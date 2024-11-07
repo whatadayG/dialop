@@ -1,6 +1,12 @@
 from thefuzz import fuzz
 import traceback
 from pathlib import Path
+import pdb
+from skills import Agent_tell
+from IPython.core.debugger import set_trace
+
+
+
 
 from dialop.games import PlanningGame
 from dialop.envs import DialogueEnv, GameError
@@ -8,14 +14,20 @@ from dialop.templates import (
     PlanningUserPromptTemplate,
     PlanningProposalTemplate,
     PlanningAgentPromptTemplate,
+    PlanningPersonaTemplate
 )
-from dialop.planning_query_executor import (
-  StaticQueryExecutor, GPT3QueryExecutor, SearchError
+from planning_query_executor import (
+  StaticQueryExecutor, GPT3QueryExecutor, GPT4QueryExecutor, SearchError
 )
+
 
 class PlanningEnv(DialogueEnv):
+    count = 0
 
-    def __init__(self, query_executor="gpt3"):
+    def __init__(self, query_executor="gpt4"):
+        
+        self.feature_extractor_prompt = (Path(__file__).parent / "data" / "planning_feature_extraction.txt").read_text()
+        
         self.players = ["user", "agent"]
         datapath = Path(__file__).parent / "data"
         self.instructions = [
@@ -27,32 +39,41 @@ class PlanningEnv(DialogueEnv):
             self._search_cls = StaticQueryExecutor
         elif query_executor == "gpt3":
             self._search_cls = GPT3QueryExecutor
+        elif query_executor == "gpt4":
+            self._search_cls = GPT4QueryExecutor
         else:
             raise NotImplementedError
 
-    def reset(self, game_state=None):
+    def reset(self, game_state=None, user_persona=False):
+        #import pdb; pdb.set_trace()
+        
         if game_state is not None:
             self.game = PlanningGame.create_from_game_state(game_state)
             self.preferences = game_state["preferences"]
             self.events = game_state["events"]
+            self.persona_styles = self.game.persona_styles
         else:
             self.game = PlanningGame({})
             self.game.reset()
             info = self.game.get_game_info()
             self.preferences = info["preferences"]
             self.events = info["events"]
+            self.persona_styles = info["persona_styles"]
         self.search = self._search_cls(self.events)
         # Compute score range
         all_scores = self.game._compute_all_solutions(sample=False)
         self.best_score = max(all_scores)
         self.worst_score = min(all_scores)
         self.num_msgs = 0
+        self.known_user_preferences = []
         obss = self._init_from_action_log()
+        #pdb.set_trace()
         return {**obss,
-                "turn_player": self.players[self.game.turn_player],
+                'extracted_features': '',
+                "   ": self.players[self.game.turn_player],
                 "done": False}
 
-    def step(self, message):
+    def step(self, message, last_message = False, ready = False, pause_turn = False, proposal_ready = False, agent_pending = False):
         """Step the game state with a message.
 
         Errors from game logic (e.g. incorrect search syntax, searching by
@@ -64,11 +85,16 @@ class PlanningEnv(DialogueEnv):
             obss: Dict with obs for each player and game info
             resample: bool indicating whether we need to resample
         """
+       
         done = False
         reward = 0
         info = {"num_msgs": self.num_msgs}
         player = self.players[self.game.turn_player]
+        extracted_feature = ''
+        
+        #import pdb;pdb.set_trace()
         try:
+            #import pdb; pdb.set_trace()
             m = self._parse_message(
                 message,
                 can_propose=(player == "agent"),
@@ -78,11 +104,25 @@ class PlanningEnv(DialogueEnv):
             type_ = m["mtype"]
             content = m["msg"]
 
+            #from IPython.core.debugger import set_trace; set_trace()
+            #if last_message:
+            if pause_turn:
+                self.game.pause = True
+
             if type_ == "message":
                 self.num_msgs += 1
                 if player == "agent":
-                    obss = [f"\nAgent: {message}", message]
+                    if ready or agent_pending:
+                        if agent_pending:
+                            ready = True
+                        obss = [f"\nAgent: {message}", message]
+                    else:
+                        ready = True
+                        obss = [f"\nAgent: {message}", ""]
                 else:
+                    extract_prompt = self.feature_extractor_prompt + "\n" + content
+                    extracted_feature = Agent_tell(extract_prompt)
+                    #import pdb; pdb.set_trace()
                     obss = [message, f"\nUser: {message}"]
                 self.game.message({
                         "data": content,
@@ -95,10 +135,13 @@ class PlanningEnv(DialogueEnv):
                 else:
                     obss = [message, ""]
             elif type_ == "tool":
+                #import pdb; pdb.set_trace()
                 assert player == "agent", "User cannot use tool."
                 result = self._call_tool(content)
                 obss = ["", f"{message}\n{result}"]
             elif type_ == "propose":
+                #import pdb; pdb.set_trace()
+                ready = True 
                 self.num_msgs += 1
                 if player != "agent":
                     raise GameError("Only the agent can make proposals.")
@@ -110,6 +153,8 @@ class PlanningEnv(DialogueEnv):
 #                self._take_turn()
             elif type_ == "accept" or type_ == "reject":
                 self.num_msgs += 1
+                if last_message:
+                    type_ = "accept"
                 done, game_infos = self._proposal_response(
                     type_ == "accept",
                     self.game.turn_player)
@@ -134,12 +179,14 @@ class PlanningEnv(DialogueEnv):
                 "reward": 0,
                 "turn_player": self.players[self.game.turn_player]
             }, True
+        
         obss = {self.players[i]: obs for i, obs in enumerate(obss)}
         obss["turn_player"] = self.players[self.game.turn_player]
         obss["done"] = done
         obss["reward"] = reward
         obss["info"] = info
-        return obss, False
+        
+        return obss, False, extracted_feature, ready
 
     def _propose(self, message):
         proposal = self._parse_events(message)
@@ -160,14 +207,38 @@ class PlanningEnv(DialogueEnv):
         return self.search(message)
 
     def _init_from_action_log(self):
+        #import pdb; pdb.set_trace()
         obss = {}
-        obss["user"] = PlanningUserPromptTemplate.render(
+        
+        user_original = PlanningUserPromptTemplate.render(
             travel_doc="\n".join([p[0] for p in self.preferences]),
             messages=self.game.action_log,
             player_id=0,
             format_proposal=self._format_proposal,
             any=any, # to call any() in template
         ).rstrip()
+        user_style = PlanningPersonaTemplate.render(
+            persona_styles=self.persona_styles
+            ).rstrip()
+        obss["user"] = user_original + "\n" + 'you must follow your communication style:' + user_style
+        # Save observations to file
+        
+        import os
+        import json
+        
+        rl_dir = "RL_data"
+        persona_dir = os.path.join(rl_dir, "20_persona")
+        os.makedirs(persona_dir, exist_ok=True)
+        
+        
+        # Save user observations
+        obs_file = os.path.join(persona_dir, f"{PlanningEnv.count}user_observations.txt")
+        with open(obs_file, "w") as f:
+            f.write(json.loads(json.dumps(obss["user"])))
+        PlanningEnv.count += 1
+        
+            
+            
         obss["agent"] = PlanningAgentPromptTemplate.render(
             messages=self.game.action_log,
             player_id=1,

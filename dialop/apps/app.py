@@ -10,7 +10,9 @@ import flask
 import flask_socketio as io
 from dialop.games import MediationGame, OptimizationGame, PlanningGame
 from flask import request, send_from_directory, session, url_for
-
+import sys
+#print(sys.path)
+sys.path.append('.')
 from server_state import ServerState
 
 flask.logging.default_handler.setFormatter(logging.Formatter("[%(filename)s:%(lineno)s:%(funcName)s] -- %(message)s"))

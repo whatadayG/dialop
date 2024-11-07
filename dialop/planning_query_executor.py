@@ -1,7 +1,10 @@
 from copy import deepcopy
 
 import numpy as np
-import openai
+from openai import OpenAI
+import pdb
+
+client = OpenAI()
 import pyparsing as pp
 from pyparsing import OneOrMore, Suppress, delimited_list, one_of
 from pyparsing.exceptions import ParseException
@@ -63,6 +66,8 @@ class StaticQueryExecutor:
             result of the search, as a string
         """
         query = self._parse_query(query_str)
+        #query = query_str
+        #pdb.set_trace()
         results = deepcopy(self.sites)
         return_fields = [self._remap(k) for k in query["fields"]]
         for filt in query.get("filters", []):
@@ -174,21 +179,131 @@ class GPT3QueryExecutor:
 
     def __call__(self, query_str):
         prompt = self.prompt + f"Query: {query_str}\nResult:\n"
-        response = openai.Completion.create(
-            model=self.model,
-            prompt=prompt,
-            temperature=0.1,
-            max_tokens=256,
-            top_p=.95,
-            frequency_penalty=0,
-            presence_penalty=0,
-            stop=["\n\n", "Query", "Query:"]
-        )
+        prompt = {'role': 'assistant', 'content': prompt,}
+        messages = [prompt]
+        response = client.chat.completions.create(model=self.model,
+        messages = messages,
+        prompt=prompt,
+        temperature=0.1,
+        #max_tokens=256,
+        top_p=.95,
+        frequency_penalty=0,
+        presence_penalty=0,
+        stop=["\n\n", "Query", "Query:"])
         print(response)
-        return response["choices"][0]["text"]
+        return response.choices[0].message.content
 
     def distance(self, s1, s2) -> float:
         dist = np.linalg.norm(np.array(s1["loc"]) - np.array(s2["loc"]))
         dist *= 69
         dist = round(dist * 10) / 10
         return dist
+
+
+
+
+class GPT4QueryExecutor:
+    count = 0
+    def __init__(self, sites):
+        #import pdb; pdb.set_trace()
+         
+        self.prompt = self._construct_prompt(sites)
+        self.model = "gpt-4o"
+        
+
+    def _construct_prompt(self, sites):
+        
+        sites = deepcopy(sites)
+        test_searches = [
+            "Search(fields=[name], filters=[category == landmark])",
+            "Search(fields=[name], filters=[category == concert])",
+            "Search(fields=[name], text_query=live music)",
+            "Search(fields=[name, price], text_query=live music, filters=[price <= 40])",
+            "Search(fields=[name, price], filters=[category == restaurant, price <= 10], sort_by=[distance_to(The Mall)])",
+            "Search(fields=[name, price, distance], filters=[category == restaurant], sort_by=[distance_to(The Mall), price])",
+            """Search(fields=[name], text_query="good for kids", filters=[category == park], sort_by=[distance_to(Saul's)])""",
+            "Search(fields=[name], filters=[vegan == true])",
+        ]
+        static_search = StaticQueryExecutor(sites)
+        def get_result_str(q):
+            try:
+                return static_search(q)
+            except SearchError as e:
+                return str(e)
+        examples = [{"query": q, "result": get_result_str(q)}
+                    for q in test_searches]
+
+        # Remove some fields to save context length
+        for s in sites:
+            del s["type"]
+            del s["id_"]
+            s["loc"] = [round(s["loc"][0], 2), round(s["loc"][1], 2)]
+
+        prompt = QueryExecutorTemplate.render(
+            sites=sites,
+            example_queries=examples
+        )
+        #import pdb; pdb.set_trace()
+        # Save prompt to file
+        
+        import os
+        import json
+        
+        rl_dir = "RL_data" 
+        prompt_dir = os.path.join(rl_dir, "20_prompt")
+        os.makedirs(prompt_dir, exist_ok=True)
+        prompt_file = os.path.join(prompt_dir, f"{GPT4QueryExecutor.count}query_executor_prompt.txt")
+        with open(prompt_file, "w") as f:
+            f.write(json.loads(json.dumps(prompt)))
+        GPT4QueryExecutor.count += 1
+        
+        return prompt
+
+    def __call__(self, query_str):
+        #pdb.set_trace()
+        
+        prompt = self.prompt + f"Query: {query_str}\nResult:\n"
+        prompt = {'role': 'assistant', 'content': prompt,}
+        messages = [prompt]
+        response = client.chat.completions.create(model=self.model,
+        messages = messages,
+        temperature=0.1,
+        #max_tokens=256,
+        top_p=.95,
+        frequency_penalty=0,
+        presence_penalty=0,
+        stop=["\n\n", "Query", "Query:"])
+        print(response)
+        return response.choices[0].message.content
+
+    def distance(self, s1, s2) -> float:
+        dist = np.linalg.norm(np.array(s1["loc"]) - np.array(s2["loc"]))
+        dist *= 69
+        dist = round(dist * 10) / 10
+        return dist
+
+
+'''
+
+#tests
+# Example data of sites or events
+sites = [
+    {"name": "The Hidden Peak", "etype": "landmark", "loc": [40.7128, -74.0060], "est_price": 0},
+    {"name": "Schwarzes Cafe", "etype": "restaurant", "loc": [40.7308, -73.9975], "est_price": 20},
+    {"name": "The Secret Garden", "etype": "park", "loc": [40.785091, -73.968285], "est_price": 0},
+]
+
+# Instantiate the StaticQueryExecutor with the data
+executor = StaticQueryExecutor(sites)
+
+# Example query string
+query_str = "{fields:[name, info], text_query: hidden spots panoramic views}"
+
+# Call the search function and print the result
+result = executor(query_str)
+print(result)
+
+# '[tool] Search(fields=[name, info], text_query="hidden spots panoramic views")\n',
+
+'''
+

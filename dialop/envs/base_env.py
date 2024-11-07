@@ -1,5 +1,6 @@
 from typing import Optional, Dict
 import re
+import pdb
 
 class DialogueEnv:
 
@@ -15,6 +16,9 @@ class DialogueEnv:
             has_recipient: bool = False,
             ):
         """Parses and checks a message string from a player."""
+        
+        message = message.replace('\\', '')
+                         
         if has_recipient:
             m = re.match(
                 r"(?P<vroom>0|1|all): \[(?P<mtype>\w+)\](?P<msg>.*)",
@@ -77,10 +81,15 @@ class DialogueEnv:
             infos (List[Dict]): game information about the proposal for each
             player
         """
-        if self.game.proposal is None or not self.game.is_full_proposal:
+        #if self.game.proposal is None or not self.game.is_full_proposal
+    
+                #"You can only [accept] or [reject] when your partner sends a "
+                #"full proposal. Either no full proposal has been made yet or "
+                #"the last proposal has expired. Keep sending more messages."
+        if self.game.proposal is None:
             raise GameError(
                 "You can only [accept] or [reject] when your partner sends a "
-                "full proposal. Either no full proposal has been made yet or "
+                "proposal. Either no full proposal has been made yet or "
                 "the last proposal has expired. Keep sending more messages."
             )
         done, infos = self.game.proposal_response(

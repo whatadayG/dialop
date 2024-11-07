@@ -101,6 +101,16 @@ MediationAgentPromptTemplate = env.from_string(MediationAgentPromptTemplateStr)
 
 
 ### Planning 
+PlanningPersonaTemplateStr = (
+"""Communication Style:
+{% for style, explanation in persona_styles.items() %}
+{{ style }}: {{ explanation }}
+{% endfor %}
+"""
+)
+PlanningPersonaTemplate = env.from_string(PlanningPersonaTemplateStr)
+
+
 PlanningUserPromptTemplateStr = (
 """Travel Preferences:
 {{ travel_doc }}

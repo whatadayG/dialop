@@ -48,6 +48,7 @@ class PlanningGame(DialogueGame):
         game.reset()
         game.action_log = game_state["action_log"]
         game.events = game_state["events"]
+        game.pause = False
         for e in game.events:
             e["type"] = "event"
         game.prefs = []
@@ -56,10 +57,15 @@ class PlanningGame(DialogueGame):
                 import pdb; pdb.set_trace()
             desc, wt, cls, cls_args = pref
             game.prefs.append(PREF_NAME_TO_CLS[cls](**cls_args))
+            
+        if "persona_styles" in game_state:
+            game.persona_styles = game_state["persona_styles"]
+    
+
         if len(game.action_log) > 0:
             last_player = game.action_log[-1]["player"]
             game.turn_player = 1 - last_player
-        game.message_history = [m["message"] for m in game.action_log \
+        game.message_history = [m["message"] for m in game.action_log 
                                 if m["type"] == "message"]
         # Set state if there's a proposal on the table
         for turn in game.action_log:
@@ -73,6 +79,7 @@ class PlanningGame(DialogueGame):
 
     def _load_data(self):
         # Check whether we're running locally or in a flask server
+        # for website
         if has_request_context():
             dataf = os.path.join(current_app.static_folder, "travel_data.yaml")
             locf = os.path.join(current_app.static_folder, "locations.geojson")
@@ -99,6 +106,7 @@ class PlanningGame(DialogueGame):
                   loc=locs[i],
                   est_price=random.choice(range(*self.all_types[e["type"]]["price_range"], 10))
             ) for i, e in enumerate(all_events)]
+        self.all_styles = json.load(open("/Users/georgiazhou/research_machine/dialop/dialop/RL/explanation_per_persona.txt", "r"))
 
     def _randomize_event_features(self, event: Event):
         feats = random.sample(self.feats_by_type[event.etype], k=5)
@@ -152,6 +160,8 @@ class PlanningGame(DialogueGame):
         # Generate event set
         events = random.sample(self.all_events, self.num_events)
         self.events = [self._randomize_event_features(e) for e in events]
+        selected_keys = random.sample(list(self.all_styles.keys()), 2)
+        self.persona_styles = {k: self.all_styles[k] for k in selected_keys}
         # Generate preferences by type
         all_prefs = []
         for p in ALL_PREFS:
@@ -181,13 +191,15 @@ class PlanningGame(DialogueGame):
         metadata = metadata or {}
         self.message_history.append(message)
         self.action_log.append({
+
             **metadata,
             "type": "message",
             "message": message,
             "player": self.turn_player,
             "time": time.time() - self.start_time
         })
-        self._take_turn()
+        if not self.pause:
+            self._take_turn()
 
     def propose(self, proposal, from_player, metadata=None):
         metadata = metadata or {}
@@ -244,7 +256,7 @@ class PlanningGame(DialogueGame):
     def proposal_response(self, response, from_player, metadata=None):
         metadata = metadata or {}
         if response["accept"]:
-            game_over = self.is_full_proposal
+            game_over = True
             if game_over:
                 self.disconnect = False
             scores, _, _ = self._score_proposal(self.proposal)
@@ -273,5 +285,6 @@ class PlanningGame(DialogueGame):
             "features": self.features,
             "preferences": [(p.readable, p.weight, type(p).__name__, p.__dict__) for p in self.prefs],
             "action_log": self.action_log,
-            "disconnect": self.disconnect
+            "disconnect": self.disconnect,
+            "persona_styles": self.persona_styles,
         }

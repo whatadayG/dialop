@@ -6,21 +6,24 @@ import time
 from dateutil.parser import parse
 from pathlib import Path
 from itertools import cycle
+import pdb
 
 enc = tiktoken.get_encoding("cl100k_base")
 SEP = "=" * 20
 SEP1 = "-" * 20
 
-def run(console, env, players, max_length=30):
+def run(console, env, players, max_length=35):
+    
     obss = env.reset()
     for t in range(max_length):
-      console.rule("environment obs")
-      console.print(obss)
-      [player.observe(obss[pname]) for pname, player in players.items()]
-      resp = players[obss["turn_player"]].respond()
-      obss, resample = env.step(resp)
-      if obss["done"]:
-        break
+        #pdb.set_trace()
+        console.rule("environment obs")
+        console.print(obss)
+        [player.observe(obss[pname]) for pname, player in players.items()]
+        resp = players[obss["turn_player"]].respond()
+        obss, resample = env.step(resp, t>=(max_length-5))
+        if obss["done"]:
+            break
     print(obss)
 
 def run_multiagent(console, env, players, max_length=45):
