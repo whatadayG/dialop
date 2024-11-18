@@ -1,0 +1,27 @@
+To determine the total number of queries, the number of incorrect queries, and the number of correct queries, let's analyze each query step by step:
+
+1. **Query 1**: `Search(fields=[name], text_query=wifi)`
+   - This query searches for entries with "wifi" in the name field.
+   - The results include "The Cupcake Bar", "Coffee Nook", "Common Grounds", "Asha Tea House", and "Harper and Rye".
+   - Upon checking the dataset, all these entries have "wifi" as a feature, except "Harper and Rye", which does not have "wifi" in its features.
+   - Therefore, this query is incorrect.
+
+2. **Query 2**: `Search(fields=[name, info], filters=[category == restaurant], text_query=vegetarian OR vegan)`
+   - This query searches for restaurants with either "vegetarian" or "vegan" in their features.
+   - The results include "Caribbean Corner", "Mad Seoul", "The Cupcake Bar", and "Schwarzes Cafe".
+   - "Caribbean Corner" and "Mad Seoul" are restaurants with "vegan options".
+   - "The Cupcake Bar" and "Schwarzes Cafe" are cafes, not restaurants, so they should not be included.
+   - Therefore, this query is incorrect.
+
+3. **Query 3**: `Search(fields=[name, info], filters=[category == shop], text_query=The Mall OR Market Street)`
+   - This query searches for shops with names "The Mall" or "Market Street".
+   - The results include "The Mall" and "Market Street".
+   - Both entries are shops and match the names specified in the query.
+   - Therefore, this query is correct.
+
+Now, let's summarize the results:
+- Total number of queries: 3
+- Number of incorrect queries: 2
+- Number of correct queries: 1
+
+[result]:: 3, 2, 1

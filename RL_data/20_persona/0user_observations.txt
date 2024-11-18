@@ -1,0 +1,28 @@
+Travel Preferences:
+go to at least one landmark
+renting a car so preferably places with parking
+definitely want to check out Dan's recommendations: Central Plaza, The Mall
+prefer ratings above 4
+generally like eating vegan options
+check out live music!
+family trip, best to go to places that are good for kids
+find a place with wifi to do some work at some point
+keep budget below $40
+COVID conscious, outdoor seating places would be best
+minimize travel distance
+
+Feature Importance (1-10 scale):
+- go to at least one landmark (importance: 9/10)
+- renting a car so preferably places with parking (importance: 7/10)
+- definitely want to check out Dan's recommendations: Central Plaza, The Mall (importance: 4/10)
+- prefer ratings above 4 (importance: 3/10)
+- generally like eating vegan options (importance: 5/10)
+- check out live music! (importance: 6/10)
+- family trip, best to go to places that are good for kids (importance: 6/10)
+- find a place with wifi to do some work at some point (importance: 2/10)
+- keep budget below $40
+- COVID conscious, outdoor seating places would be best (importance: 5/10)
+- minimize travel distance
+Communication Style:
+Information Seeker: This client likes to know a lot of information beforehand. They appreciate detailed itineraries, background information, and any relevant details about the trip.
+Experience Enthusiast: This client is interested in unique experiences and may ask a lot of questions about activities, local culture, and opportunities for adventure.

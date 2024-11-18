@@ -32,20 +32,20 @@ if not client.api_key:
     print("Warning: no OpenAI API key loaded.")
 
 
-SERVICE_ACCOUNT_FILE = '/Users/georgiazhou/research_machine/dialop/dialop-8759580d9f40.json'
-SCOPE = ["https://spreadsheets.google.com/feeds", 
-         "https://www.googleapis.com/auth/drive"]
-credentials = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPE)
-paper = gspread.authorize(credentials)
-spreadsheet = paper.open('Dialop-GPT4-Planning')
+#SERVICE_ACCOUNT_FILE = '/Users/georgiazhou/research_machine/dialop/dialop-8759580d9f40.json'
+#SCOPE = ["https://spreadsheets.google.com/feeds", 
+#         "https://www.googleapis.com/auth/drive"]
+#credentials = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPE)
+#paper = gspread.authorize(credentials)
+#spreadsheet = paper.open('Dialop-GPT4-Planning')
 
 columns = ["Experiment 1", "Experiment 2", "Experiment 3"]
 
-worksheet1 = spreadsheet.sheet1
-worksheet2 = spreadsheet.get_worksheet(1)
-search_sheet = spreadsheet.get_worksheet(2)
-other_sheet_Q = spreadsheet.get_worksheet(3)
-cleaned_data_sheet = spreadsheet.get_worksheet(4)
+#worksheet1 = spreadsheet.sheet1
+#worksheet2 = spreadsheet.get_worksheet(1)
+#search_sheet = spreadsheet.get_worksheet(2)
+#other_sheet_Q = spreadsheet.get_worksheet(3)
+#cleaned_data_sheet = spreadsheet.get_worksheet(4)
 
 
 def extract_tools_from_worksheet(col):
@@ -167,7 +167,6 @@ def Agent_tell(string, temperature = 0.8):
             temperature=temperature,
             top_p=.95,
             frequency_penalty=0,
-            presence_penalty=0,
             messages = [prompt]
         )
 

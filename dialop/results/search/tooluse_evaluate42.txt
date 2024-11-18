@@ -1,0 +1,35 @@
+To determine the total number of queries, the number of incorrect queries, and the number of correct queries, let's analyze each query step by step:
+
+1. **Query 1**: `Search(fields=[name, category], text_query="hipster, good for kids, good for groups, outdoor seating")`
+   - **Result**: The Dive (bar), Saul's (restaurant)
+   - **Analysis**: The Dive has "hipster" ambience but does not have "good for kids". Saul's does not have "hipster" ambience or "outdoor seating". Both results do not fully match the query criteria.
+   - **Conclusion**: Incorrect
+
+2. **Query 2**: `Search(fields=[name, category], text_query="shop, non-touristy")`
+   - **Result**: The Mall (shop), Vista Ridge Mall (shop), Market Street (shop)
+   - **Analysis**: All three results are shops, but The Mall is non-touristy, while Vista Ridge Mall and Market Street are touristy.
+   - **Conclusion**: Incorrect
+
+3. **Query 3**: `Search(fields=[name, category], text_query="hidden, non-touristy")`
+   - **Result**: Cookies Cream (restaurant), Liberty Memorial (landmark), Hindenberg Memorial (landmark), Saul's (restaurant), The Mall (shop)
+   - **Analysis**: All results are non-touristy, but the query asks for "hidden", which is subjective and not directly verifiable from the dataset.
+   - **Conclusion**: Correct (assuming "hidden" is interpreted as non-touristy)
+
+4. **Query 4**: `Search(fields=[name, category], text_query="live music, takeout")`
+   - **Result**: Mad Seoul (restaurant), Saul's (restaurant)
+   - **Analysis**: Mad Seoul has live music but no takeout. Saul's has takeout but no live music.
+   - **Conclusion**: Incorrect
+
+5. **Query 5**: `Search(fields=[name, category], filters=[category == shop OR category == restaurant OR category == bar], sort_by=[distance_to(Saul's)], limit=2)`
+   - **Result**: The Mall (shop), Mad Seoul (restaurant)
+   - **Analysis**: Both results are within the specified categories and are sorted by distance to Saul's.
+   - **Conclusion**: Correct
+
+Now, let's summarize the results:
+- Total number of queries: 5
+- Number of incorrect queries: 3 (Queries 1, 2, and 4)
+- Number of correct queries: 2 (Queries 3 and 5)
+
+Therefore, the final result is: 
+
+[result]:: 5, 3, 2

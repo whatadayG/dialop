@@ -1,0 +1,32 @@
+To determine the total number of queries, the number of incorrect queries, and the number of correct queries, let's analyze each query one by one:
+
+1. **Query 1**: `Search(fields=[name, info, price], text_query="Artisan Street Fair")`
+   - The result matches the dataset entry for "Artisan Street Fair".
+   - **Correct**
+
+2. **Query 2**: `Search(fields=[name, info, price], text_query="Central Plaza")`
+   - The result matches the dataset entry for "Central Plaza".
+   - **Correct**
+
+3. **Query 3**: `Search(fields=[name, info, price], filters=[category == restaurant, price <= 70], text_query="kosher OR American")`
+   - The result includes "El Toro Steakhouse" and "The Dockside Grill", which are within the price range and match the category. "Mad Seoul" is included but is priced at 90, which is above the filter limit of 70.
+   - **Incorrect**
+
+4. **Query 4**: `Search(fields=[name, info, price], filters=[category == shop, price <= 70, good for groups == True])`
+   - The result includes "Artisan Street Fair", which is priced at 220, above the filter limit of 70.
+   - **Incorrect**
+
+5. **Query 5**: `Search(fields=[name, info, price], filters=[category == cafe OR category == restaurant, price <= 70, has_wifi == True])`
+   - The result includes "Common Grounds" and "Coffee Nook", both of which match the filters.
+   - **Correct**
+
+6. **Query 6**: `Search(fields=[name, info, price], filters=[category == restaurant, price <= 70, good for groups == True, has_vegetarian_options == True])`
+   - The result includes "Earthbar", which matches the filters. "Saul's" is included but is priced at 80, which is above the filter limit of 70.
+   - **Incorrect**
+
+Now, let's summarize the results:
+- Total number of queries: 6
+- Number of incorrect queries: 3 (Queries 3, 4, and 6)
+- Number of correct queries: 3 (Queries 1, 2, and 5)
+
+[result]:: 6, 3, 3

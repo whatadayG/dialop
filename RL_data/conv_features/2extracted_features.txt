@@ -1,0 +1,1 @@
+{'WantToGo': ['The Tower', 'High'], 'has_parking': ['must', 'High'], 'PriceBudgetPreference': ['below $30', 'Medium'], 'viewpoint': ['panoramic views', 'High']}

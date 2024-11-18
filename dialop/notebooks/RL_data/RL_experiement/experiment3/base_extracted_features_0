@@ -1,0 +1,1 @@
+{"AtLeastOneEventType": ["cafe", "Unknown"], "has_parking": ["like", "Unknown"], "cuisine": [["japanese", "High"], ["seafood", "High"], ["chinese", "High"], ["kosher", "High"], ["french", "High"], ["ethiopian", "High"], ["korean", "High"], ["american", "High"]], "DistancePreference": ["minimum travel distance", "High"], "WantToGo": ["Market Street", "High"]}

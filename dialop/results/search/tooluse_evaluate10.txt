@@ -1,0 +1,30 @@
+To determine the total number of queries, the number of incorrect queries, and the number of correct queries, let's analyze each query step by step:
+
+1. **Query 1**: `Search(fields=[name, info], filters=[category == restaurant], text_query="Thai OR French")`
+   - Result: No results
+   - This query is incorrect because there are no restaurants with "Thai" or "French" in the dataset.
+
+2. **Query 2**: `Search(fields=[name, info], filters=[category == cafe], text_query="wifi")`
+   - Result: 1 result (Schwarzes Cafe)
+   - This query is incorrect because the result shows "has wifi": False, which means it doesn't have wifi.
+
+3. **Query 3**: `Search(fields=[name, info], filters=[category == bar], text_query="cocktails")`
+   - Result: 6 results
+   - This query is incorrect because none of the bars explicitly mention "cocktails" in their features.
+
+4. **Query 4**: `Search(fields=[name], sort_by=[distance_to(Einstein's summer house)], limit=2)`
+   - Result: 2 results (The Jazz Spot, Market Street)
+   - This query is correct as it returns the two closest places to "Einstein's summer house."
+
+5. **Query 5**: `Search(fields=[name, info], filters=[category == bar], sort_by=[distance_to(Einstein's summer house)], limit=1)`
+   - Result: 1 result (The Jazz Spot)
+   - This query is correct as it returns the closest bar to "Einstein's summer house."
+
+Now, let's summarize the results:
+- Total number of queries: 5
+- Number of incorrect queries: 3 (Queries 1, 2, and 3)
+- Number of correct queries: 2 (Queries 4 and 5)
+
+Therefore, the result is: 
+
+[result]:: 5, 3, 2

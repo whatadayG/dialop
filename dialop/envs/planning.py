@@ -2,11 +2,11 @@ from thefuzz import fuzz
 import traceback
 from pathlib import Path
 import pdb
+import random
 from skills import Agent_tell
 from IPython.core.debugger import set_trace
-
-
-
+import ast
+import copy
 
 from dialop.games import PlanningGame
 from dialop.envs import DialogueEnv, GameError
@@ -18,6 +18,9 @@ from dialop.templates import (
 )
 from planning_query_executor import (
   StaticQueryExecutor, GPT3QueryExecutor, GPT4QueryExecutor, SearchError
+)
+from dialop.games.planning_data import (
+    Event, PREF_NAME_TO_CLS, ALL_PREFS, FeaturePreference, ALL_CONSTRAINTS, DistancePreference,
 )
 
 
@@ -43,11 +46,57 @@ class PlanningEnv(DialogueEnv):
             self._search_cls = GPT4QueryExecutor
         else:
             raise NotImplementedError
+        
+    def create_sampled_user_preferences(self, num_preferences):
+        random_prefs = []
+        for p in ALL_PREFS:
+            random_prefs.extend(p.generate(self.game.game_data))
+        random.shuffle(random_prefs)
+        random_prefs = random_prefs[:(num_preferences-1)]
+        random_prefs.extend(DistancePreference.generate(self.game.game_data))
+        output = [(p.readable, p.weight, type(p).__name__, p.__dict__) 
+                                       for p in random_prefs]
+        
+        return output
+    
+    def create_non_overlapping_preferences(self, num_preferences, existing_prefs):
+        # Convert existing prefs keys to set for efficient lookup
+        existing_keys = set(existing_prefs.keys())
+        
+        random_prefs = []
+        for p in ALL_PREFS:
+            # Generate preferences
+            new_prefs = p.generate(self.game.game_data)
+            
+            # Only add preferences whose type doesn't exist in existing_prefs
+            for pref in new_prefs:
+                if type(pref).__name__ not in existing_keys:
+                    random_prefs.append(pref)
+                    
+        random.shuffle(random_prefs)
+        
+        # Add distance preference only if not in existing prefs
+        if 'DistancePreference' not in existing_keys:
+            random_prefs.extend(DistancePreference.generate(self.game.game_data))
+            
+        # Take only requested number of preferences
+        random_prefs = random_prefs[:num_preferences]
+        
+        output = [(p.readable, p.weight, type(p).__name__, p.__dict__) 
+                  for p in random_prefs]
+        
+        return output
+    
+    
 
-    def reset(self, game_state=None, user_persona=False):
+    def reset(self, game_state=None, known_user_preferences_num =None, extracted_features = None):
         #import pdb; pdb.set_trace()
         
         if game_state is not None:
+            if known_user_preferences_num is not None:
+                
+                game_state["preferences"] = self.create_non_overlapping_preferences(known_user_preferences_num, extracted_features)
+
             self.game = PlanningGame.create_from_game_state(game_state)
             self.preferences = game_state["preferences"]
             self.events = game_state["events"]
@@ -66,14 +115,14 @@ class PlanningEnv(DialogueEnv):
         self.worst_score = min(all_scores)
         self.num_msgs = 0
         self.known_user_preferences = []
-        obss = self._init_from_action_log()
+        obss = self._init_from_action_log(no_action_log=True)
         #pdb.set_trace()
         return {**obss,
-                'extracted_features': '',
-                "   ": self.players[self.game.turn_player],
+                'extracted_features': {},
+                "turn_player": self.players[self.game.turn_player],
                 "done": False}
 
-    def step(self, message, last_message = False, ready = False, pause_turn = False, proposal_ready = False, agent_pending = False):
+    def step(self, message, last_message = False, ready = False, pause_turn = False, propose = False, agent_pending = False):
         """Step the game state with a message.
 
         Errors from game logic (e.g. incorrect search syntax, searching by
@@ -85,18 +134,23 @@ class PlanningEnv(DialogueEnv):
             obss: Dict with obs for each player and game info
             resample: bool indicating whether we need to resample
         """
-       
+
         done = False
         reward = 0
         info = {"num_msgs": self.num_msgs}
         player = self.players[self.game.turn_player]
-        extracted_feature = ''
+        extracted_feature = {}
         
         #import pdb;pdb.set_trace()
         try:
             #import pdb; pdb.set_trace()
+            edited_prompt_propose = False
+            if propose:
+                edited_prompt_propose = True
+                
             m = self._parse_message(
                 message,
+                edited_prompt_propose,
                 can_propose=(player == "agent"),
                 can_respond=(player != "agent"),
                 must_respond=(player != "agent" and self.game.proposal is not None),
@@ -121,8 +175,15 @@ class PlanningEnv(DialogueEnv):
                         obss = [f"\nAgent: {message}", ""]
                 else:
                     extract_prompt = self.feature_extractor_prompt + "\n" + content
-                    extracted_feature = Agent_tell(extract_prompt)
-                    #import pdb; pdb.set_trace()
+                    finished = False
+                    correction_str = ""
+                    while finished == False:
+                        try:
+                            extracted_feature = ast.literal_eval(Agent_tell(extract_prompt + correction_str))
+                            finished = True
+                        except Exception as e:
+                            correction_str = f"Please avoid this syntax error: {e}."
+                            
                     obss = [message, f"\nUser: {message}"]
                 self.game.message({
                         "data": content,
@@ -152,9 +213,11 @@ class PlanningEnv(DialogueEnv):
                                 f"(1) [accept] Accept\n(2) [reject] Reject")
 #                self._take_turn()
             elif type_ == "accept" or type_ == "reject":
+                
                 self.num_msgs += 1
                 if last_message:
                     type_ = "accept"
+    
                 done, game_infos = self._proposal_response(
                     type_ == "accept",
                     self.game.turn_player)
@@ -187,7 +250,16 @@ class PlanningEnv(DialogueEnv):
         obss["info"] = info
         
         return obss, False, extracted_feature, ready
-
+    def get_feature_weights(self):
+        feature_weights = {}
+        for pref in self.game.prefs:
+            if isinstance(pref, FeaturePreference):
+                feature_weights[pref.name] = {
+                    'weight': pref.weight,
+                    'readable': pref.readable,
+                    'value_sets': pref.value_sets  # [disliked_values, liked_values]
+                }
+        return feature_weights
     def _propose(self, message):
         proposal = self._parse_events(message)
         if len(proposal) < 5:
@@ -206,13 +278,18 @@ class PlanningEnv(DialogueEnv):
     def _call_tool(self, message: str):
         return self.search(message)
 
-    def _init_from_action_log(self):
+    def _init_from_action_log(self, no_action_log=False):
         #import pdb; pdb.set_trace()
         obss = {}
-        
+        if no_action_log:
+            action_log = []
+        else:
+            action_log = self.game.action_log
+        #import pdb; pdb.set_trace()
         user_original = PlanningUserPromptTemplate.render(
             travel_doc="\n".join([p[0] for p in self.preferences]),
-            messages=self.game.action_log,
+            preferences=self.game.prefs,
+            messages=action_log,
             player_id=0,
             format_proposal=self._format_proposal,
             any=any, # to call any() in template
@@ -220,23 +297,7 @@ class PlanningEnv(DialogueEnv):
         user_style = PlanningPersonaTemplate.render(
             persona_styles=self.persona_styles
             ).rstrip()
-        obss["user"] = user_original + "\n" + 'you must follow your communication style:' + user_style
-        # Save observations to file
-        
-        import os
-        import json
-        
-        rl_dir = "RL_data"
-        persona_dir = os.path.join(rl_dir, "20_persona")
-        os.makedirs(persona_dir, exist_ok=True)
-        
-        
-        # Save user observations
-        obs_file = os.path.join(persona_dir, f"{PlanningEnv.count}user_observations.txt")
-        with open(obs_file, "w") as f:
-            f.write(json.loads(json.dumps(obss["user"])))
-        PlanningEnv.count += 1
-        
+        obss["user"] = user_original + "\n"  + user_style
             
             
         obss["agent"] = PlanningAgentPromptTemplate.render(

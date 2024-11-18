@@ -1,0 +1,56 @@
+To determine the total number of queries, the number of incorrect queries, and the number of correct queries, let's analyze each query step by step:
+
+1. **Query 1**: 
+   - Search for restaurants that are Spanish or kosher, non-touristy, have wifi, outdoor seating, and price <= 90.
+   - Result: No results.
+   - This query is incorrect because there are no restaurants with all these specific criteria.
+
+2. **Query 2**: 
+   - Search for restaurants that are Spanish or kosher, non-touristy, have wifi, and price <= 90.
+   - Result: No results.
+   - This query is incorrect because there are no restaurants with all these specific criteria.
+
+3. **Query 3**: 
+   - Search for restaurants that are non-touristy, have wifi, and price <= 90.
+   - Result: No results.
+   - This query is incorrect because there are no restaurants with all these specific criteria.
+
+4. **Query 4**: 
+   - Search for restaurants that have wifi and price <= 90.
+   - Result: No results.
+   - This query is incorrect because there are no restaurants with all these specific criteria.
+
+5. **Query 5**: 
+   - Search for restaurants with price <= 90.
+   - Result: 8 results found.
+   - This query is correct because it returns results that match the criteria.
+
+6. **Query 6**: 
+   - Search for places that are quiet, have wifi, and outdoor seating, sorted by distance to The Dockside Grill.
+   - Result: No results.
+   - This query is incorrect because there are no places with all these specific criteria.
+
+7. **Query 7**: 
+   - Search for places that are quiet and have wifi, sorted by distance to The Dockside Grill.
+   - Result: No results.
+   - This query is incorrect because there are no places with all these specific criteria.
+
+8. **Query 8**: 
+   - Search for places that are quiet, sorted by distance to The Dockside Grill.
+   - Result: No results.
+   - This query is incorrect because there are no places with this specific criterion.
+
+9. **Query 9**: 
+   - Search for places sorted by distance to The Dockside Grill, limit 2.
+   - Result: 2 results found.
+   - This query is correct because it returns results that match the criteria.
+
+Now, let's summarize the results:
+
+- Total number of queries: 9
+- Number of incorrect queries: 7 (Queries 1, 2, 3, 4, 6, 7, 8)
+- Number of correct queries: 2 (Queries 5, 9)
+
+Therefore, the result is:
+
+[result]:: 9, 7, 2

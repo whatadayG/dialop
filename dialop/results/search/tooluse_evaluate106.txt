@@ -1,0 +1,34 @@
+To determine the total number of queries, the number of incorrect queries, and the number of correct queries, let's analyze each query step by step:
+
+1. **Query 1**: `Search(fields=[name], text_query=panoramic view)`
+   - This query is incorrect because there is no field named "text_query" in the dataset.
+
+2. **Query 2**: `Search(fields=[name, rating, has outdoor seating], filters=[rating > 4.5, has outdoor seating == True])`
+   - This query is correct. It returns a result with the name "Kozy Kar" which matches the filters.
+
+3. **Query 3**: `Search(fields=[name, category, good for groups], filters=[category == park OR category == hidden spot, good for groups == True])`
+   - This query is correct. It returns results for parks that are good for groups.
+
+4. **Query 4**: `Search(fields=[name, distance_to(Coffee Nook), distance_to(The Cupcake Bar)], filters=[name == Garden of Wonders OR name == The Arboretum OR name == Lincoln Park], sort_by=[distance_to(Coffee Nook), distance_to(The Cupcake Bar)])`
+   - This query is correct. It returns the distances for the specified parks.
+
+5. **Query 5**: `Search(fields=[name, rating, distance_to(Coffee Nook), distance_to(The Cupcake Bar)], filters=[rating > 4.5], sort_by=[distance_to(Coffee Nook), distance_to(The Cupcake Bar)])`
+   - This query is correct. It returns results with ratings greater than 4.5.
+
+6. **Query 6**: `Search(fields=[name, category, distance_to(Coffee Nook), distance_to(The Cupcake Bar), distance_to(Kozy Kar)], filters=[category == park], sort_by=[distance_to(Coffee Nook), distance_to(The Cupcake Bar), distance_to(Kozy Kar)])`
+   - This query is correct. It returns parks sorted by distance.
+
+7. **Query 7**: `Search(fields=[name, rating, distance_to(Coffee Nook), distance_to(The Cupcake Bar), distance_to(Kozy Kar)], filters=[category == park, rating > 4.5], sort_by=[distance_to(Coffee Nook), distance_to(The Cupcake Bar), distance_to(Kozy Kar)])`
+   - This query is incorrect because there are no parks with a rating greater than 4.5.
+
+8. **Query 8**: `Search(fields=[name, rating, distance_to(Coffee Nook), distance_to(The Cupcake Bar), distance_to(Kozy Kar)], filters=[category == park], sort_by=[rating, distance_to(Coffee Nook), distance_to(The Cupcake Bar), distance_to(Kozy Kar)])`
+   - This query is correct. It returns parks sorted by rating and distance.
+
+Now, let's count the queries:
+- Total number of queries: 8
+- Number of incorrect queries: 2 (Query 1 and Query 7)
+- Number of correct queries: 6
+
+Therefore, the result is:
+
+[result]:: 8, 2, 6

@@ -1,0 +1,35 @@
+To determine the total number of queries, the number of incorrect queries, and the number of correct queries, let's analyze each query step by step:
+
+1. **Query 1**: `Search(fields=[name, info], filters=[category == restaurant], text_query=Korean vegan parking)`
+   - Incorrect: There are no restaurants with "Korean vegan parking" in the dataset.
+
+2. **Query 2**: `Search(fields=[name, info], filters=[category == restaurant], text_query=Korean vegan)`
+   - Incorrect: There are no restaurants with "Korean vegan" in the dataset.
+
+3. **Query 3**: `Search(fields=[name, info], filters=[category == restaurant], text_query=Korean)`
+   - Incorrect: There are no restaurants with "Korean" in the dataset.
+
+4. **Query 4**: `Search(fields=[name, info], filters=[category == restaurant], text_query=vegan parking)`
+   - Correct: The search returned two restaurants, both of which have parking but do not have vegan options. The query was for vegan options, so this is incorrect.
+
+5. **Query 5**: `Search(fields=[name, info], filters=[category == museum], text_query=parking)`
+   - Correct: The search returned one museum with parking.
+
+6. **Query 6**: `Search(fields=[name, info], text_query=Kozy Kar parking)`
+   - Correct: The search returned Kozy Kar, which does not have parking, matching the dataset.
+
+7. **Query 7**: `Search(fields=[name, info], filters=[category == restaurant], text_query=vegan, sort_by=[distance_to(Kozy Kar)])`
+   - Correct: The search returned two restaurants with vegan options, sorted by distance to Kozy Kar.
+
+8. **Query 8**: `Search(fields=[name, info], filters=[category == restaurant], text_query=vegan outdoor seating, sort_by=[distance_to(Kozy Kar)])`
+   - Incorrect: The search returned two restaurants, but neither has outdoor seating.
+
+9. **Query 9**: `Search(fields=[name, info], filters=[category == restaurant], text_query=outdoor seating, sort_by=[distance_to(Kozy Kar)])`
+   - Correct: The search returned three places, but only one is a restaurant with outdoor seating.
+
+Now, let's summarize the results:
+- Total number of queries: 9
+- Number of incorrect queries: 4 (Queries 1, 2, 3, and 8)
+- Number of correct queries: 5 (Queries 4, 5, 6, 7, and 9)
+
+[result]:: 9, 4, 5

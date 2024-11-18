@@ -1,0 +1,42 @@
+To determine the total number of queries, the number of incorrect queries, and the number of correct queries, let's analyze each query step by step:
+
+1. **Query 1**: 
+   - Filters: category == restaurant, rating > 4, info == vegetarian OR vegan, info == kid-friendly, info == outdoor seating, info == COVID conscious
+   - Result: No results
+   - Incorrect because there are no restaurants with a rating > 4 and all the specified features.
+
+2. **Query 2**: 
+   - Filters: category == restaurant, rating > 4, info == vegetarian OR vegan, info == kid-friendly, info == outdoor seating
+   - Result: No results
+   - Incorrect because there are no restaurants with a rating > 4 and all the specified features.
+
+3. **Query 3**: 
+   - Filters: category == restaurant, rating > 4, info == vegetarian OR vegan, info == kid-friendly
+   - Result: No results
+   - Incorrect because there are no restaurants with a rating > 4 and all the specified features.
+
+4. **Query 4**: 
+   - Filters: category == restaurant, rating > 4, info == vegetarian OR vegan
+   - Result: No results
+   - Incorrect because there are no restaurants with a rating > 4 and the specified features.
+
+5. **Query 5**: 
+   - Filters: category == restaurant, info == vegetarian OR vegan, info == kid-friendly
+   - Result: 5 results
+   - Correct because it returns restaurants with either vegetarian or vegan options and are good for kids.
+
+6. **Query 6**: 
+   - Filters: category == restaurant, rating > 4
+   - Result: 1 result (Liberty Memorial, which is incorrect as it is a landmark)
+   - Incorrect because the result is not a restaurant.
+
+7. **Query 7**: 
+   - Filters: category == restaurant, info == vegetarian OR vegan, rating > 4
+   - Result: 2 results (Artisan Street Fair and Moabit Garden, which are not restaurants)
+   - Incorrect because the results are not restaurants.
+
+Total number of queries: 7
+Number of incorrect queries: 6
+Number of correct queries: 1
+
+[result]:: 7, 6, 1

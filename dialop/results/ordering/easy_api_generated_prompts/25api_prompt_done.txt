@@ -1,0 +1,6 @@
+1. I care about location more than rating.
+2. I care about rating more than price.
+3. I care about vibe more than price.
+4. I care about location more than price.
+5. I care about vibe more than location.
+6. I care about rating more than vibe.

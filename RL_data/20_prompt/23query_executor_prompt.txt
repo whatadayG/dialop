@@ -1,0 +1,109 @@
+Database:
+{'est_price': 0, 'etype': 'park', 'features': {'good for kids': False, 'has parking': True, 'open late': True, 'touristy': False, 'viewpoint': False}, 'loc': [-122.27, 37.87], 'name': 'Moabit Garden'}
+{'est_price': 80, 'etype': 'restaurant', 'features': {'accepts reservations': True, 'ambience': 'hipster', 'has parking': True, 'open late': True, 'outdoor seating': False}, 'loc': [-122.29, 37.87], 'name': 'The Dockside Grill'}
+{'est_price': 100, 'etype': 'restaurant', 'features': {'ambience': 'serious', 'cuisine': 'kosher', 'has parking': True, 'live music': False, 'open late': False}, 'loc': [-122.3, 37.87], 'name': 'Earthbar'}
+{'est_price': 180, 'etype': 'restaurant', 'features': {'ambience': 'trendy', 'good for kids': True, 'has parking': True, 'has takeout': False, 'vegetarian options': False}, 'loc': [-122.26, 37.87], 'name': "Saul's"}
+{'est_price': 60, 'etype': 'bar', 'features': {'ambience': 'romantic', 'live music': False, 'open late': True, 'outdoor seating': True, 'touristy': True}, 'loc': [-122.26, 37.87], 'name': 'Kozy Kar'}
+{'est_price': 10, 'etype': 'bar', 'features': {'good for groups': True, 'live music': True, 'open late': True, 'outdoor seating': True, 'touristy': True}, 'loc': [-122.27, 37.87], 'name': 'The Dive'}
+{'est_price': 30, 'etype': 'restaurant', 'features': {'cuisine': 'chinese', 'has parking': False, 'has takeout': False, 'touristy': True, 'vegetarian options': True}, 'loc': [-122.27, 37.87], 'name': 'Cookies Cream'}
+{'est_price': 330, 'etype': 'shop', 'features': {'good for groups': True, 'good for kids': True, 'has parking': True, 'open late': True, 'rating': 4.5}, 'loc': [-122.27, 37.87], 'name': 'Vista Ridge Mall'}
+{'est_price': 40, 'etype': 'bar', 'features': {'alcohol type': 'beer', 'ambience': 'hipster', 'good for groups': True, 'outdoor seating': True, 'touristy': False}, 'loc': [-122.29, 37.89], 'name': 'A-Trane'}
+{'est_price': 5, 'etype': 'cafe', 'features': {'ambience': 'serious', 'good for groups': True, 'good for kids': True, 'has wifi': True, 'vegan options': True}, 'loc': [-122.26, 37.84], 'name': 'The Cupcake Bar'}
+{'est_price': 0, 'etype': 'landmark', 'features': {'good for groups': True, 'has parking': True, 'open late': True, 'rating': 5, 'touristy': True}, 'loc': [-122.3, 37.89], 'name': "Einstein's summer house"}
+{'est_price': 15, 'etype': 'cafe', 'features': {'ambience': 'intimate', 'good for kids': True, 'has wifi': False, 'open late': False, 'outdoor seating': True}, 'loc': [-122.26, 37.87], 'name': 'Common Grounds'}
+{'est_price': 0, 'etype': 'landmark', 'features': {'good for groups': True, 'good for kids': True, 'has parking': False, 'rating': 3.5, 'touristy': False}, 'loc': [-122.26, 37.84], 'name': 'Liberty Memorial'}
+{'est_price': 0, 'etype': 'museum', 'features': {'good for groups': False, 'good for kids': True, 'has parking': False, 'open late': False, 'touristy': True}, 'loc': [-122.27, 37.87], 'name': 'City Museum of Art'}
+{'est_price': 110, 'etype': 'restaurant', 'features': {'ambience': 'hipster', 'cuisine': 'french', 'good for kids': False, 'has takeout': True, 'touristy': False}, 'loc': [-122.26, 37.87], 'name': 'El Toro Steakhouse'}
+{'est_price': 0, 'etype': 'park', 'features': {'good for groups': True, 'has parking': True, 'open late': False, 'rating': 4, 'viewpoint': False}, 'loc': [-122.28, 37.87], 'name': 'Atlas Park'}
+{'est_price': 15, 'etype': 'cafe', 'features': {'ambience': 'hipster', 'open late': True, 'outdoor seating': False, 'touristy': True, 'vegetarian options': False}, 'loc': [-122.29, 37.88], 'name': 'Asha Tea House'}
+{'est_price': 240, 'etype': 'shop', 'features': {'good for groups': False, 'has parking': True, 'open late': True, 'rating': 2, 'touristy': False}, 'loc': [-122.26, 37.87], 'name': 'Market Street'}
+{'est_price': 0, 'etype': 'landmark', 'features': {'good for kids': False, 'has parking': False, 'open late': False, 'rating': 1, 'touristy': False}, 'loc': [-122.28, 37.89], 'name': 'Hindenberg Memorial'}
+{'est_price': 0, 'etype': 'park', 'features': {'good for groups': True, 'good for kids': False, 'open late': True, 'rating': 3.5, 'viewpoint': True}, 'loc': [-122.26, 37.84], 'name': 'Riverside Trail'}
+{'est_price': 110, 'etype': 'restaurant', 'features': {'good for groups': True, 'good for kids': False, 'live music': True, 'open late': False, 'outdoor seating': False}, 'loc': [-122.29, 37.87], 'name': 'Taqueria y Mas'}
+{'est_price': 180, 'etype': 'restaurant', 'features': {'accepts reservations': True, 'cuisine': 'kosher', 'has parking': True, 'vegan options': False, 'vegetarian options': False}, 'loc': [-122.27, 37.89], 'name': 'Mad Seoul'}
+{'est_price': 30, 'etype': 'bar', 'features': {'live music': False, 'open late': True, 'outdoor seating': True, 'rating': 2.5, 'touristy': True}, 'loc': [-122.29, 37.88], 'name': 'Bards n Brews'}
+{'est_price': 10, 'etype': 'museum', 'features': {'good for groups': True, 'good for kids': False, 'open late': True, 'rating': 1.5, 'touristy': False}, 'loc': [-122.26, 37.87], 'name': 'BAMPFA'}
+{'est_price': 0, 'etype': 'park', 'features': {'good for groups': False, 'good for kids': True, 'open late': False, 'touristy': True, 'viewpoint': True}, 'loc': [-122.3, 37.87], 'name': 'The Arboretum'}
+{'est_price': 80, 'etype': 'shop', 'features': {'good for groups': True, 'good for kids': True, 'has parking': False, 'open late': True, 'rating': 5}, 'loc': [-122.24, 37.87], 'name': 'Artisan Street Fair'}
+{'est_price': 5, 'etype': 'cafe', 'features': {'ambience': 'hipster', 'good for kids': False, 'rating': 3.5, 'touristy': False, 'vegan options': False}, 'loc': [-122.27, 37.87], 'name': 'Schwarzes Cafe'}
+{'est_price': 0, 'etype': 'park', 'features': {'good for groups': False, 'good for kids': True, 'has parking': False, 'rating': 1.5, 'viewpoint': False}, 'loc': [-122.26, 37.87], 'name': 'Lincoln Park'}
+{'est_price': 0, 'etype': 'landmark', 'features': {'good for groups': False, 'good for kids': False, 'has parking': False, 'open late': False, 'rating': 5}, 'loc': [-122.3, 37.89], 'name': 'The Tower'}
+{'est_price': 10, 'etype': 'bar', 'features': {'alcohol type': 'cocktails', 'ambience': 'romantic', 'good for groups': True, 'outdoor seating': True, 'rating': 3.5}, 'loc': [-122.27, 37.87], 'name': 'The Jazz Spot'}
+{'est_price': 100, 'etype': 'shop', 'features': {'good for groups': True, 'good for kids': True, 'has parking': False, 'rating': 3.5, 'touristy': True}, 'loc': [-122.26, 37.87], 'name': 'The Mall'}
+{'est_price': 10, 'etype': 'restaurant', 'features': {'good for groups': False, 'has parking': True, 'has takeout': True, 'open late': False, 'rating': 1}, 'loc': [-122.29, 37.88], 'name': 'Caribbean Corner'}
+{'est_price': 40, 'etype': 'bar', 'features': {'alcohol type': 'beer', 'ambience': 'divey', 'good for groups': False, 'live music': False, 'outdoor seating': False}, 'loc': [-122.3, 37.88], 'name': 'Harper and Rye'}
+{'est_price': 30, 'etype': 'museum', 'features': {'good for groups': False, 'good for kids': False, 'has parking': True, 'open late': True, 'rating': 1.5}, 'loc': [-122.29, 37.89], 'name': 'Historical Society'}
+{'est_price': 150, 'etype': 'restaurant', 'features': {'accepts reservations': False, 'cuisine': 'korean', 'good for groups': False, 'good for kids': False, 'open late': False}, 'loc': [-122.26, 37.84], 'name': "Lucia's"}
+{'est_price': 15, 'etype': 'cafe', 'features': {'ambience': 'romantic', 'good for groups': True, 'good for kids': True, 'outdoor seating': False, 'vegan options': True}, 'loc': [-122.24, 37.88], 'name': 'Coffee Nook'}
+{'est_price': 0, 'etype': 'park', 'features': {'good for groups': False, 'good for kids': True, 'rating': 3.5, 'touristy': True, 'viewpoint': False}, 'loc': [-122.3, 37.88], 'name': 'Garden of Wonders'}
+{'est_price': 90, 'etype': 'restaurant', 'features': {'has parking': True, 'has takeout': True, 'rating': 5, 'touristy': False, 'vegan options': True}, 'loc': [-122.29, 37.87], 'name': 'The Cakery'}
+{'est_price': 430, 'etype': 'shop', 'features': {'good for groups': True, 'good for kids': True, 'has parking': True, 'open late': True, 'rating': 2.5}, 'loc': [-122.31, 37.88], 'name': 'Central Plaza'}
+
+Query: Search(fields=[name], filters=[category == landmark])
+Result:
+Search Results (4):
+name
+Einstein's summer house
+Liberty Memorial
+Hindenberg Memorial
+The Tower
+
+Query: Search(fields=[name], filters=[category == concert])
+Result:
+Search Results: No results
+
+
+Query: Search(fields=[name], text_query=live music)
+Result:
+Search Results (6):
+name
+Earthbar
+Kozy Kar
+The Dive
+Taqueria y Mas
+Bards n Brews
+Harper and Rye
+
+Query: Search(fields=[name, price], text_query=live music, filters=[price <= 40])
+Result:
+Search Results (3):
+name|price
+The Dive|10
+Bards n Brews|30
+Harper and Rye|40
+
+Query: Search(fields=[name, price], filters=[category == restaurant, price <= 10], sort_by=[distance_to(The Mall)])
+Result:
+Search Results (1):
+name|price|distance
+Caribbean Corner|10|1.9
+
+Query: Search(fields=[name, price, distance], filters=[category == restaurant], sort_by=[distance_to(The Mall), price])
+Result:
+Search Results (10):
+name|price|distance
+Caribbean Corner|10|1.9
+Cookies Cream|30|0.2
+The Dockside Grill|80|2.0
+The Cakery|90|1.9
+Earthbar|100|2.3
+El Toro Steakhouse|110|0.0
+Taqueria y Mas|110|2.1
+Lucia's|150|2.1
+Saul's|180|0.3
+Mad Seoul|180|1.8
+
+Query: Search(fields=[name], text_query="good for kids", filters=[category == park], sort_by=[distance_to(Saul's)])
+Result:
+Search Results (5):
+name|distance
+Lincoln Park|0.4
+Moabit Garden|0.5
+Riverside Trail|2.1
+The Arboretum|2.7
+Garden of Wonders|2.8
+
+Query: Search(fields=[name], filters=[vegan == true])
+Result:
+You cannot filter by vegan.Try searching with a text query instead.
+

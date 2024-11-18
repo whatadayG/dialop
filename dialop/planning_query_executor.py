@@ -4,12 +4,36 @@ import numpy as np
 from openai import OpenAI
 import pdb
 
-client = OpenAI()
+#client = OpenAI()
+import pathlib
+import json
+import os
 import pyparsing as pp
 from pyparsing import OneOrMore, Suppress, delimited_list, one_of
 from pyparsing.exceptions import ParseException
 
 from dialop.templates import QueryExecutorTemplate
+
+try:
+    with open(pathlib.Path(__file__).parent / ".api_key") as f:
+        
+        x = json.load(f)
+        
+        client = OpenAI(api_key=x["api_key"], organization = x["organization"])
+        #pdb.set_trace()
+
+
+        # TODO: The 'openai.organization' option isn't read in the client API. You will need to pass it when you instantiate the client, e.g. 'OpenAI(organization=x["organization"])'
+        
+        
+    print("Loaded .api_key")
+except Exception as e:
+    #openai.api_key = os.getenv("OPENAI_API_KEY")
+    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+    print(e)
+
+if not client.api_key:
+    print("Warning: no OpenAI API key loaded.")
 
 
 def create_search_api():

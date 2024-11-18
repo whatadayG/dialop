@@ -1,0 +1,34 @@
+Above are the features you know for certain that the user cares about. 
+Here are 20 features people can care about. Normally users care about 9 featues in total.
+Excluding the ones you already know that the user care about, You must sample a few more from the following list to estimate the full picture of the user's preferences:
+rating
+has_parking
+has_takeout
+touristy
+cuisine
+good for kids
+accepts reservations
+good for groups
+ambience
+outdoor seating
+vegetarian options
+vegan options
+live music
+has wifi
+alcohol type
+viewpoint
+PriceBudgetPreference
+WantToGo
+AtLeastOneEventType
+DistancePreference (always included)
+1. Now enumerate all the known preferences of the user and the preferences you sampled from the list in a thinking step.
+2. Then rate your own proposal with a score between 0 and 100 based on how good you think the proposal is if the samples preferences combined with the known preferences are the actual preferences of the user.
+You should do both actions in one thinking or message step.
+
+# if they have heart set on zoo why should they have not said it 
+# the language model is too smart to do well on our task 
+# open source model less inclinded to not do what you tell them or chat tuned 
+# corrolation between features / dicision oriented computation ; top 3 proposals and what user persona can distinguish? myutic prompting 
+# what would make this true and what makes this false -- the generalization of information gain; more than just value of computation with respect to value of information; value of computation; cuts set conditioning in graphical models; fall back on approxiaton.
+if you know value on some variable; and itterate through the possible ones, and seperate inference; cutset variable. 
+# remind nick on monday to send message 

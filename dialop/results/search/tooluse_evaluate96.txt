@@ -1,0 +1,59 @@
+To determine the total number of queries, the number of incorrect queries, and the number of correct queries, let's analyze each query step by step:
+
+1. **Query 1:** 
+   - `Search(fields=[name, category, good for kids, has parking, rating], filters=[category == museum, good for kids == True, has parking == True, rating > 3])`
+   - Result: No results
+   - Reason: There are no museums in the dataset with a rating greater than 3, good for kids, and has parking.
+   - **Incorrect Query**
+
+2. **Query 2:** 
+   - `Search(fields=[name, category, good for kids, has wifi], filters=[category == museum, good for kids == True, has wifi == True], sort_by=[distance_to(City Museum of Art)])`
+   - Result: No results
+   - Reason: There are no museums with 'has wifi' in the dataset.
+   - **Incorrect Query**
+
+3. **Query 3:** 
+   - `Search(fields=[name, category, good for kids, has wifi], filters=[category == museum, good for kids == True, has wifi == True], sort_by=[distance_to(City Museum of Art)])`
+   - Result: No results
+   - Reason: Same as Query 2.
+   - **Incorrect Query**
+
+4. **Query 4:** 
+   - `Search(fields=[name, category, good for kids, has wifi], filters=[good for kids == True, has wifi == True], sort_by=[distance_to(City Museum of Art)])`
+   - Result: No results
+   - Reason: There are no entries with 'has wifi' in the dataset.
+   - **Incorrect Query**
+
+5. **Query 5:** 
+   - `Search(fields=[name, category, good for kids, has wifi], filters=[good for kids == True, has wifi == True], sort_by=[distance_to(City Museum of Art)])`
+   - Result: No results
+   - Reason: Same as Query 4.
+   - **Incorrect Query**
+
+6. **Query 6:** 
+   - `Search(fields=[name, category, good for kids, has wifi], filters=[good for kids == True, has wifi == True], sort_by=[distance_to(City Museum of Art)])`
+   - Result: No results
+   - Reason: Same as Query 4.
+   - **Incorrect Query**
+
+7. **Query 7:** 
+   - `Search(fields=[name, category, good for kids, has wifi], filters=[good for kids == True], sort_by=[distance_to(City Museum of Art)])`
+   - Result: 10 results
+   - Reason: Correctly filters entries that are good for kids and sorts by distance to City Museum of Art.
+   - **Correct Query**
+
+8. **Query 8:** 
+   - `Search(fields=[name, category, good for kids], filters=[good for kids == True], sort_by=[distance_to(City Museum of Art)], limit=2)`
+   - Result: 2 results
+   - Reason: Correctly filters entries that are good for kids, sorts by distance, and limits to 2 results.
+   - **Correct Query**
+
+Now, let's summarize the results:
+
+- Total number of queries: 8
+- Number of incorrect queries: 6
+- Number of correct queries: 2
+
+Therefore, the result is:
+
+[result]:: 8, 6, 2

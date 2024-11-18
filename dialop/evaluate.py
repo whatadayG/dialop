@@ -52,11 +52,12 @@ class CheckpointManager:
     def __init__(self, checkpoint_dir='/Users/georgiazhou/research_machine/dialop/dialop/checkpoints/debug_states/'):
         self.checkpoint_dir = Path(checkpoint_dir)
         self.checkpoint_dir.mkdir(parents=True, exist_ok=True)
+        self.last_checkpoint_time = 0
     
     def save_state(self, state, name):
         """Save state while handling unpickleable objects"""
         clean_state = {}
-        
+        clean_state['t'] = state.get('t', 0)
         # Only save the essential player data
         if 'players' in state:
             clean_state['players'] = {}
@@ -78,26 +79,50 @@ class CheckpointManager:
             
         with open(self.checkpoint_dir / f"{name}.pkl", 'wb') as f:
             pickle.dump(clean_state, f)
-        
+            
+        self.last_checkpoint_time = time.time()
         print(f"DEBUG: Successfully saved checkpoint to {self.checkpoint_dir.absolute()}")
     
-    def load_state(self, name):
-        """Load state and verify player objects"""
-        path = self.checkpoint_dir / f"{name}.pkl"
-        with open(path, 'rb') as f:
-            state = pickle.load(f)
-            
-        # Verify player objects are accessible
-        if 'players' in state:
-            players = state['players']
-            # Verify key player attributes are accessible
-            for player_name, player in players.items():
-                assert hasattr(player, 'prompt'), f"Player {player_name} missing prompt"
-                assert hasattr(player, 'role'), f"Player {player_name} missing role"
-                if player.role == 'user':
-                    assert hasattr(player, 'user_prompt_obss'), f"User player missing prompt observations"
-        
-        return state
+    #def load_state(self, name):
+    #    """Load state and verify player objects"""
+    #    path = self.checkpoint_dir / f"{name}.pkl"
+    #    with open(path, 'rb') as f:
+    #        state = pickle.load(f)
+    #        
+    #    # Verify player objects are accessible
+    #    if 'players' in state:
+    #        players = state['players']
+    #        # Verify key player attributes are accessible
+    #        try:
+    #            for player_name, player in players.items():
+    #                assert hasattr(player, 'prompt'), f"Player {player_name} missing prompt"
+    #                assert hasattr(player, 'role'), f"Player {player_name} missing role"
+    #                if player.role == 'user':
+    #                    assert hasattr(player, 'user_prompt_obss'), f"User player missing prompt observations"
+    #        except Exception as e:
+    #            pdb.set_trace()
+    #    return state
+    def get_latest_checkpoint(self):
+        """Get most recent checkpoint created after last_checkpoint_time"""
+        # Ensure we're working with Path objects
+        if isinstance(self.checkpoint_dir, str):
+            self.checkpoint_dir = Path(self.checkpoint_dir)
+
+        # Get list of checkpoint files as Path objects
+        checkpoints = list(self.checkpoint_dir.glob("best_path_*.pkl"))
+        if not checkpoints:
+            return None
+
+        # Convert to Path objects if they're strings
+        checkpoints = [Path(p) if isinstance(p, str) else p for p in checkpoints]
+
+        latest = max(checkpoints, key=lambda p: int(p.stem.split('_')[2]))
+        checkpoint_time = latest.stat().st_mtime
+
+        if checkpoint_time > self.last_checkpoint_time:
+            return latest.stem
+        return None
+    
     def load_full_state(self, name):
         """Load state and recreate player objects with full functionality"""
         path = self.checkpoint_dir / f"{name}.pkl"
@@ -131,6 +156,21 @@ class CheckpointManager:
             state['players'] = restored_players
     
         return state
+    def load_and_continue_from_best_path(checkpoint_name, checkpoint_manager, env, players):
+        """Load and continue conversation from the best path checkpoint"""
+        # Load the saved state
+        state = checkpoint_manager.load_full_state(checkpoint_name)
+        
+        #pdb.set_trace()
+        extra_turn = state.get('turn', 0)
+        players = state.get('players', {})
+        
+
+        # Restore environment state
+        env.reset(game_state=state['env_state'])
+
+
+        return env, players, extra_turn, 
 
 
 
@@ -255,7 +295,8 @@ def run(
     players = player_ctor()
     # Create env.
     env = env_ctor()
-    extracted_features = []
+    extracted_features = {}
+    
     # TODO: make api the same
     if use_word_limit:
         obss = env.reset(word_limit=metadata["hh_words"],
@@ -329,31 +370,6 @@ def run(
         agent_pending = False
         not_ready = []
         checkpoint_mgr = CheckpointManager()
-        def use_checkpoint_state(checkpoint_name: str):
-            """Load and use checkpoint state"""
-            checkpoint_mgr = CheckpointManager()
-            state = checkpoint_mgr.load_state(checkpoint_name)
-            
-            # Access player objects
-            players = state['players']
-            agent = players['agent']
-            user = players['user']
-            
-            # Access important attributes
-            print(f"Turn: {state['t']}")
-            print(f"Extracted features: {state['extracted_features']}")
-            
-            # Access player-specific data
-            print(f"Agent prompt: {agent.prompt}")
-            print(f"User conversation history: {user.user_prompt_obss}")
-    
-            # Generate responses using loaded state
-            responses = n_10_user_personas(
-                players=players,
-                extracted_features=state['extracted_features']
-            )
-    
-            return responses
         
         def modeling_user_prompt(obss):
             nonlocal extracted_features
@@ -365,39 +381,7 @@ def run(
             available_prefs = list(set(all_prefs_list) - set(known_preferences))
             pref_list = random.sample(available_prefs, (10-len(known_preferences)))
             return pref_list
-        def n_different_proposals(players):
-            resp1 = players['agent'].respond(t, max_length, vary=True, propose = True)
-            resp2 = players['agent'].respond(t, max_length, vary=True, propose = True)
-            resp3 = players['agent'].respond(t, max_length, vary=True, propose = True)
-            return resp1, resp2, resp3
-        def n_10_user_personas(players, extracted_features):
-            pdb.set_trace()
-            real_user = players['user']
-            agent_3 = []
-            chat_history_user = real_user.user_prompt_obss
-            if players['agent'].temp_prompt:
-                chat_history_agent = players['agent'].temp_prompt
-            else:
-                chat_history_agent = players['agent'].prompt
-            for p in chat_history_agent.values():
-                resp = p.split("--special prompt--")[1]
-                agent_3.append(resp)
-            user_personas = {}
-            responses_per_persona = {}
-            features_prompt = 'Here are your preferences: ' + str(extracted_features)
-            for resp in agent_3:
-                agent_resp = 'agent: ' + str(resp) + "\n"
-                for i in range(10):
-                    user_personas[i] = player_ctor()
-                    total_feature_prompt = features_prompt + sample_preferences(extracted_features)
-                    user_personas[i].prompt += total_feature_prompt
-                    user_personas[i].prompt += chat_history_user 
-                    user_personas[i].prompt += agent_resp
-                    responses_per_persona[i] = user_personas[i].respond(vary = True)
-                    print(responses_per_persona[i])
-                pdb.set_trace()
-       
-              
+             
             
             
             return user_personas 
@@ -406,45 +390,19 @@ def run(
             resp2 = players['agent'].respond(t, max_length, vary=True)
             resp3 = players['agent'].respond(t, max_length, vary=True)
             return [resp1, resp2, resp3]
-        def user_persona_respond(players1, players2, players3, extracted_features):
-            extracted_features = str(extracted_features)
-            resp_dic1 = players1['user'].respond_ready_user_planning(extracted_features)
-            resp_dic2 = players2['user'].respond_ready_user_planning(extracted_features)
-            resp_dic3 = players3['user'].respond_ready_user_planning(extracted_features)
         
-
-            
+        
+        
+        tracker = False
+        
         while not obss["done"] and t < max_length:
             #pdb.set_trace()
             console.rule("environment obs")
-            ##if propose_ready:
-            ##    
-            ##    modeling_user_prompt(obss1)
-            ##    modeling_user_prompt(obss2)
-            ##    modeling_user_prompt(obss3)
-            ##    players['agent'].observe(obss1['agent'],temporal = 0)
-            ##    estimation1 = players['agent'].respond(vary=True, temporal = True)
-            ##    players['agent'].observe(obss2['agent'], temporal = 0)
-            ##    estimation2 = players['agent'].respond(vary=True, temporal = True)
-            ##    players['agent'].observe(obss3['agent'], temporal = 0)
-            ##    estimation3 = players['agent'].respond(vary=True, temporal = True)
-            ##    pdb.set_trace()
-            ##    
-            ##elif user_ready:
-            ##    players2 = player_ctor(determined = True)
-            ##    players3 = player_ctor(determined = True)
-            ##    [[player.observe(obss1[pname]) for pname, player in players.items()]]
-            ##    [[player2.observe(obss2[pname]) for pname, player2 in players2.items()]]
-            ##    [[player3.observe(obss3[pname]) for pname, player3 in players3.items()]]
-            
-            
-            if agent_pending or user_ready:
-                ignore_obs = True
-                
-            else:
-                ignore_obs = False
             console.print(obss)
-            [player.observe(obss[pname], ignore_obs = ignore_obs) for pname, player in players.items()]
+            if tracker:
+                [player.observe(obss[pname], ignore_obs=True) for pname, player in players.items()]
+            else:
+                [player.observe(obss[pname]) for pname, player in players.items()]
             for pname in players:
                 log.log(key=pname, value=obss[pname], title=f"obs t={t}")
             resample = True
@@ -456,8 +414,8 @@ def run(
                 while not stepped:
                     #pdb.set_trace()
                     try:
-                        
-                        if user_response_counter >= cap and obss["turn_player"] == 'agent' and not agent_pending:
+                        tracker = False
+                        if user_response_counter >= cap and obss["turn_player"] == 'agent':
                             agent_ready = True
                             state = {
                                 'env': env,
@@ -467,53 +425,36 @@ def run(
                                 'max_length': max_length,
                                 'extracted_features': extracted_features
                             }
-                            checkpoint_mgr.save_state(state, f"agent_ready_t{t}")
+                            #print(t)
+                            #pdb.set_trace()
+                            checkpoint_mgr.save_state(state, "initial_state")
+                            tracker = True
+                            print("Waiting for best path checkpoint...")
                             pdb.set_trace()
-                        if agent_pending:
-                            for list_ in not_ready:
-                                players['agent'].observe(list_[0]['agent'], temporal = list_[1:])
-                                console.print(list_[0]['agent'], "agent's currrent obs")
-                            
-                            
-                            
-                            
+                        if tracker:
+                            while True and user_response_counter >= cap: 
+                                # Look for most recent best_path checkpoint
+                                checkpoint_name = checkpoint_mgr.get_latest_checkpoint()
+                                if checkpoint_name:
+                                # Get most recent checkpoint
+                                    
+                                    
+                                    print(f"Found checkpoint: {checkpoint_name}")
+
+                                    # Load and restore state
+                                    #state = checkpoint_mgr.load_full_state(checkpoint_name)
+                                    env, players, extra_turn = CheckpointManager.load_and_continue_from_best_path( checkpoint_name, checkpoint_mgr, env, players)
+                              
+                                    
+                                    #pdb.set_trace()
+                                    break
+                                time.sleep(3)
+
                         #pdb.set_trace()
-                        
-                            
-                        ##if user_ready:
-                        ##    resp1_dict, resp2_dict, resp3_dict = user_persona_respond(players, players2, players3, extracted_features)
-                        ##    file_path = '/Users/georgiazhou/research_machine/dialop/RL_data/all/'
-                        ##    with open(f'{file_path}{t}user_persona_replies.txt', 'w') as f:
-                        ##        for pname, player in players.items():
-                        ##            if pname == 'user':
-                        ##                f.write(json.dumps(player.prompt, indent=2))
-                        ##        f.write(json.dumps(resp1))
-                        ##        f.write(json.dumps(resp1_dict, indent=2))
-                        ##        f.write(json.dumps(resp2))
-                        ##        f.write(json.dumps(resp2_dict, indent=2))
-                        ##        f.write(json.dumps(resp3))
-                        ##        f.write(json.dumps(resp3_dict, indent=2))
-                        ##    pdb.set_trace()
-                        if user_ready:
-                            pdb.set_trace()
-                            n_10_user_personas(players, extracted_features)
-                            
-                            
-                        elif agent_ready:
-                            ##proposal1, proposal2, proposal3 = n_different_proposals(players)
-                            resp1, resp2, resp3 = n_different_responses(players)
-                            pdb.set_trace()
-                        elif agent_pending:
-                            agent_pending_responses = []
-                            for list_ in not_ready:
-                                agent_pending_responses.append([players['agent'].respond(list_[0], temporal = list_[1:]), list_[1], list_[2]])
+                        if not tracker:
+                            resp = players[obss["turn_player"]].respond()
                         else:
-                       
-                            if players[obss["turn_player"]].role == 'user':
-                                resp = players[obss["turn_player"]].respond(vary = True)
-                                user_response_counter += 1
-                            else:
-                                resp = players[obss["turn_player"]].respond()
+                            resp = players['user'].respond()
                         #obss, resample = env.step(resp)
                         
                         stepped = True
@@ -528,66 +469,17 @@ def run(
                 stepped = False
                 while not stepped:
                     try:
-                         # make sure a proposal is made
-                        #pdb.set_trace()
-                          
-                   
-                            
-                            # now there's 3 agent proposals, we need to make 3 estimated ratings 
-                        if agent_ready or agent_pending:
-                            #pdb.set_trace()
-                            
-                            if agent_pending:
-                                obss_list = []
-                                ready_list = []
-                                id_list = []
-                                count_list = []
-                                
-                                
-                                for resp_with_id in agent_pending_responses:
-                                    obss, resample, extracted_feature, ready = env.step(resp_with_id[0], t>=(max_length-5), pause_turn = True, agent_pending = True)
-                                    obss_list.append(obss)
-                                    ready_list.append(ready)
-                                    count_list.append(resp_with_id[1])
-                                    id_list.append(resp_with_id[2])
-                                obss_ready_tuples = list(zip(obss_list, count_list, id_list, ready_list))
-                            elif agent_ready:
 
-                                obss1, resample, extracted_feature1, ready1 = env.step(resp1, t>=(max_length-5), pause_turn = True)
-                                obss2, resample, extracted_feature2, ready2 = env.step(resp2, t>=(max_length-5), pause_turn = True)
-                                obss3, resample, extracted_feature3, ready3 = env.step(resp3, t>=(max_length-5), pause_turn = True)
-                                ready_list = [ready1, ready2, ready3]
-                                obss_list = [obss1, obss2, obss3]
-                                obss_ready_tuples = list(zip(obss_list, ready_list))
-                            if all(ready_list):
-                                user_ready = True
-                                agent_pending = False
-                                pdb.set_trace()
-                            else:
-                                pdb.set_trace()
-                                if not_ready:
-                                    current_indices = {x[2] for x in not_ready}
-                                    new_indices = {x[2] for i, x in enumerate(obss_ready_tuples) if x[3]}
-                                    # Keep only ones that are still not ready
-                                    still_not_ready = current_indices ^ new_indices
-                                    not_ready = [[x[0], x[1] + 1, x[2]] for x in obss_ready_tuples if x[2] in still_not_ready]
-                                else: 
-                                    # [obss, how many convs, id]
-                                    not_ready =[[x[0], 0, i] for i, x in enumerate(obss_ready_tuples) if not x[1]]
-                                agent_pending = True
-                                agent_ready = False
-                        else:
-                            obss, resample, extracted_feature, ready = env.step(resp, t>=(max_length-5))
+                        #pdb.set_trace()
+                        
+                        obss, resample, extracted_feature, ready = env.step(resp, t>=(max_length-5))
+                        print(obss["turn_player"])
+                        if obss["turn_player"] == 'user':
+                            user_response_counter += 1
+         
                             
-                        
-                        
-                      
-                            
-                     
-                          
-                        
-                                
-                        extracted_features.append(extracted_feature)
+                              
+                        extracted_features.update(extracted_feature)
                         #pdb.set_trace()
                         stepped = True
                         if obss["done"]:
@@ -634,6 +526,7 @@ def run(
     log.write("Result", json.dumps(result))
     log.flush()
     log.close()
+    pdb.set_trace()
 
 count = 0
 def save_extracted_features(extracted_features):
@@ -768,7 +661,7 @@ def main(
     elif game_cls == MediationEnv:
         max_length = 45
     else:
-        max_length = 35
+        max_length = 60
 
     # Evaluate.
     times = []
@@ -796,6 +689,8 @@ def main(
         elapsed = (time.time() - start) / 60
         times.append(elapsed)
         print(f" == Finished {i} {elapsed:.1f} == ")
+        
+        # pdb.set_trace()
 
     exit()
 

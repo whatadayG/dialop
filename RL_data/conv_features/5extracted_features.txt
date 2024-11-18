@@ -1,0 +1,1 @@
+{'viewpoint': ['see some panoramic views of the city', 'Unknown'], 'live music': ['dislike', 'Unknown'], 'vegan options': ['like', 'Unknown'], 'alcohol type': ['cocktails', 'Unknown'], 'PriceBudgetPreference': ['$30', 'High'], 'has wifi': ['like', 'Unknown']}

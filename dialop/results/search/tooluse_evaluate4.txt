@@ -1,0 +1,38 @@
+To determine the total number of queries, the number of incorrect queries, and the number of correct queries, let's analyze each query step by step:
+
+1. **Query 1**: 
+   - Search for restaurants with "vegetarian options".
+   - Result: 5 restaurants found.
+   - Correct.
+
+2. **Query 2**: 
+   - Search for specific restaurants with certain cuisines.
+   - Result: 2 restaurants found, but "Mad Seoul" is not in the initial list of restaurants.
+   - Incorrect.
+
+3. **Query 3**: 
+   - Search for restaurants with price <= 30 and "vegetarian options".
+   - Result: 2 restaurants found, but prices are incorrect (The Cakery: 80, The Dockside Grill: 50).
+   - Incorrect.
+
+4. **Query 4**: 
+   - Search for specific restaurants with certain cuisines.
+   - Result: 2 restaurants found, both are correct.
+   - Correct.
+
+5. **Query 5**: 
+   - Search for specific restaurants with "wifi OR good city views OR rating >= 4".
+   - Result: 1 restaurant found, but The Cakery has a rating of 2.5.
+   - Incorrect.
+
+6. **Query 6**: 
+   - Search for non-restaurant places with "wifi OR good city views OR rating >= 4".
+   - Result: 8 places found, all correct.
+   - Correct.
+
+Now, let's summarize the results:
+- Total number of queries: 6
+- Number of incorrect queries: 3 (Queries 2, 3, and 5)
+- Number of correct queries: 3 (Queries 1, 4, and 6)
+
+[result]:: 6, 3, 3

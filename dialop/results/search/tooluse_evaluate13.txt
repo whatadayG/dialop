@@ -1,0 +1,29 @@
+To determine the total number of queries, the number of incorrect queries, and the number of correct queries, let's analyze each query step by step:
+
+1. **Query 1**: `Search(fields=[name], text_query=wifi)`
+   - This query is correct. It searches for places with "wifi" in their name, and the result is "Common Grounds," which matches the dataset.
+
+2. **Query 2**: `Search(fields=[name, info], filters=[category == restaurant], text_query=vegetarian)`
+   - This query is correct. It searches for restaurants with "vegetarian" in their features, and the results include places with vegetarian options.
+
+3. **Query 3**: `Search(fields=[name, info], filters=[category == shop])`
+   - This query is correct. It searches for all shops, and the results match the dataset.
+
+4. **Query 4**: `Search(fields=[name, info], filters=[good for kids, rating > 4.5, touristy == False, price <= 60])`
+   - This query is incorrect. The dataset does not have any entries that match all these criteria, resulting in no results.
+
+5. **Query 5**: `Search(fields=[name, info], filters=[good for kids, rating > 4.5, price <= 60], text_query=wifi)`
+   - This query is incorrect. The dataset does not have any entries that match all these criteria, resulting in no results.
+
+6. **Query 6**: `Search(fields=[name, info], filters=[good for kids, price <= 60], sort_by=[distance_to(A-Trane)])`
+   - This query is correct. It searches for places good for kids with a price less than or equal to 60, sorted by distance to "A-Trane," and the results match the dataset.
+
+7. **Query 7**: `Search(fields=[name, info], filters=[category == shop, price <= 60], sort_by=[distance_to(A-Trane)])`
+   - This query is incorrect. The dataset does not have any shops with a price less than or equal to 60, resulting in no results.
+
+Now, let's summarize the results:
+- Total number of queries: 7
+- Number of incorrect queries: 3 (Queries 4, 5, and 7)
+- Number of correct queries: 4 (Queries 1, 2, 3, and 6)
+
+[result]:: 7, 3, 4

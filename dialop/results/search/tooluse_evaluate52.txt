@@ -1,0 +1,31 @@
+To determine the total number of queries, the number of incorrect queries, and the number of correct queries, let's analyze each query step by step:
+
+1. **Query 1:**
+   - **Text Query:** "live music vegan trendy"
+   - **Filters:** category == restaurant
+   - **Expected Result:** A restaurant with live music, vegan options, and a trendy (or similar) ambience.
+   - **Actual Result:** Taqueria y Mas, which matches the criteria (live music, vegan options, casual ambience).
+   - **Conclusion:** Correct query.
+
+2. **Query 2:**
+   - **Text Query:** "landmark good for kids and groups parking"
+   - **Expected Result:** A landmark that is good for kids and groups and has parking.
+   - **Actual Result:** Hindenberg Memorial, which matches the criteria (good for kids, has parking).
+   - **Conclusion:** Correct query.
+
+3. **Query 3:**
+   - **Filters:** rating > 3
+   - **Sort By:** rating
+   - **Limit:** 1
+   - **Expected Result:** The highest-rated place with a rating greater than 3.
+   - **Actual Result:** Lucia's, which has a rating of 5.
+   - **Conclusion:** Correct query.
+
+Now, let's summarize the results:
+- Total number of queries: 3
+- Number of incorrect queries: 0
+- Number of correct queries: 3
+
+Therefore, the result is:
+
+[result]:: 3, 0, 3

@@ -1,0 +1,29 @@
+To determine the total number of queries, the number of incorrect queries, and the number of correct queries, let's analyze each query step by step:
+
+1. **Query 1**: `Search(fields=[name], filters=[category == landmark, has parking == True, outdoor seating == True])`
+   - Incorrect: There are no landmarks with outdoor seating in the dataset.
+
+2. **Query 2**: `Search(fields=[name], filters=[category == landmark, has parking == True])`
+   - Correct: Returns three landmarks with parking.
+
+3. **Query 3**: `Search(fields=[name], filters=[outdoor seating == True])`
+   - Correct: Returns four places with outdoor seating.
+
+4. **Query 4**: `Search(fields=[name, rating, info], filters=[category == restaurant, rating > 4.5, touristy == False])`
+   - Incorrect: No restaurants have a rating greater than 4.5.
+
+5. **Query 5**: `Search(fields=[name, rating, info], filters=[category == restaurant, rating > 4.5])`
+   - Incorrect: No restaurants have a rating greater than 4.5.
+
+6. **Query 6**: `Search(fields=[name, rating, info], filters=[category == restaurant, rating > 4])`
+   - Correct: Returns one restaurant with a rating greater than 4.
+
+7. **Query 7**: `Search(fields=[name], filters=[category == landmark, has parking == True], sort_by=[distance_to(Schwarzes Cafe, Asha Tea House)], limit=1)`
+   - Correct: Returns the closest landmark with parking to the specified cafes.
+
+Now, let's count the queries:
+- Total number of queries: 7
+- Number of incorrect queries: 2 (Queries 1, 4, and 5)
+- Number of correct queries: 5 (Queries 2, 3, 6, and 7)
+
+[result]:: 7, 2, 5

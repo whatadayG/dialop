@@ -1,0 +1,17 @@
+To determine the total number of queries, the number of incorrect queries, and the number of correct queries, let's analyze the provided search queries:
+
+1. **Query 1:**
+   - Search for restaurants sorted by distance to "Saul's".
+   - The dataset contains 10 restaurants, and the search results list 10 restaurants.
+   - The query seems correct as it matches the dataset and the sorting criterion is valid.
+
+2. **Query 2:**
+   - Search for shops sorted by distance to "Saul's".
+   - The dataset contains 5 shops, and the search results list 5 shops.
+   - The query seems correct as it matches the dataset and the sorting criterion is valid.
+
+Both queries are correctly formed and executed based on the dataset provided.
+
+Therefore, the total number of queries is 2, with 0 incorrect queries and 2 correct queries.
+
+[result]:: 2, 0, 2

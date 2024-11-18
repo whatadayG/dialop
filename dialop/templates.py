@@ -112,8 +112,16 @@ PlanningPersonaTemplate = env.from_string(PlanningPersonaTemplateStr)
 
 
 PlanningUserPromptTemplateStr = (
-"""Travel Preferences:
-{{ travel_doc }}
+"""Travel Preferences with feature Importance (High or Medium or Low):
+{% for pref in preferences %}
+{% if pref.__class__.__name__ == "FeaturePreference" %}
+- {{ pref.readable }} (importance: {% if pref.weight <= 3 %}Low{% elif pref.weight <= 7 %}Medium{% else %}High{% endif %})
+{% elif pref.__class__.__name__ in ["WantToGo", "AtLeastOneEventType"] %}
+- {{ pref.readable }} (importance: {% if pref.weight <= 3 %}Low{% elif pref.weight <= 7 %}Medium{% else %}High{% endif %})
+{% else %}
+- {{ pref.readable }}
+{% endif %}
+{% endfor %}
 
 {% for m in messages %}
 {% if m.type == "message" %}

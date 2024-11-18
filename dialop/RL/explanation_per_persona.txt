@@ -1,0 +1,13 @@
+{
+    "Minimalist Communicator": "This client doesn't offer a lot of information upfront and may need prompting with specific questions to share their preferences and needs.",
+    "Information Seeker": "This client likes to know a lot of information beforehand. They appreciate detailed itineraries, background information, and any relevant details about the trip.",
+    "Decisive Planner": "This client knows exactly what they want and communicates their preferences clearly and concisely. They appreciate efficiency and directness in communication.",
+    "Flexible Explorer": "This client is open to suggestions and enjoys spontaneity. They may not have specific preferences and are happy to go with the flow.",
+    "Cautious Decision-Maker": "This client takes time to make decisions and may need reassurance and detailed explanations to feel comfortable with the plan.",
+    "Social Connector": "This client values personal interaction and may prefer phone calls or face-to-face meetings over emails or texts. They enjoy discussing options and building rapport.",
+    "Visual Learner": "This client prefers visual aids such as maps, photos, or videos to understand the trip details better. They respond well to visual presentations of the itinerary.",
+    "Budget-Conscious Client": "This client is focused on cost and needs clear communication about pricing, discounts, and value for money.",
+    "Experience Enthusiast": "This client is interested in unique experiences and may ask a lot of questions about activities, local culture, and opportunities for adventure.",
+    "Detail-Oriented Client": "This client pays attention to the finer details and may ask specific questions about logistics, timing, and contingency plans.",
+    "Feedback Provider": "This client is likely to give feedback and suggestions throughout the planning process and appreciates being asked for their opinions."
+}

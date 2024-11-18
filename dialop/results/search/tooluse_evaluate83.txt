@@ -1,0 +1,26 @@
+To determine the total number of queries, the number of incorrect queries, and the number of correct queries, let's analyze each query step by step:
+
+1. **Query 1:**
+   - `Search(fields=[name, category, good for groups, outdoor seating, vegan options], filters=[category == shop OR category == bar], text_query=good for groups)`
+   - This query is correct. It searches for entries in the categories "shop" or "bar" with the text query "good for groups". The results match the dataset.
+
+2. **Query 2:**
+   - `Search(fields=[name, category, good for groups, outdoor seating, vegan options], filters=[category == shop], text_query=good for groups)`
+   - This query is incorrect. The dataset shows that there are shops with "good for groups" as true, but the search returned no results.
+
+3. **Query 3:**
+   - `Search(fields=[name, category, good for groups, outdoor seating, vegan options, rating], filters=[rating > 4], text_query=good for groups)`
+   - This query is correct. It searches for entries with a rating greater than 4 and the text query "good for groups". The results match the dataset.
+
+4. **Query 4:**
+   - `Search(fields=[name, category, good for groups, local beers], filters=[category == bar], text_query=good for groups)`
+   - This query is incorrect. The search includes "local beers" which is not a field in the dataset, and the results are inconsistent with the dataset.
+
+Now, let's summarize the results:
+- Total number of queries: 4
+- Number of incorrect queries: 2 (Query 2 and Query 4)
+- Number of correct queries: 2 (Query 1 and Query 3)
+
+Therefore, the result is:
+
+[result]:: 4, 2, 2

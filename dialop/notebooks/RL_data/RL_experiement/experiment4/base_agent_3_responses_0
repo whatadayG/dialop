@@ -1,0 +1,1 @@
+["[message] I see that both Central Plaza and The Mall do not have parking available.", "[tool] Search(fields=[name, category, has parking, info], filters=[name == Central Plaza OR name == The Mall])", "[tool] Search(fields=[name, category, has parking], filters=[category == landmark], sort_by=[distance_to(The Mall)], limit=1)"]

@@ -1,0 +1,43 @@
+To determine the total number of queries, the number of incorrect queries, and the number of correct queries, let's analyze each query step by step:
+
+1. **Query 1**: 
+   - Search for Korean restaurants with price <= 30.
+   - Result: No results.
+   - Incorrect because the dataset does not have a specific "Korean" category or info.
+
+2. **Query 2**: 
+   - Search for vegan restaurants with price <= 30.
+   - Result: No results.
+   - Incorrect because the dataset does not have a specific "vegan" category or info.
+
+3. **Query 3**: 
+   - Search for vegan restaurants that are good for kids with price <= 30.
+   - Result: Mad Seoul.
+   - Incorrect because Mad Seoul is not specifically labeled as vegan in the dataset.
+
+4. **Query 4**: 
+   - Search for vegan restaurants that are good for kids with price <= 30.
+   - Result: Mad Seoul.
+   - Incorrect for the same reason as Query 3.
+
+5. **Query 5**: 
+   - Search for vegan restaurants that are good for kids with price <= 30.
+   - Result: Mad Seoul.
+   - Incorrect for the same reason as Query 3.
+
+6. **Query 6**: 
+   - Search for restaurants that are good for kids with price <= 30.
+   - Result: Caribbean Corner.
+   - Correct because Caribbean Corner is a restaurant, good for kids, and priced at 10.
+
+7. **Query 7**: 
+   - Search for landmarks that are good for kids with price <= 30.
+   - Result: Liberty Memorial, Hindenberg Memorial.
+   - Correct because both are landmarks, good for kids, and priced at 10.
+
+Now, let's summarize the results:
+- Total number of queries: 7
+- Number of incorrect queries: 4 (Queries 1, 2, 3, 4, 5)
+- Number of correct queries: 3 (Queries 6, 7)
+
+[result]:: 7, 4, 3

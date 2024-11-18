@@ -10,6 +10,7 @@ class DialogueEnv:
     def _parse_message(
             self,
             message: str,
+            edited_prompt_propose: bool,
             can_propose: bool,
             can_respond: bool,
             must_respond: bool,
@@ -18,8 +19,10 @@ class DialogueEnv:
         """Parses and checks a message string from a player."""
         
         message = message.replace('\\', '')
-                         
-        if has_recipient:
+        if edited_prompt_propose:
+            m = {"mtype": "propose", "msg": message, "vroom": "0"}
+            return m
+        elif has_recipient:
             m = re.match(
                 r"(?P<vroom>0|1|all): \[(?P<mtype>\w+)\](?P<msg>.*)",
                 message.strip())
@@ -29,20 +32,20 @@ class DialogueEnv:
                 message.strip())
         if m is None:
             raise GameError(f"Invalid message: {message}."
-                            "Messages must be formatted with a type like '[message]"
+                            "Error: Messages must be formatted with a type like '[message]"
                             "<content here>'")
         if m["mtype"] == "propose" and not can_propose:
-            raise GameError("Your role cannot propose. You can send messages.")
+            raise GameError("Error: Your role cannot propose. You can send messages.")
         if (m["mtype"] == "accept" or m["mtype"] == "reject") and not can_respond:
-            raise GameError("Your role cannot accept or reject. You can send"
+            raise GameError("Error: Your role cannot accept or reject. You can send"
                             " other messages.")
         if m["mtype"] not in ("accept", "reject") and len(m["msg"]) == 0:
-            raise GameError("Cannot send empty message.")
+            raise GameError("Error: Cannot send empty message.")
         if must_respond and m["mtype"] not in ("accept", "reject"):
-            raise GameError("A proposal was made. You must first accept or"
+            raise GameError("Error: A proposal was made. You must first accept or"
                             " reject it.")
         if has_recipient and m["mtype"] != "propose" and m["vroom"] == "all":
-            raise GameError(f"You can only send proposals to everyone. Try"
+            raise GameError(f"Error: You can only send proposals to everyone. Try"
                             " messaging an individual player.")
         m = {k: v.strip() for k, v in m.groupdict().items()}
         return m

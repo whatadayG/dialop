@@ -1,0 +1,1 @@
+price > location > vibe > rating

@@ -1,0 +1,35 @@
+To determine the total number of queries, the number of incorrect queries, and the number of correct queries, let's analyze each query step by step:
+
+1. **Query 1**: `Search(fields=[name], text_query=good for groups)`
+   - Correct: It returns names of places that are good for groups.
+
+2. **Query 2**: `Search(fields=[name], text_query=has wifi)`
+   - Correct: It returns names of places that have wifi.
+
+3. **Query 3**: `Search(fields=[name], text_query=has takeout)`
+   - Correct: It returns names of places that have takeout.
+
+4. **Query 4**: `Search(fields=[name, category, good for groups, has wifi], filters=[category == cafe], sort_by=[good for groups])`
+   - Correct: It returns cafes sorted by whether they are good for groups.
+
+5. **Query 5**: `Search(fields=[name, category, good for groups, has takeout], filters=[category == restaurant], sort_by=[good for groups])`
+   - Correct: It returns restaurants sorted by whether they are good for groups.
+
+6. **Query 6**: `Search(fields=[name, good for groups], filters=[name == Riverside Trail])`
+   - Correct: It checks if Riverside Trail is good for groups.
+
+7. **Query 7**: `Search(fields=[name], sort_by=[distance_to(Riverside Trail)], limit=2)`
+   - Correct: It returns the two closest places to Riverside Trail.
+
+8. **Query 8**: `Search(fields=[name, category, good for groups, has wifi, has takeout], filters=[category == cafe OR category == restaurant], sort_by=[distance_to(Riverside Trail)], limit=1)`
+   - Correct: It returns the closest cafe or restaurant to Riverside Trail.
+
+9. **Query 9**: `Search(fields=[name, category, good for groups, has wifi, has takeout], filters=[category == cafe OR category == restaurant], sort_by=[distance_to(Riverside Trail)], limit=3)`
+   - Correct: It returns the three closest cafes or restaurants to Riverside Trail.
+
+10. **Query 10**: `Search(fields=[name], sort_by=[distance_to(Riverside Trail)], limit=2)`
+    - Correct: It returns the two closest places to Riverside Trail.
+
+All queries are correct based on the dataset and the search criteria provided.
+
+[result]:: 10, 0, 10

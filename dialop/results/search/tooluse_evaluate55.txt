@@ -1,0 +1,40 @@
+To determine the total number of queries, the number of incorrect queries, and the number of correct queries, let's analyze each query step by step:
+
+1. **Query 1**: `Search(fields=[name, info], filters=[category == restaurant, info == French, info == vegan options, info == quiet])`
+   - No results found. This query is correct because there are no restaurants with French cuisine, vegan options, and a quiet atmosphere in the dataset.
+
+2. **Query 2**: `Search(fields=[name, info], filters=[category == restaurant, info == French, info == vegan options])`
+   - No results found. This query is correct because there are no restaurants with French cuisine and vegan options in the dataset.
+
+3. **Query 3**: `Search(fields=[name, info], filters=[category == restaurant, info == French, info == quiet])`
+   - No results found. This query is correct because there are no restaurants with French cuisine and a quiet atmosphere in the dataset.
+
+4. **Query 4**: `Search(fields=[name, info], filters=[category == restaurant, info == French])`
+   - No results found. This query is correct because there are no restaurants with French cuisine in the dataset.
+
+5. **Query 5**: `Search(fields=[name, info], filters=[category == restaurant, info == vegan options, info == quiet])`
+   - Results found: Mad Seoul. This query is correct because Mad Seoul is a restaurant with vegan options and a quiet atmosphere.
+
+6. **Query 6**: `Search(fields=[name, info], filters=[info == viewpoint])`
+   - Results found: Moabit Garden (viewpoint: False), Garden of Wonders (viewpoint: True). This query is correct because it correctly identifies the places with the viewpoint feature.
+
+7. **Query 7**: `Search(fields=[name, info], filters=[info == hidden, info == non-touristy])`
+   - No results found. This query is correct because there is no "hidden" feature in the dataset.
+
+8. **Query 8**: `Search(fields=[name, info], filters=[info == non-touristy])`
+   - Results found: City Museum of Art, BAMPFA, Riverside Trail, Caribbean Corner, Central Plaza, Vista Ridge Mall, The Cupcake Bar, Moabit Garden, Saul's, The Jazz Spot. This query is correct because it correctly identifies non-touristy places.
+
+9. **Query 9**: `Search(fields=[name, info], filters=[category == restaurant, info == vegan options, info == quiet, info != live music])`
+   - Results found: Caribbean Corner, The Cupcake Bar. This query is correct because both places match the criteria.
+
+10. **Query 10**: `Search(fields=[name, info], filters=[info == viewpoint], sort_by=[distance_to(The Cupcake Bar)])`
+    - Results found: Garden of Wonders. This query is correct because it correctly identifies the place with the viewpoint feature and sorts by distance.
+
+11. **Query 11**: `Search(fields=[name, info], filters=[info == non-touristy], sort_by=[distance_to(The Cupcake Bar)], limit=1)`
+    - Results found: The Cupcake Bar. This query is correct because it correctly identifies the closest non-touristy place to The Cupcake Bar.
+
+Total number of queries: 11
+Number of incorrect queries: 0
+Number of correct queries: 11
+
+[result]:: 11, 0, 11

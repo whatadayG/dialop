@@ -1,0 +1,1 @@
+{'has_takeout': ['yes', 'Unknown'], 'vegetarian options': ['like', 'High'], 'accepts reservations': ['yes', 'Unknown'], 'has_parking': ['like', 'High'], 'PriceBudgetPreference': ['$60', 'Unknown']}

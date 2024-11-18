@@ -1,0 +1,33 @@
+To determine the total number of queries, the number of incorrect queries, and the number of correct queries, let's analyze each query step by step:
+
+1. **Query 1**: `Search(fields=[name, price, info], filters=[category == restaurant, info == Ethiopian], sort_by=[price])`
+   - The dataset does not contain any restaurant with Ethiopian cuisine. 
+   - Result: No results.
+   - This query is correct because it correctly returns no results based on the dataset.
+
+2. **Query 2**: `Search(fields=[name, info], filters=[category == shop, good for groups, outdoor seating, not touristy], sort_by=[price])`
+   - The dataset does not contain any shop that is good for groups, has outdoor seating, and is not touristy.
+   - Result: No results.
+   - This query is incorrect because it returned results that do not match the filter criteria.
+
+3. **Query 3**: `Search(fields=[name, info], filters=[category == shop, good for groups, outdoor seating, not touristy], sort_by=[price], limit=3)`
+   - Same as Query 2, the dataset does not contain any shop that is good for groups, has outdoor seating, and is not touristy.
+   - Result: No results.
+   - This query is incorrect because it returned results that do not match the filter criteria.
+
+4. **Query 4**: `Search(fields=[name, price, info], filters=[category == restaurant, good for groups, outdoor seating, not touristy, vegetarian OR vegan], sort_by=[price])`
+   - The dataset contains restaurants that match the criteria: Lucia's, Cookies Cream, and El Toro Steakhouse.
+   - Result: Correct results.
+   - This query is correct because it correctly returns results based on the dataset.
+
+5. **Query 5**: `Search(fields=[name, price, info], filters=[category != restaurant, good for groups, outdoor seating, not touristy], sort_by=[price])`
+   - The dataset contains cafes that match the criteria: The Cupcake Bar and Schwarzes Cafe.
+   - Result: Correct results.
+   - This query is correct because it correctly returns results based on the dataset.
+
+Now, let's summarize the results:
+- Total number of queries: 5
+- Number of incorrect queries: 2 (Queries 2 and 3)
+- Number of correct queries: 3 (Queries 1, 4, and 5)
+
+Therefore, the result is: [result]:: 5, 2, 3.

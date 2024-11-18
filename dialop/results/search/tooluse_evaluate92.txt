@@ -1,0 +1,29 @@
+To determine the total number of queries, the number of incorrect queries, and the number of correct queries, let's analyze each query step by step:
+
+1. **Query 1**: `Search(fields=[name, category, info], filters=[category == landmark], text_query="touristy outdoor seating wifi")`
+   - Incorrect: The dataset shows no landmarks with "touristy outdoor seating wifi".
+
+2. **Query 2**: `Search(fields=[name, category, info], filters=[category == landmark], text_query="touristy outdoor seating")`
+   - Correct: The dataset returns two landmarks that match the query.
+
+3. **Query 3**: `Search(fields=[name, category, info], filters=[category == cafe], text_query="outdoor seating wifi", sort_by=[distance_to(Schwarzes Cafe, Asha Tea House)])`
+   - Correct: The dataset returns two cafes that match the query.
+
+4. **Query 4**: `Search(fields=[name, category, info], filters=[category == restaurant], text_query="vegetarian", sort_by=[distance_to(Schwarzes Cafe, Asha Tea House)])`
+   - Correct: The dataset returns five restaurants that match the query.
+
+5. **Query 5**: `Search(fields=[name], sort_by=[distance_to(Schwarzes Cafe)], limit=2)`
+   - Correct: The dataset returns two names sorted by distance to Schwarzes Cafe.
+
+6. **Query 6**: `Search(fields=[name], sort_by=[distance_to(Schwarzes Cafe, Asha Tea House)], limit=2)`
+   - Correct: The dataset returns two names sorted by distance to Schwarzes Cafe and Asha Tea House.
+
+7. **Query 7**: `Search(fields=[name], sort_by=[distance_to(Schwarzes Cafe)], limit=2)`
+   - Correct: The dataset returns two names sorted by distance to Schwarzes Cafe.
+
+Now, let's summarize the results:
+- Total number of queries: 7
+- Number of incorrect queries: 1 (Query 1)
+- Number of correct queries: 6 (Queries 2, 3, 4, 5, 6, 7)
+
+Therefore, the result is: [result]:: 7, 1, 6.

@@ -1,0 +1,35 @@
+To determine the total number of queries, the number of incorrect queries, and the number of correct queries, let's analyze each query step by step:
+
+1. **First Query:**
+   - **Query:** `Search(fields=[name, category, has parking, good for kids, rating, has outdoor seating, has wifi], filters=[category == shop], sort_by=[distance_to(Market Street)])`
+   - **Expected Result:** Shops sorted by distance to Market Street.
+   - **Result:** 5 results, all shops.
+   - **Correctness:** Correct.
+
+2. **Second Query:**
+   - **Query:** `Search(fields=[name, category, has parking, good for kids, rating, has outdoor seating, has wifi], filters=[has outdoor seating == True, has wifi == True], sort_by=[distance_to(Vista Ridge Mall)])`
+   - **Expected Result:** Places with outdoor seating and wifi, sorted by distance to Vista Ridge Mall.
+   - **Result:** 1 result, The Cupcake Bar.
+   - **Correctness:** Correct.
+
+3. **Third Query:**
+   - **Query:** `Search(fields=[name, category, has parking, good for kids, rating, has outdoor seating, has wifi], filters=[good for kids == True, has parking == True], text_query=non-touristy, sort_by=[distance_to(The Cupcake Bar)])`
+   - **Expected Result:** Non-touristy places good for kids with parking, sorted by distance to The Cupcake Bar.
+   - **Result:** 5 results, all matching the criteria.
+   - **Correctness:** Correct.
+
+4. **Fourth Query:**
+   - **Query:** `Search(fields=[name, category, has parking, good for kids, rating, has outdoor seating, has wifi], filters=[good for kids == True, has parking == True], text_query=vegan options and beer, sort_by=[distance_to(Garden of Wonders)])`
+   - **Expected Result:** Places good for kids with parking, vegan options, and beer, sorted by distance to Garden of Wonders.
+   - **Result:** 1 result, The Dockside Grill.
+   - **Correctness:** Incorrect. The Dockside Grill does not have beer as a feature.
+
+Now, let's summarize the results:
+
+- **Total number of queries:** 4
+- **Number of incorrect queries:** 1 (Fourth query)
+- **Number of correct queries:** 3
+
+Therefore, the result is:
+
+[result]:: 4, 1, 3

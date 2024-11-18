@@ -1,0 +1,38 @@
+To determine the total number of queries, the number of incorrect queries, and the number of correct queries, let's analyze each query step by step:
+
+1. **Query 1**: 
+   - Filters: category == restaurant, info.contains('Thai') OR info.contains('Spanish'), info.contains('takeout'), info.contains('vegan') OR info.contains('vegetarian'), info.contains('parking'), info.contains('non-touristy'), price <= 90
+   - Result: 2 results found, but neither matches all the filter criteria (e.g., neither has takeout).
+   - **Incorrect Query**
+
+2. **Query 2**: 
+   - Filters: category == event, info.contains('live music'), info.contains('non-touristy'), price <= 90
+   - Result: No results found.
+   - **Correct Query** (No events in the dataset match these criteria)
+
+3. **Query 3**: 
+   - Filters: category == event, info.contains('live music'), price <= 90
+   - Result: No results found.
+   - **Correct Query** (No events in the dataset match these criteria)
+
+4. **Query 4**: 
+   - Filters: category == event, info.contains('live music')
+   - Result: No results found.
+   - **Correct Query** (No events in the dataset match these criteria)
+
+5. **Query 5**: 
+   - Filters: category == event, info.contains('cultural') OR info.contains('historical')
+   - Result: No results found.
+   - **Correct Query** (No events in the dataset match these criteria)
+
+6. **Query 6**: 
+   - Filters: category == landmark OR category == museum, info.contains('non-touristy'), price <= 90
+   - Result: 3 results found, all match the filter criteria.
+   - **Correct Query**
+
+Now, let's summarize the results:
+- Total number of queries: 6
+- Number of incorrect queries: 1
+- Number of correct queries: 5
+
+Therefore, the result is: [result]:: 6, 1, 5.

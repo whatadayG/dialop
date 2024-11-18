@@ -1,0 +1,26 @@
+To determine the total number of queries, the number of incorrect queries, and the number of correct queries, let's analyze each query step by step:
+
+1. **Query 1**: `Search(fields=[name], text_query=kid friendly wifi)`
+   - This query is correct. It searches for places with "kid friendly wifi" and returns "Coffee Nook" and "Asha Tea House," which match the criteria.
+
+2. **Query 2**: `Search(fields=[name, category], filters=[category == landmark], sort_by=[distance_to(Central Plaza, The Mall)])`
+   - This query is correct. It searches for landmarks and sorts them by distance to "Central Plaza" and "The Mall." The results are consistent with the dataset.
+
+3. **Query 3**: `Search(fields=[name, category, info], filters=[category == restaurant], text_query=vegan options live music)`
+   - This query is incorrect. It searches for restaurants with "vegan options" and "live music," but "Earthbar" is included in the results despite not having vegan options.
+
+4. **Query 4**: `Search(fields=[name, info], text_query=outdoor seating)`
+   - This query is correct. It searches for places with "outdoor seating" and returns results that match the dataset.
+
+5. **Query 5**: `Search(fields=[name, category], filters=[category == landmark], sort_by=[distance_to(Central Plaza, The Mall, The Dockside Grill)])`
+   - This query is incorrect. The distances in the results do not match the dataset's locations for "Central Plaza," "The Mall," and "The Dockside Grill."
+
+6. **Query 6**: `Search(fields=[name, category], filters=[category == landmark], sort_by=[distance_to(Central Plaza, The Mall, The Dockside Grill)])`
+   - This query is correct. It corrects the previous query by providing accurate distances based on the dataset.
+
+Now, let's summarize the results:
+- Total number of queries: 6
+- Number of incorrect queries: 2 (Queries 3 and 5)
+- Number of correct queries: 4 (Queries 1, 2, 4, and 6)
+
+[result]:: 6, 2, 4

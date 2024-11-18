@@ -1,0 +1,1 @@
+{'touristy': ['like', 'Unknown'], 'WantToGo': ['Hindenberg Memorial', 'Unknown'], 'AtLeastOneEventType': ['cafe', 'Unknown'], 'has_takeout': ['prefer', 'Unknown'], 'cuisine': ['Spanish', 'Unknown'], 'PriceBudgetPreference': ['$70', 'Unknown']}

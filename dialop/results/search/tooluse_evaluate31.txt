@@ -1,0 +1,34 @@
+To determine the total number of queries, the number of incorrect queries, and the number of correct queries, let's analyze each query step by step:
+
+1. **Query 1:**
+   - **Text:** `Search(fields=[name, category, info], filters=[category == cafe], text_query="vegan vegetarian outdoor seating kid-friendly")`
+   - **Expected Result:** Cafes with vegan, vegetarian options, outdoor seating, and kid-friendly.
+   - **Returned Result:** Asha Tea House and Schwarzes Cafe.
+   - **Correctness:** Incorrect. Schwarzes Cafe matches vegan and vegetarian options but lacks outdoor seating. Asha Tea House does not match any criteria.
+
+2. **Query 2:**
+   - **Text:** `Search(fields=[name, category, info], filters=[category != cafe], text_query="vegan vegetarian outdoor seating kid-friendly")`
+   - **Expected Result:** Non-cafe places with vegan, vegetarian options, outdoor seating, and kid-friendly.
+   - **Returned Result:** Schwarzes Cafe, The Cupcake Bar, Common Grounds, Coffee Nook.
+   - **Correctness:** Incorrect. Schwarzes Cafe is a cafe and should not be included. The Cupcake Bar matches vegetarian options and outdoor seating but not vegan or kid-friendly. Common Grounds and Coffee Nook do not match all criteria.
+
+3. **Query 3:**
+   - **Text:** `Search(fields=[name, category, info], filters=[category != cafe], text_query="outdoor seating kid-friendly")`
+   - **Expected Result:** Non-cafe places with outdoor seating and kid-friendly.
+   - **Returned Result:** The Dockside Grill, A-Trane, Atlas Park, The Jazz Spot, Caribbean Corner, Kozy Kar, The Dive, Taqueria y Mas.
+   - **Correctness:** Incorrect. None of the returned results are both outdoor seating and kid-friendly.
+
+4. **Query 4:**
+   - **Text:** `Search(fields=[name, price], filters=[name in ["BAMPFA", "The Cupcake Bar", "Atlas Park"]])`
+   - **Expected Result:** Prices for BAMPFA, The Cupcake Bar, and Atlas Park.
+   - **Returned Result:** BAMPFA ($40), The Cupcake Bar ($15), Atlas Park ($0).
+   - **Correctness:** Correct. The prices match the dataset.
+
+Now, let's summarize the results:
+- Total number of queries: 4
+- Number of incorrect queries: 3
+- Number of correct queries: 1
+
+Therefore, the result is:
+
+[result]:: 4, 3, 1

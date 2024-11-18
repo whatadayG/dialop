@@ -12,7 +12,7 @@ yaml = YAML(typ='safe')
 
 from dialop.games.base_game import DialogueGame
 from dialop.games.planning_data import (
-    Event, PREF_NAME_TO_CLS, ALL_PREFS, ALL_CONSTRAINTS, DistancePreference,
+    Event, PREF_NAME_TO_CLS, ALL_PREFS, FeaturePreference, ALL_CONSTRAINTS, DistancePreference,
 )
 
 ## Game logic
@@ -107,7 +107,9 @@ class PlanningGame(DialogueGame):
                   est_price=random.choice(range(*self.all_types[e["type"]]["price_range"], 10))
             ) for i, e in enumerate(all_events)]
         self.all_styles = json.load(open("/Users/georgiazhou/research_machine/dialop/dialop/RL/explanation_per_persona.txt", "r"))
+        
 
+    
     def _randomize_event_features(self, event: Event):
         feats = random.sample(self.feats_by_type[event.etype], k=5)
         evt_feats = {}
@@ -153,7 +155,8 @@ class PlanningGame(DialogueGame):
         dist *= 69
         dist = round(dist * 10) / 10
         return dist
-
+    
+        
     def reset(self):
         self.action_log = []
         self.start_time = time.time()
@@ -279,9 +282,13 @@ class PlanningGame(DialogueGame):
         } for i in range(2)]
         return game_over, infos
 
-    def get_game_info(self):
+    def get_game_info(self, override_events=False):
+        if override_events is True:
+            events = self.events
+        else:
+            events = [e.__dict__ for e in self.events]
         return {
-            "events": [e.__dict__ for e in self.events],
+            "events": events,
             "features": self.features,
             "preferences": [(p.readable, p.weight, type(p).__name__, p.__dict__) for p in self.prefs],
             "action_log": self.action_log,

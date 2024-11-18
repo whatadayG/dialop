@@ -1,0 +1,38 @@
+To determine the total number of queries, the number of incorrect queries, and the number of correct queries, let's analyze each query step by step:
+
+1. **Query 1:**
+   - **Search:** `fields=[name, category, price, info]`
+   - **Filters:** `[category == restaurant, info == Spanish, info == vegan options, info == good for groups, info == has parking]`
+   - **Sort by:** `[rating]`
+   - **Limit:** `3`
+   - **Result:** `Cookies Cream` is returned, but it does not have "vegan options" or "has parking". This query is incorrect.
+
+2. **Query 2:**
+   - **Search:** `fields=[name, category, info]`
+   - **Filters:** `[category == landmark, info == non-touristy, info == good for groups, info == has parking]`
+   - **Sort by:** `[rating]`
+   - **Limit:** `3`
+   - **Result:** `Liberty Memorial`, `Hindenberg Memorial`, and `The Tower` are returned. All match the filters. This query is correct.
+
+3. **Query 3:**
+   - **Search:** `fields=[name, category, info]`
+   - **Filters:** `[info == non-touristy, info == good for groups, info == has parking]`
+   - **Sort by:** `[rating]`
+   - **Limit:** `3`
+   - **Result:** `Hindenberg Memorial`, `Liberty Memorial`, and `The Tower` are returned. All match the filters. This query is correct.
+
+4. **Query 4:**
+   - **Search:** `fields=[name, category, info]`
+   - **Filters:** `[info == good for groups, info == has parking]`
+   - **Sort by:** `[distance_to(Cookies Cream, Liberty Memorial, The Tower)]`
+   - **Limit:** `3`
+   - **Result:** `The Tower`, `Liberty Memorial`, and `Mad Seoul` are returned. All match the filters. This query is correct.
+
+Now, let's summarize the results:
+- Total number of queries: 4
+- Number of incorrect queries: 1 (Query 1)
+- Number of correct queries: 3 (Queries 2, 3, and 4)
+
+Therefore, the result is: 
+
+[result]:: 4, 1, 3

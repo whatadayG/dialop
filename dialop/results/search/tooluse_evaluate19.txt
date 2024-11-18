@@ -1,0 +1,44 @@
+To determine the total number of queries, the number of incorrect queries, and the number of correct queries, let's analyze each query step by step:
+
+1. **Query 1**: `Search(fields=[name], text_query=panoramic view)`
+   - Result: No results
+   - Correctness: Correct (no entries with "panoramic view")
+
+2. **Query 2**: `Search(fields=[name], text_query=wifi)`
+   - Result: 2 results (Coffee Nook, Asha Tea House)
+   - Correctness: Correct (both have wifi)
+
+3. **Query 3**: `Search(fields=[name], text_query=vegetarian food)`
+   - Result: 5 results (Mad Seoul, The Cakery, Taqueria y Mas, Asha Tea House, The Cupcake Bar)
+   - Correctness: Correct (all have vegetarian options)
+
+4. **Query 4**: `Search(fields=[name], text_query=landmark)`
+   - Result: 4 results (Hindenberg Memorial, Liberty Memorial, The Tower, Einstein's summer house)
+   - Correctness: Correct (all are landmarks)
+
+5. **Query 5**: `Search(fields=[name], text_query=panoramic view)`
+   - Result: No results
+   - Correctness: Correct (no entries with "panoramic view")
+
+6. **Query 6**: `Search(fields=[name], text_query=viewpoint)`
+   - Result: 2 results (The Arboretum, Lincoln Park)
+   - Correctness: Correct (both have viewpoint)
+
+7. **Query 7**: `Search(fields=[name, info], filters=[category == cafe OR category == restaurant], text_query=wifi AND vegetarian AND viewpoint)`
+   - Result: No results
+   - Correctness: Correct (no cafes or restaurants with all three features)
+
+8. **Query 8**: `Search(fields=[name, info], filters=[category == cafe OR category == restaurant], text_query=wifi AND vegetarian)`
+   - Result: 3 results (Common Grounds, Schwarzes Cafe, The Cakery)
+   - Correctness: Correct (all have wifi and vegetarian options)
+
+9. **Query 9**: `Search(fields=[name, info], text_query=viewpoint)`
+   - Result: 2 results (The Arboretum, Lincoln Park)
+   - Correctness: Correct (both have viewpoint)
+
+Now, let's summarize the results:
+- Total number of queries: 9
+- Number of incorrect queries: 0
+- Number of correct queries: 9
+
+Therefore, the result is: [result]:: 9, 0, 9.

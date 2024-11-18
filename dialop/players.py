@@ -66,19 +66,21 @@ class DryRunPlayer:
 class LLMPlayer:
 
     def __init__(self, prompt, role, console, model_kwargs=None,
-                 prefix="\nYou:", optional=None):
+                 prefix="\nYou:", optional=None, strategy = None):
         #pdb.set_trace()
         self.count_agent_path = 0
         self.prompt = prompt
         self.user_planning_extra = "You want to accept a proposal even when it's not perfect. "
         self.user_planning_4o = "Remember to format your message with a type like '[message]' or '[think]' or '[accept]' or [reject]"
         self.user_planing_final = "You have to accept the next proposal because you are runing out of conversation time"
-        self.agent_planning_extra = "Messages must be formatted with a type like '[message]' or '[tool]' or '[think]' or '[propose]'"
+        self.agent_planning_extra = "Messages must be formatted with a type like '[message]' or '[tool]' or '[think]' or '[propose]'. Remember, user might not say everything they want or forget things that are important to them. It's important to ask questions to the user to understand the user's priorities so you can propose the best itinerary that satisfies the user's most important preferences."
+        self.user_priority = "You should optimize for the features with high importance socres because it directly affects your final score."
         self.role = role
-        self.console = console
+        self.console = console      
         self.model = "gpt-4" #not 4o
         self.optional = optional
         self.removed_optional = False
+        self.strategy = None
         if self.role in ["user", "agent", "user0", "user1"]:
             stop_tokens = ["User", "Agent", "You", "\n"]
             if self.role == "user":
@@ -102,9 +104,11 @@ class LLMPlayer:
             
                 ##self.prompt =  "You are a helpful assistant. This is your communication style and their corresponding description: " + self.persona_explain + "\n" + "here is how much you score on each style attributes" + self.persona_tokens + "the scale is 0-1. 1 means the style is extremely obvious and 0 means the style is not obvious at all. Behave accordingly." +  "\n" + self.prompt
                 self.user_prompt_obss = ''
-                self.prompt =  "You can only list up to 3 preferences up front." + "\n" + self.user_planning_extra + self.prompt 
+                self.prompt =  self.prompt + self.user_planning_extra + " Unlike the examples above, you can only list up to 2 preferences up front." + self.user_priority
             if self.role == "agent":
                 self.temp_prompt = {}
+                self.prompt = self.prompt + self.agent_planning_extra
+                self.strategy = strategy
         elif self.role in ["player-1", "player-2"]:
             stop_tokens = ["Partner", "You", "\n"]
         else:
@@ -145,12 +149,9 @@ class LLMPlayer:
         elif ignore_obs:
             pass 
         else:
-            self.prompt += obs
-            
-        if self.role == "user":
-            #self.prompt += self.user_planning_4o
-            self.prompt += "Unlike some of the given examples, you can only list up to 3 preferences up front."
             self.prompt += (self.prefix + obs)
+            
+
 
     def respond_ready_user_planning(self, extracted_features):
         self.console.rule(f"{self.role}'s turn")
@@ -166,40 +167,56 @@ class LLMPlayer:
         return all_users
     
                 
-    def respond(self, t = 0, max_len = 3, vary = False, propose = False, temporal = None):
+    def respond(self, t = 0, max_len = 3, vary = False, propose = False, temporal_id = None, strategy = None):
         
         #pdb.set_trace()
         
                 
                 
-        if propose:
-            selfprompt = self.prompt + 'You must make a proposal now.'
         
-        else:
-            selfprompt = self.prompt
         
-        if temporal:
-            pdb.set_trace()
+
+        
+        if temporal_id:
+            #pdb.set_trace()
             try:
-                selfprompt = self.temp_prompt[temporal[1]]
+                selfprompt = self.temp_prompt[temporal_id]
+                if propose:
+                    selfprompt += 'You must make a proposal now.'
             except:
-                pdb.set_trace()
-                print(f"Warning: No prompt found for temporal index {temporal[1]}")
+                #pdb.set_trace()
+                print(f"Warning: No prompt found for temporal index {temporal_id}")
                 selfprompt = self.prompt
+        elif propose:
+            selfprompt = 'You must make a proposal now.' + self.prompt + 'You must make a proposal now.'
+            #print(selfprompt)
+        else:
+            if strategy:
+                selfprompt = self.prompt + '\n' + 'Here is your conversational strategy: ' + strategy
+            else:
+                # there was a reason that it's this way; code modification logistic stuff 
+                if self.strategy:
+                    selfprompt = self.prompt + '\n' + 'Here is your conversational strategy: ' + self.strategy
+                else:
+                    selfprompt = self.prompt
         
         
             
         
         if not selfprompt.endswith(self.prefix):
-            if self.role == "user":
-                if t>= (max_len - 5):
-                    selfprompt += self.user_planing_final
-                ##else:
-                ##    prompt += self.user_planning_extra
-            ##if self.role == "agent":
-            ##    prompt += self.agent_planning_extra
-            
-            selfprompt += self.prefix
+            if propose:
+                selfprompt += (self.prefix + '[propose]')
+            else:
+                if self.role == "user":
+                    if t>= (max_len - 5):
+                        selfprompt += self.user_planing_final
+
+                    ##else:
+                    ##    prompt += self.user_planning_extra
+                ##if self.role == "agent":
+                ##    prompt += self.agent_planning_extra
+
+                selfprompt += self.prefix
         
         #self.console.print(escape(prompt))
         remaining = 4096 - num_tokens(selfprompt)
@@ -269,7 +286,7 @@ class HumanPlayer:
         if not self.prompt.endswith(self.prefix):
             self.prompt += self.prefix
         self.console.rule(f"Your turn ({self.role})")
-        self.console.print(escape(self.prompt))
+        #self.console.print(escape(self.prompt))
         resp = ""
         if self.prefix.strip().endswith("You to"):
             id_ = Prompt.ask(

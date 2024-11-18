@@ -1,0 +1,29 @@
+To determine the total number of queries, the number of incorrect queries, and the number of correct queries, let's analyze each query step by step:
+
+1. **Query 1**: `Search(fields=[name, category, price, rating], filters=[category == museum OR category == restaurant, price <= 90, rating > 3])`
+   - This query is incorrect because it includes "Schwarzes Cafe" which is a cafe, not a museum or restaurant.
+
+2. **Query 2**: `Search(fields=[name, info], filters=[name == Schwarzes Cafe])`
+   - This query is correct as it retrieves the information for "Schwarzes Cafe".
+
+3. **Query 3**: `Search(fields=[name, info], text_query=city views)`
+   - This query is correct as it retrieves parks with viewpoints, which can be associated with city views.
+
+4. **Query 4**: `Search(fields=[name, category, price, rating], filters=[category == museum, price <= 90, rating > 3])`
+   - This query is correct as it retrieves museums with the specified criteria.
+
+5. **Query 5**: `Search(fields=[name, category, price, rating, info], filters=[category == restaurant, price <= 90, rating > 3])`
+   - This query is incorrect because it includes "Schwarzes Cafe" and "The Cupcake Bar", which are cafes, not restaurants.
+
+6. **Query 6**: `Search(fields=[name, category, price, rating], filters=[category == museum, price <= 20, rating > 3])`
+   - This query is incorrect because it includes "BAMPFA" which has a price of 40, not <= 20.
+
+7. **Query 7**: `Search(fields=[name, category, price, rating, info], filters=[category == restaurant, price <= 10, rating > 3])`
+   - This query is correct as it retrieves "Mad Seoul" which is a restaurant with the specified criteria.
+
+Now, let's summarize the results:
+- Total number of queries: 7
+- Number of incorrect queries: 3 (Queries 1, 5, and 6)
+- Number of correct queries: 4 (Queries 2, 3, 4, and 7)
+
+[result]:: 7, 3, 4

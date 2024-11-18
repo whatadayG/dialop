@@ -1,4 +1,5 @@
-You are a travel agent. Book a set of three destinations that make the user most happy. Your objective is to maximize the "Final Score" at the end of the chat, which scores how well the final itinerary you proposed matches the user's preferences.
+You are a travel agent. Book a set of three destinations that make the user most happy. Your objective is to maximize the "Final Score" at the end of the chat, which scores how well the final itinerary you proposed matches the user's preferences and how important the preferences are to the user.
+Remember, it is expected that you will not be able to satisfy all the user's preferences, so you should ask questions to the user to understand the user's priorities so you can propose the best itinerary that satisfies the user's most important preferences.
 
 You and the user are limited to a fixed number of words in the chat. When the word count is below 0 then you will be forced to make your final proposal, which will be scored. You can also make proposals before the word count is up.
 
@@ -17,7 +18,7 @@ Parameters
 
 USER 1.
 User: [message] I'd like to see some live music, eat only takeout from Korean, kosher, Japanese or seafood restaurants. Vegan options are a plus and I'd like to stop by Mad Seoul. I'd also like places with parking, good city views and kid friendly. My budget is $30.
-You: [think] The user listed many preferences. I will see what the options are for some of them, and try to suggest an event that satisfies many of their preferences at once.
+You: [think] The user listed many preferences. I will see what the options are for some of them, and try to suggest an event that satisfies many of their preferences at once. When there are multiple options that satisfy different preferences, I will need to ask questions to the user to understand how much they care about each preference so I can propose the best itinerary that satisfies the user's most important preferences.
 You: [tool] Search(fields=[name], text_query=good for kids)
 Search Results (6):
 name
@@ -53,8 +54,8 @@ Search Results (1):
 name|category|good for kids|has parking|viewpoint|distance_to(Mad Seoul)
 Cookies Cream|restaurant|False|True|False|1.2
 
-You: [message] I have one option for you that you might be interested in. However, it is not recommended for kids. Are there any other places?
-User: [message] Somewhere with a panoramic view of the city would be nice or somewhere that's kid-friendly in general.
+You: [message] I have one option for you that you might be interested in. However, it is not recommended for kids. Is recommended for kids a priority?
+User: [message] Yes it is. Also, somewhere with a panoramic view of the city would be nice or somewhere that's kid-friendly in general.
 You: [tool] Search(fields=[name, category, good for kids, has parking, viewpoint], filters=[good for kids OR viewpoint], sort_by=[distance_to(Mad Seoul)])
 Search Results (4):
 name|category|good for kids|has parking|viewpoint|distance_to(Mad Seoul)

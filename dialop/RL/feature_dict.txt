@@ -1,0 +1,20 @@
+{ "rating" : true,
+  "has_parking" : true,
+  "has_takeout": true,
+  "touristy": "binary",
+  "good for kids": true,
+  "accepts reservations": true,
+  "good for groups": true,
+  "outdoor seating": true,
+  "vegetarian options": true,
+  "vegan options": true,
+  "live music": "binary",
+  "has wifi": true,
+  "viewpoint": true,
+  "DistancePreference": true,
+  "COVID conscious": true
+  }
+  
+
+
+

@@ -1,0 +1,37 @@
+To determine the total number of queries, the number of incorrect queries, and the number of correct queries, let's analyze each query step by step:
+
+1. **Query 1**: `Search(fields=[name, category, info], filters=[category == cafe], text_query=romantic outdoor seating wifi)`
+   - The query is searching for cafes with "romantic" ambience, "outdoor seating", and "wifi".
+   - The result returned is "Coffee Nook", which matches the criteria (romantic ambience, has wifi, but no outdoor seating).
+   - **Incorrect** because "Coffee Nook" does not have outdoor seating.
+
+2. **Query 2**: `Search(fields=[name, category, info], text_query=live music city views)`
+   - The query is searching for places with "live music" and "city views".
+   - The results returned are "The Cakery" and "Kozy Kar".
+   - "The Cakery" does not have live music, and neither has city views.
+   - **Incorrect** because neither result fully matches the criteria.
+
+3. **Query 3**: `Search(fields=[name, category, info], filters=[live music, outdoor seating])`
+   - The query is searching for places with "live music" and "outdoor seating".
+   - The results returned are "The Dive", "Kozy Kar", "A-Trane", and "Harper and Rye".
+   - None of these results have both live music and outdoor seating.
+   - **Incorrect** because none of the results fully match the criteria.
+
+4. **Query 4**: `Search(fields=[name], sort_by=[distance_to(Coffee Nook)], limit=2)`
+   - The query is searching for the two closest places to "Coffee Nook".
+   - The results returned are "The Jazz Spot" and "Historical Society".
+   - Without specific location data, we assume the sorting is correct.
+   - **Correct** assuming the sorting by distance is accurate.
+
+5. **Query 5**: `Search(fields=[name, info], filters=[live music], sort_by=[distance_to(Coffee Nook)], limit=1)`
+   - The query is searching for the closest place with "live music" to "Coffee Nook".
+   - The result returned is "Kozy Kar", which has live music.
+   - **Correct** assuming the sorting by distance is accurate.
+
+Now, let's summarize the results:
+
+- Total number of queries: 5
+- Number of incorrect queries: 3 (Queries 1, 2, and 3)
+- Number of correct queries: 2 (Queries 4 and 5)
+
+[result]:: 5, 3, 2

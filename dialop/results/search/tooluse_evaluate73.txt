@@ -1,0 +1,41 @@
+To determine the total number of queries, the number of incorrect queries, and the number of correct queries, let's analyze each query step by step:
+
+1. **Query 1**: `Search(fields=[name, info], filters=[category == restaurant, good for groups, has parking], text_query="Ethiopian OR seafood")`
+   - Incorrect. The result returned is "Mad Seoul," which does not have parking.
+
+2. **Query 2**: `Search(fields=[name, info], filters=[category == restaurant, good for groups, has parking], text_query="seafood")`
+   - Incorrect. The result returned is "Mad Seoul," which does not have parking.
+
+3. **Query 3**: `Search(fields=[name, info], filters=[category == restaurant, good for groups, has parking])`
+   - Incorrect. The result returned is "Central Plaza," which is a shop, not a restaurant.
+
+4. **Query 4**: `Search(fields=[name, info], filters=[category == restaurant, good for groups, has parking, has takeout])`
+   - Incorrect. The result returned is "Taqueria y Mas," which does not have parking.
+
+5. **Query 5**: `Search(fields=[name, info], filters=[category == restaurant, has takeout], text_query="Ethiopian OR seafood")`
+   - Correct. The results returned are "Mad Seoul" and "Saul's," both of which match the criteria.
+
+6. **Query 6**: `Search(fields=[name, info], filters=[category == restaurant, has wifi, has takeout], text_query="Ethiopian OR seafood")`
+   - Correct. No results found, which is correct since no restaurant in the dataset has wifi.
+
+7. **Query 7**: `Search(fields=[name, info], filters=[category == restaurant, has wifi], text_query="Ethiopian OR seafood")`
+   - Correct. No results found, which is correct since no restaurant in the dataset has wifi.
+
+8. **Query 8**: `Search(fields=[name, info], filters=[category == restaurant, has wifi])`
+   - Correct. No results found, which is correct since no restaurant in the dataset has wifi.
+
+9. **Query 9**: `Search(fields=[name, info], text_query="wifi")`
+   - Correct. No results found, which is correct since no entity in the dataset has wifi.
+
+10. **Query 10**: `Search(fields=[name, info], filters=[category == restaurant, has takeout], text_query="wifi")`
+    - Correct. No results found, which is correct since no restaurant in the dataset has wifi.
+
+11. **Query 11**: `Search(fields=[name, info], filters=[category == restaurant, has takeout, non-touristy], text_query="Ethiopian OR seafood")`
+    - Correct. The results returned are "Mad Seoul" and "Saul's," both of which match the criteria.
+
+Now, let's summarize the results:
+- Total number of queries: 11
+- Number of incorrect queries: 4 (Queries 1, 2, 3, 4)
+- Number of correct queries: 7 (Queries 5, 6, 7, 8, 9, 10, 11)
+
+[result]:: 11, 4, 7

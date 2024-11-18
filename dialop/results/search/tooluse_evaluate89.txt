@@ -1,0 +1,40 @@
+To determine the total number of queries, the number of incorrect queries, and the number of correct queries, let's analyze each query step by step:
+
+1. **Query 1**: 
+   - Filters: `category == restaurant`, text_query: `vegetarian options`
+   - Correct: Yes, it returns restaurants with vegetarian options.
+
+2. **Query 2**: 
+   - Filters: `category == restaurant`, `info == French OR American OR Spanish OR Korean OR Ethiopian`, text_query: `vegetarian options`
+   - Correct: Yes, it returns restaurants with the specified cuisines and vegetarian options.
+
+3. **Query 3**: 
+   - Filters: `category == restaurant`, `info == French OR American OR Spanish OR Korean OR Ethiopian`, `has parking == True`, `touristy == False`, `classy == False`, text_query: `vegetarian options`
+   - Correct: Yes, it returns restaurants with the specified criteria.
+
+4. **Query 4**: 
+   - Filters: `category == live music`, sorted by distance
+   - Correct: No, there is no category called "live music" in the dataset.
+
+5. **Query 5**: 
+   - Filters: `category == park OR category == landmark`, sorted by distance
+   - Correct: Yes, it returns parks and landmarks sorted by distance.
+
+6. **Query 6**: 
+   - Filters: `category == restaurant OR category == landmark`, sorted by distance, limit 2
+   - Correct: Yes, it returns the closest restaurant or landmark with a limit of 2.
+
+7. **Query 7**: 
+   - Filters: `category == restaurant OR category == landmark`, sorted by distance, limit 1
+   - Correct: Yes, it returns the closest restaurant or landmark with a limit of 1.
+
+8. **Query 8**: 
+   - Filters: `category == restaurant`, sorted by distance, limit 1
+   - Correct: Yes, it returns the closest restaurant with a limit of 1.
+
+Now, let's summarize the results:
+- Total number of queries: 8
+- Number of incorrect queries: 1 (Query 4)
+- Number of correct queries: 7
+
+[result]:: 8, 1, 7

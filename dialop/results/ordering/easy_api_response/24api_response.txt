@@ -1,0 +1,3 @@
+Based on the given sentences, the traveler's preferences can be listed as follows:
+
+location > rating > price == vibe

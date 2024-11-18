@@ -1,0 +1,1 @@
+{'AtLeastOneEventType': ['landmark', 'Unknown'], 'WantToGo': ['The Tower', 'Unknown'], 'has_parking': ['True', 'Unknown'], 'has wifi': ['like', 'Unknown']}

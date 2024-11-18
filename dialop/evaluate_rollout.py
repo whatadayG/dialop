@@ -215,7 +215,7 @@ def run(
                 log.log(
                     key=next_player,
                     value=resp,
-                    title=f"generate t={t} try={resample_cnt}"
+                    title=f"generate t={t} try={resample_cnt}" 
                 )
                 stepped = False
                 while not stepped:
@@ -234,7 +234,7 @@ def run(
             console.print(obss)
             [player.observe(obss[pname]) for pname, player in players.items()]
             for pname in players:
-                log.log(key=pname, value=obs s[pname], title=f"obs t={t}")
+                log.log(key=pname, value=obss[pname], title=f"obs t={t}")
             resample = True
             resample_cnt = 0
             while resample and resample_cnt < 3:

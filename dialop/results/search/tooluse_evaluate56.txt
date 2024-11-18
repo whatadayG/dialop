@@ -1,0 +1,37 @@
+To determine the total number of queries, the number of incorrect queries, and the number of correct queries, let's analyze each query step by step:
+
+1. **Query 1**: `Search(fields=[name], filters=[category == landmark, has parking == True])`
+   - Result: 2 landmarks with parking.
+   - Correct.
+
+2. **Query 2**: `Search(fields=[name, info], filters=[category == restaurant, has outdoor seating == True, has takeout == True], text_query="Ethiopian, Spanish, Thai")`
+   - Result: No results.
+   - Correct, as there are no restaurants matching all these criteria.
+
+3. **Query 3**: `Search(fields=[name, info], filters=[category == restaurant, has outdoor seating == True, has takeout == True])`
+   - Result: 1 restaurant (Cookies Cream).
+   - Correct.
+
+4. **Query 4**: `Search(fields=[name], filters=[has wifi == True])`
+   - Result: 2 cafes with wifi.
+   - Correct.
+
+5. **Query 5**: `Search(fields=[name, price], filters=[category == landmark, has parking == True], sort_by=[distance_to(The Tower)], limit=2)`
+   - Result: 2 landmarks with parking, sorted by distance.
+   - Correct.
+
+6. **Query 6**: `Search(fields=[name, price, info], filters=[category == restaurant, has outdoor seating == True, has takeout == True], sort_by=[distance_to(The Tower)], limit=2)`
+   - Result: 1 restaurant (Cookies Cream).
+   - Correct, as there is only one restaurant matching the criteria.
+
+7. **Query 7**: `Search(fields=[name, price, info], filters=[category == restaurant, price <= 90], sort_by=[distance_to(The Tower)], limit=2)`
+   - Result: 2 restaurants within the price range.
+   - Correct.
+
+8. **Query 8**: `Search(fields=[name, price, info], filters=[category == restaurant, price <= 90, live music == False], sort_by=[distance_to(The Tower)], limit=2)`
+   - Result: 2 restaurants within the price range and without live music.
+   - Correct.
+
+All queries are correct based on the dataset provided.
+
+[result]:: 8, 0, 8

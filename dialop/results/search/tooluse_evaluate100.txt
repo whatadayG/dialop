@@ -1,0 +1,32 @@
+To determine the total number of queries, the number of incorrect queries, and the number of correct queries, let's analyze each query step by step:
+
+1. **First Query:**
+   - Query: `Search(fields=[name, category, info], filters=[category == landmark OR category == restaurant], text_query="rating above 4")`
+   - Result: 5 results, all with ratings above 4.
+   - **Correct Query**
+
+2. **Second Query:**
+   - Query: `Search(fields=[name, info], filters=[name == "Taqueria y Mas" OR name == "Saul's"])`
+   - Result: 2 results, matching the names "Taqueria y Mas" and "Saul's".
+   - **Correct Query**
+
+3. **Third Query:**
+   - Query: `Search(fields=[name, category, info], filters=[category == landmark, good for kids == True, viewpoint == True])`
+   - Result: No results.
+   - The dataset does not contain any landmark with both "good for kids" and "viewpoint" as True.
+   - **Correct Query**
+
+4. **Fourth Query:**
+   - Query: `Search(fields=[name, category, info], filters=[category == landmark, good for kids == True OR viewpoint == True])`
+   - Result: 3 results, including landmarks with either "good for kids" or "viewpoint" as True.
+   - **Correct Query**
+
+Now, let's summarize the findings:
+
+- Total number of queries: 4
+- Number of incorrect queries: 0
+- Number of correct queries: 4
+
+Therefore, the result is:
+
+[result]:: 4, 0, 4

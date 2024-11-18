@@ -1,0 +1,29 @@
+To determine the total number of queries, the number of incorrect queries, and the number of correct queries, let's analyze each query step by step:
+
+1. **Query 1**: `Search(fields=[name, category, has parking], filters=[category == landmark], sort_by=[distance_to(City Museum of Art)])`
+   - This query is correct. It searches for landmarks and sorts by distance to "City Museum of Art". The dataset contains landmarks, and the query returns results.
+
+2. **Query 2**: `Search(fields=[name, price, info], filters=[category == restaurant, price <= 30], text_query=vegetarian OR vegan, sort_by=[distance_to(City Museum of Art)])`
+   - This query is incorrect. It searches for restaurants with a price of 30 or less and mentions vegetarian or vegan options. The dataset does not have any restaurants meeting these criteria, resulting in no results.
+
+3. **Query 3**: `Search(fields=[name, price, info, rating], filters=[category == restaurant, price <= 30, rating >= 3], sort_by=[distance_to(City Museum of Art)])`
+   - This query is incorrect. It searches for restaurants with a price of 30 or less and a rating of 3 or more. The dataset does not have any restaurants meeting these criteria, resulting in no results.
+
+4. **Query 4**: `Search(fields=[name, price, info, rating], filters=[category == restaurant, price <= 30, rating >= 2], sort_by=[distance_to(City Museum of Art)])`
+   - This query is incorrect. It searches for restaurants with a price of 30 or less and a rating of 2 or more. The dataset does not have any restaurants meeting these criteria, resulting in no results.
+
+5. **Query 5**: `Search(fields=[name, price, info, rating], filters=[category == restaurant, price <= 30, rating >= 2], sort_by=[distance_to(The Tower)])`
+   - This query is incorrect. It searches for restaurants with a price of 30 or less and a rating of 2 or more. The dataset does not have any restaurants meeting these criteria, resulting in no results.
+
+6. **Query 6**: `Search(fields=[name, price, info, rating], filters=[category == restaurant, price <= 30], sort_by=[distance_to(The Tower)])`
+   - This query is incorrect. It searches for restaurants with a price of 30 or less. The dataset does not have any restaurants meeting these criteria, resulting in no results.
+
+7. **Query 7**: `Search(fields=[name, price, info, rating], filters=[category == restaurant, price <= 30], sort_by=[distance_to(City Museum of Art)])`
+   - This query is incorrect. It searches for restaurants with a price of 30 or less. The dataset does not have any restaurants meeting these criteria, resulting in no results.
+
+8. **Query 8**: `Search(fields=[name, price, info, rating], filters=[category == restaurant], sort_by=[distance_to(City Museum of Art)])`
+   - This query is correct. It searches for all restaurants and sorts by distance to "City Museum of Art". The dataset contains restaurants, and the query returns results.
+
+In total, there are 8 queries. Out of these, 2 queries are correct, and 6 queries are incorrect.
+
+[result]:: 8, 6, 2

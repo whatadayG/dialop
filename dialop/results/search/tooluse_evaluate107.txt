@@ -1,0 +1,44 @@
+To determine the total number of queries, the number of incorrect queries, and the number of correct queries, let's analyze each query step by step:
+
+1. **Query 1**: `Search(fields=[name], text_query=kid friendly)`
+   - Correct: It searches for names with "kid friendly" in the dataset.
+
+2. **Query 2**: `Search(fields=[name], text_query=wifi)`
+   - Correct: It searches for names with "wifi" in the dataset.
+
+3. **Query 3**: `Search(fields=[name], text_query=wine)`
+   - Correct: It searches for names with "wine" in the dataset.
+
+4. **Query 4**: `Search(fields=[name, category, info], filters=[category == bar], text_query=wine)`
+   - Correct: It searches for bars with "wine" in the info.
+
+5. **Query 5**: `Search(fields=[name, category, info], filters=[category == bar], text_query=outdoor seating)`
+   - Correct: It searches for bars with "outdoor seating" in the info.
+
+6. **Query 6**: `Search(fields=[name, price], filters=[name in [Schwarzes Cafe, Historical Society, Bards n Brews]])`
+   - Correct: It searches for the price of specific names.
+
+7. **Query 7**: `Search(fields=[name, price], sort_by=[distance_to(Historical Society)], limit=3)`
+   - Correct: It sorts by distance to "Historical Society" and limits to 3 results.
+
+8. **Query 8**: `Search(fields=[name, price], filters=[price <= 50], sort_by=[distance_to(Historical Society)], limit=3)`
+   - Correct: It filters by price, sorts by distance to "Historical Society", and limits to 3 results.
+
+9. **Query 9**: `Search(fields=[name, price, category, info], filters=[category == bar, price <= 50], sort_by=[distance_to(Historical Society)], limit=1)`
+   - Incorrect: The result shows a bar with a price of 60, which is above the filter of 50.
+
+10. **Query 10**: `Search(fields=[name, price, category, info], filters=[category == bar, price <= 50], sort_by=[distance_to(Historical Society)], limit=3)`
+    - Incorrect: The result includes bars with prices above 50, which violates the filter condition.
+
+11. **Query 11**: `Search(fields=[name, price, category, info], filters=[category == bar, price <= 50], sort_by=[price], limit=1)`
+    - Incorrect: The result shows a bar with a price of 60, which is above the filter of 50.
+
+12. **Query 12**: `Search(fields=[name, price, category, info], filters=[category == bar], sort_by=[price], limit=1)`
+    - Correct: It sorts bars by price and limits to 1 result.
+
+Now, let's summarize the results:
+- Total number of queries: 12
+- Number of incorrect queries: 3 (Queries 9, 10, and 11)
+- Number of correct queries: 9
+
+Therefore, the result is: [result]:: 12, 3, 9.

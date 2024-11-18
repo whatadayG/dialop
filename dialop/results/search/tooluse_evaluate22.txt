@@ -1,0 +1,35 @@
+To determine the total number of queries, the number of incorrect queries, and the number of correct queries, let's analyze each query step by step:
+
+1. **Query 1**: `Search(fields=[name], text_query=good for groups and kids)`
+   - This query is correct. It searches for places that are good for groups and kids.
+
+2. **Query 2**: `Search(fields=[name], text_query=reservable in advance)`
+   - This query is correct. It searches for places that can be reserved in advance.
+
+3. **Query 3**: `Search(fields=[name, category], filters=[category == cafe], text_query=good for groups and kids)`
+   - This query is correct. It searches for cafes that are good for groups and kids.
+
+4. **Query 4**: `Search(fields=[name, category], text_query=live music)`
+   - This query is correct. It searches for places with live music.
+
+5. **Query 5**: `Search(fields=[name, info], text_query=non-touristy)`
+   - This query is correct. It searches for non-touristy places.
+
+6. **Query 6**: `Search(fields=[name, info], text_query=vegetarian)`
+   - This query is correct. It searches for places with vegetarian options.
+
+7. **Query 7**: `Search(fields=[name, category, good for groups, good for kids, reservable in advance, vegetarian options, non-touristy], sort_by=[distance_to(The Mall)], limit=3)`
+   - This query is correct. It searches for places sorted by distance to "The Mall" with specified fields.
+
+8. **Query 8**: `Search(fields=[name, category, good for groups, good for kids, reservable in advance, vegetarian options, non-touristy], filters=[category == cafe], sort_by=[distance_to(The Mall)], limit=3)`
+   - This query is correct. It searches for cafes sorted by distance to "The Mall" with specified fields.
+
+9. **Query 9**: `Search(fields=[name, category, good for groups, good for kids, reservable in advance, vegetarian options, non-touristy], sort_by=[distance_to(Asha Tea House)], limit=3)`
+   - This query is correct. It searches for places sorted by distance to "Asha Tea House" with specified fields.
+
+10. **Query 10**: `Search(fields=[name, category, good for groups, good for kids, reservable in advance, vegetarian options, non-touristy], text_query=live music, sort_by=[distance_to(The Mall)], limit=3)`
+    - This query is correct. It searches for places with live music sorted by distance to "The Mall" with specified fields.
+
+All queries are correctly formed based on the dataset and the search criteria provided. Therefore, there are no incorrect queries.
+
+[result]:: 10, 0, 10

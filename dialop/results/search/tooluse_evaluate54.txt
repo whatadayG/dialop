@@ -1,0 +1,33 @@
+To determine the total number of queries, the number of incorrect queries, and the number of correct queries, let's analyze each query step by step:
+
+1. **First Query:**
+   - Query: `Search(fields=[name, category, info], filters=[category == bar], text_query="cocktails outdoor seating")`
+   - Result: 
+     - A-Trane: Matches the text query "cocktails" but does not have "outdoor seating".
+     - The Jazz Spot: Matches "outdoor seating" but not "cocktails".
+   - Conclusion: The query is incorrect because neither result fully matches both "cocktails" and "outdoor seating".
+
+2. **Second Query:**
+   - Query: `Search(fields=[name, category, info], filters=[category != bar, touristy == False], text_query="good city views good for groups", sort_by=[distance_to(Market Street)])`
+   - Result:
+     - The Arboretum: Is touristy, so it should not be included.
+     - Riverside Trail: Matches the criteria.
+     - Artisan Street Fair: Is a shop, so it should not be included.
+   - Conclusion: The query is incorrect because The Arboretum is touristy and Artisan Street Fair is a shop, both of which should not be included.
+
+3. **Third Query:**
+   - Query: `Search(fields=[name, category, info], filters=[category != bar, category != shop, touristy == False], text_query="good city views good for groups", sort_by=[distance_to(Market Street)])`
+   - Result:
+     - Garden of Wonders: Matches the criteria.
+     - Riverside Trail: Matches the criteria.
+     - The Arboretum: Is touristy, so it should not be included.
+   - Conclusion: The query is incorrect because The Arboretum is touristy and should not be included.
+
+Now, let's summarize the results:
+- Total number of queries: 3
+- Number of incorrect queries: 3
+- Number of correct queries: 0
+
+Therefore, the result is:
+
+[result]:: 3, 3, 0

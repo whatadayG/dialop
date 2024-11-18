@@ -1,0 +1,36 @@
+To determine the total number of queries, the number of incorrect queries, and the number of correct queries, let's analyze each query step by step:
+
+1. **Query 1:**
+   - `Search(fields=[name, category, info], filters=[category == cafe OR category == restaurant], text_query=vegetarian options, sort_by=[distance_to(Kozy Kar)])`
+   - This query is correct. It searches for cafes or restaurants with vegetarian options and sorts by distance to Kozy Kar.
+
+2. **Query 2:**
+   - `Search(fields=[name, info], filters=[name == Schwarzes Cafe OR name == The Dockside Grill], text_query=outdoor seating AND reservable)`
+   - This query is incorrect. The Dockside Grill does not accept reservations, which contradicts the text query.
+
+3. **Query 3:**
+   - `Search(fields=[name, category, info], filters=[category == cafe OR category == restaurant], text_query=vegetarian options AND outdoor seating AND reservable, sort_by=[distance_to(Kozy Kar)])`
+   - This query is incorrect. Lucia's does not accept reservations, which contradicts the text query.
+
+4. **Query 4:**
+   - `Search(fields=[name, info, price], filters=[name == Lucia's], text_query=reservable)`
+   - This query is incorrect. Lucia's does not accept reservations, which contradicts the text query.
+
+5. **Query 5:**
+   - `Search(fields=[name], sort_by=[distance_to(Kozy Kar)], limit=2)`
+   - This query is correct. It sorts by distance to Kozy Kar and limits the results to 2.
+
+6. **Query 6:**
+   - `Search(fields=[name], sort_by=[distance_to(Kozy Kar)], limit=1)`
+   - This query is correct. It sorts by distance to Kozy Kar and limits the results to 1.
+
+7. **Query 7:**
+   - `Search(fields=[name], sort_by=[distance_to(Harper and Rye)], limit=1)`
+   - This query is correct. It sorts by distance to Harper and Rye and limits the results to 1.
+
+Now, let's summarize the results:
+- Total number of queries: 7
+- Number of incorrect queries: 3 (Queries 2, 3, and 4)
+- Number of correct queries: 4 (Queries 1, 5, 6, and 7)
+
+[result]:: 7, 3, 4

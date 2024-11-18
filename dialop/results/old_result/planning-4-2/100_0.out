@@ -1,0 +1,1194 @@
+
+
+==================== agent params ====================
+
+>{
+  "model": "gpt-4",
+  "temperature": 0.1,
+  "top_p": 0.95,
+  "frequency_penalty": 0,
+  "presence_penalty": 0,
+  "stop": [
+    "User",
+    "Agent",
+    "You",
+    "\n"
+  ]
+}<
+
+==================== agent prompt ====================
+
+>You are a travel agent. Book a set of three destinations that make the user most happy. Your objective is to maximize the "Final Score" at the end of the chat, which scores how well the final itinerary you proposed matches the user's preferences.
+
+You and the user are limited to a fixed number of words in the chat. When the word count is below 0 then you will be forced to make your final proposal, which will be scored. You can also make proposals before the word count is up.
+
+You can use the `Search` tool with the following API:
+
+field: can be name, category, price, info, or any other field of an site
+category: can be [restaurant, cafe, museum, bar, landmark, park, shop]
+Search:
+Parameters
+- fields: list of field names to return
+- filters: list of filters to intersect with AND. Can only filter one of the
+  fields above.
+- text_query: freeform text query to search in event descriptions. Will be intersected with filters with AND.
+- sort_by: list of fields or callable function to sort results by.
+- limit: number of results to return
+
+USER 1.
+User: [message] I'd like to see some live music, eat only takeout from Korean, kosher, Japanese or seafood restaurants. Vegan options are a plus and I'd like to stop by Mad Seoul. I'd also like places with parking, good city views and kid friendly. My budget is $30.
+You: [think] The user listed many preferences. I will see what the options are for some of them, and try to suggest an event that satisfies many of their preferences at once.
+You: [tool] Search(fields=[name], text_query=good for kids)
+Search Results (6):
+name
+Saul's
+The Dockside Grill
+Riverside Trail
+Moabit Garden
+Common Grounds
+The Dive
+
+You: [tool] Search(fields=[name], text_query=viewpoint)
+Search Results (2):
+name
+Garden of Wonders
+Moabit Garden
+
+You: [tool] Search(fields=[name], text_query=has parking)
+Search Results (3):
+name
+Liberty Memorial
+Common Grounds
+Lincoln Park
+
+You: [think] Common Grounds is good for kids and has parking, so it seems like an option the user might like. Let me send a partial proposal so I can see what the user thinks.
+You: [propose] [Common Grounds, NULL, NULL]
+You: [message] I have made a proposal. Please let me know what you think of it.
+User: [message] It's not bad so far, I'd really like to stop by Mad Seoul though.
+You: [message] Sure. I can help you out with that! Are there any other events you'd like to go to after Mad Seoul?
+User: [message] I'd like to go to see some live music.
+You: [think] I will try to find somewhere with live music near Mad Seoul and check whether the event also satisfies the other preferences the user listed.
+You: [tool] Search(fields=[name, good for kids, has parking, viewpoint], text_query=live music, sort_by=[distance_to(Mad Seoul)])
+Search Results (1):
+name|category|good for kids|has parking|viewpoint|distance_to(Mad Seoul)
+Cookies Cream|restaurant|False|True|False|1.2
+
+You: [message] I have one option for you that you might be interested in. However, it is not recommended for kids. Are there any other places?
+User: [message] Somewhere with a panoramic view of the city would be nice or somewhere that's kid-friendly in general.
+You: [tool] Search(fields=[name, category, good for kids, has parking, viewpoint], filters=[good for kids OR viewpoint], sort_by=[distance_to(Mad Seoul)])
+Search Results (4):
+name|category|good for kids|has parking|viewpoint|distance_to(Mad Seoul)
+Atlas Park|park|True|True|False|0.2
+Lincoln Park|park|True|False|False|0.8
+Moabit Garden|park|False|True|True|1.3
+Garden of Wonders|park|False|False|True|1.8
+
+You: [message] I have several options available. Do you have a price point?
+User: [message] As long as it's $30 or under, it should be fine.
+You: [tool] Search(fields=[name, category, good for kids, has parking, viewpoint], filters=[good for kids OR viewpoint], sort_by=[distance_to(Mad Seoul), price])
+Search Results (4):
+name|category|good for kids|has parking|viewpoint|distance_to(Mad Seoul)|price
+Atlas Park|park|True|True|False|0.2|0
+Lincoln Park|park|True|False|False|0.8|0
+Moabit Garden|park|False|True|True|1.3|0
+Garden of Wonders|park|False|False|True|1.8|0
+
+You: [propose] [Mad Seoul, Lincoln Park, Atlas Park]
+You: [message] I have found several options. If you have enough time you may even be able to go to all of these places as they are all under 2 miles away from each other and close to Mad Seoul. Both parks are also kid friendly.
+User: [reject]
+User: [message] It would be great if you could significantly lower the travel time. Maybe another restaurant or a concert that's closer?
+You: [think] Concert is not a category I can search by. I should look for a restaurant that is close to Mad Seoul and satisfies the user's preferences as much as possible.
+You: [tool] Search(fields=[name, price, info], filters=[category == restaurant], sort_by=[distance_to(Mad Seoul)])
+Search Results (4):
+name|price|info|distance_to(Mad Seoul)
+Caribbean Corner|10|divey, has takeout, live music, vegetarian options|0.0
+El Toro Steakhouse|130|good for groups, live music, outdoor seating|0.8
+Earthbar|40|classy, rating: 3, vegan options|0.9
+Saul's|40|spanish, touristy|0.9
+
+You: [message] Mad Seoul is 0.8 miles away from Lincoln Park. I can definitely find a restaurant for you. Do you want a place with live music, touristy, kid-friendly, and has vegetarian options? The price point is around $10.
+User: [message] Yes, all those things would be great. Just make sure to keep the travel distance as low as you can get it.
+You: [propose] [Mad Seoul, Lincoln Park, Caribbean Corner]
+You: [message] I have several options. One option might be a little too far for you, however it does have live music. I also have another restaurant that is closer. All of the places I have recommended are less than a mile apart from each other.
+User: [reject]
+User: [message] The places you've chosen are great, but everything is still too far apart for me. Choose the places closest to each other if you can.
+You: [think] I should just look for the closest places to Mad Seoul.
+You: [tool] Search(fields=[name], sort_by=[distance_to(Mad Seoul)], limit=2)
+Search Results (2):
+name|distance_to(Mad Seoul)
+Caribbean Corner|0.0
+Hindenberg Memorial|0.2
+
+You: [propose] [Mad Seoul, Caribbean Corner, Hindenberg Memorial]
+You: [message] Yes sir, but there are only so many options that are kid friendly near the café of your choice. However I have one more proposal that is within a much better distance of each other.
+User: [accept]
+FINAL SCORE: 92/100
+
+USER 2.
+<
+
+==================== user params ====================
+
+>{
+  "model": "gpt-4",
+  "temperature": 0.1,
+  "top_p": 0.95,
+  "frequency_penalty": 0,
+  "presence_penalty": 0,
+  "stop": [
+    "User",
+    "Agent",
+    "You",
+    "\n"
+  ]
+}<
+
+==================== user prompt ====================
+
+>You are traveling to a new city and consulting a travel agent. For each city, you have created a document listing things you would like to do and preferences about the places you visit. The preferences are not shared between cities. Communicate with the travel agent to find the best destinations to go to for the day.
+
+Your objective is to maximize the "Final Score" at the end of the chat, which scores how well the itinerary you agreed on matches your preferences. You should not list all your preferences up front in the conversation.
+
+CITY 1.
+Travel Preferences:
+check out live music!
+prefer just eating takeout
+keep budget below $30
+would be great if everything is reservable in advance
+like: korean, kosher, japanese, seafood
+generally like eating vegan options
+definitely want to go to Mad Seoul
+renting a car so preferably places with parking
+would love to see some panoramic views of the city
+family trip, best to go to places that are good for kids
+minimize travel distance
+
+You: [message] I'd like to see some live music, eat only takeout from Korean, kosher, Japanese or seafood restaurants. Vegan options are a plus and I'd like to stop by Mad Seoul. I'd also like places with parking, good city views and kid friendly. My budget is $30.
+Agent: [propose] [Common Grounds, NULL, NULL]
+Proposal Score:
+1) (score: 4) Common Grounds
+good for groups: True
+open late: False
+rating: 2.5
+touristy: False
+vegan options: True
+2) Empty
+3) Empty
+4) Empty
+5) Empty
+
+Overall Checklist:
+YES (score: 0) keep budget below $30
+NO (score: -9) definitely want to go to Mad Seoul
+TOTAL SCORE: +4+0+0+0+0+0-9=-5
+
+Agent: [message] I have made a proposal. Please let me know what you think of it.
+You: [message] It's not bad so far, I'd really like to stop by Mad Seoul though.
+Agent: [message] Sure. I can help you out with that! Are there any other events you'd like to go to after Mad Seoul?
+You: [message] I'd like to go to see some live music.
+Agent: [message] I have one option for you that you might be interested in. However, it is not recommended for kids. Are there any other places?
+You: [message] Somewhere with a panoramic view of the city would be nice or somewhere that's kid-friendly in general.
+Agent: [message] I have several options available. Do you have a price point?
+You: [message] As long as it's $30 or under, it should be fine.
+Agent: [propose] [Mad Seoul, Lincoln Park, Atlas Park]
+Proposal Score:
+1) (score: 1) Mad Seoul
+good for kids: False
+live music: False
+open late: True
+touristy: True
+vegan options: True
+2) (score: -8) Travel from Mad Seoul to Lincoln Park, 0.8mi
+3) (score: -3) Lincoln Park
+good for groups: False
+good for kids: True
+rating: 3
+touristy: False
+viewpoint: False
+4) (score: -11) Travel from Lincoln Park to Atlas Park, 1.1mi
+5) (score: 7) Atlas Park
+good for groups: False
+good for kids: True
+has parking: False
+touristy: True
+viewpoint: True
+
+Overall Checklist:
+NO (score: -1) keep budget below $30
+YES (score: 9) definitely want to go to Mad Seoul
+TOTAL SCORE: +1-8-3-11+7-1+9=-6
+You can [think], or output one of these choices:
+(1) [accept]
+(2) [reject]
+
+Agent: [message] I have found several options. If you have enough time you may even be able to go to all of these places as they are all under 2 miles away from each other and close to Mad Seoul. Both parks are also kid friendly.
+You: [think] I am losing the most points from the travel time between events. I should reject the proposal and tell the agent to find sites that are closer to each other.
+You: [reject] 
+You: [message] It would be great if you could significantly lower the travel time. Maybe another restaurant or a concert that's closer?
+Agent: [message] Mad Seoul is 0.8 miles away from Lincoln Park. I can definitely find a restaurant for you. Do you want a place with live music, touristy, kid-friendly, and has vegetarian options? The price point is around $10.
+You: [message] Yes, all those things would be great. Just make sure to keep the travel distance as low as you can get it.
+Agent: [propose] [Mad Seoul, Lincoln Park, Caribbean Corner]
+Proposal Score:
+1) (score: 1) Mad Seoul
+good for kids: False
+live music: False
+open late: True
+touristy: True
+vegan options: True
+2) (score: -8) Travel from Mad Seoul to Lincoln Park, 0.8mi
+3) (score: -3) Lincoln Park
+good for groups: False
+good for kids: True
+rating: 3
+touristy: False
+viewpoint: False
+4) (score: -8) Travel from Lincoln Park to Caribbean Corner, 0.8mi
+5) (score: -1) Caribbean Corner
+ambience: divey
+good for groups: False
+good for kids: False
+has takeout: True
+live music: True
+
+Overall Checklist:
+NO (score: -1) keep budget below $30
+YES (score: 9) definitely want to go to Mad Seoul
+TOTAL SCORE: +1-8-3-8-1-1+9=-11
+You can [think], or output one of these choices:
+(1) [accept]
+(2) [reject]
+
+Agent: [message] I have several options. One option might be a little too far for you, however it does have live music. I also have another restaurant that is closer. All of the places I have recommended are less than a mile apart from each other.
+You: [think] I am still losing a lot of points from the travel time between events. This seems more important to me than the other features of the sites.
+You: [reject] 
+You: [message] The places you've chosen are great, but everything is still too far apart for me. Choose the places closest to each other if you can.
+Agent: [propose] [Mad Seoul, Caribbean Corner, Hindenberg Memorial]
+Proposal Score:
+1) (score: 1) Mad Seoul
+good for kids: False
+live music: False
+open late: True
+touristy: True
+vegan options: True
+2) (score: 0) Travel from Estimated Travel to Caribbean Corner, 0mi
+3) (score: -1) Caribbean Corner
+ambience: divey
+good for groups: False
+good for kids: False
+has takeout: True
+live music: True
+4) (score: -2) Travel from Estimated Travel to Hindenberg Memorial, 0.2mi
+5) (score: -2) Hindenberg Memorial
+good for groups: True
+good for kids: False
+open late: False
+rating: 5
+touristy: True
+
+Overall Checklist:
+NO (score: -1) keep budget below $30
+YES (score: 9) definitely want to go to Mad Seoul
+TOTAL SCORE: +1+0-1-2-2-1+9=4
+You must output one of these choices:
+(1) [accept]
+(2) [reject]
+
+Agent: [message] Yes sir, but there are only so many options that are kid friendly near the café of your choice. However I have one more proposal that is within a much better distance of each other.
+You: [think] All the events are very close to each other and the score is a lot better. My total score seems like it could be pretty good. I should accept this proposal.
+You: [accept] 
+FINAL SCORE: 92/100
+
+CITY 2.
+<
+
+==================== Query Executor Prompt ====================
+
+>Database:
+{'est_price': 90, 'etype': 'bar', 'features': {'good for groups': True, 'has parking': False, 'open late': False, 'outdoor seating': False, 'rating': 2.5}, 'loc': [-122.26, 37.87], 'name': 'The Dive'}
+{'est_price': 20, 'etype': 'bar', 'features': {'good for groups': True, 'has parking': False, 'live music': True, 'open late': False, 'outdoor seating': True}, 'loc': [-122.29, 37.87], 'name': 'Bards n Brews'}
+{'est_price': 0, 'etype': 'landmark', 'features': {'good for groups': True, 'good for kids': True, 'has parking': False, 'open late': True, 'rating': 1.5}, 'loc': [-122.3, 37.87], 'name': 'Liberty Memorial'}
+{'est_price': 5, 'etype': 'cafe', 'features': {'ambience': 'trendy', 'good for kids': False, 'has parking': False, 'has wifi': False, 'outdoor seating': False}, 'loc': [-122.26, 37.87], 'name': 'Schwarzes Cafe'}
+{'est_price': 170, 'etype': 'restaurant', 'features': {'cuisine': 'chinese', 'good for kids': False, 'has takeout': True, 'touristy': False, 'vegetarian options': False}, 'loc': [-122.29, 37.88], 'name': 'Taqueria y Mas'}
+{'est_price': 15, 'etype': 'cafe', 'features': {'ambience': 'hipster', 'good for groups': True, 'good for kids': True, 'has wifi': False, 'vegan options': False}, 'loc': [-122.29, 37.88], 'name': 'Asha Tea House'}
+{'est_price': 20, 'etype': 'museum', 'features': {'good for groups': True, 'good for kids': True, 'has parking': True, 'open late': True, 'touristy': False}, 'loc': [-122.26, 37.87], 'name': 'BAMPFA'}
+{'est_price': 0, 'etype': 'park', 'features': {'good for kids': False, 'has parking': False, 'rating': 3.5, 'touristy': True, 'viewpoint': True}, 'loc': [-122.27, 37.89], 'name': 'The Arboretum'}
+{'est_price': 190, 'etype': 'restaurant', 'features': {'ambience': 'romantic', 'cuisine': 'american', 'has takeout': False, 'outdoor seating': False, 'touristy': False}, 'loc': [-122.29, 37.88], 'name': 'El Toro Steakhouse'}
+{'est_price': 0, 'etype': 'park', 'features': {'good for groups': False, 'good for kids': True, 'open late': True, 'touristy': True, 'viewpoint': False}, 'loc': [-122.26, 37.87], 'name': 'Atlas Park'}
+{'est_price': 5, 'etype': 'cafe', 'features': {'good for kids': False, 'has wifi': True, 'open late': False, 'vegan options': False, 'vegetarian options': True}, 'loc': [-122.26, 37.87], 'name': 'Common Grounds'}
+{'est_price': 90, 'etype': 'restaurant', 'features': {'ambience': 'romantic', 'good for kids': True, 'has parking': False, 'open late': False, 'outdoor seating': False}, 'loc': [-122.3, 37.89], 'name': "Lucia's"}
+{'est_price': 140, 'etype': 'restaurant', 'features': {'good for groups': True, 'has parking': True, 'has takeout': True, 'open late': True, 'rating': 2.5}, 'loc': [-122.27, 37.87], 'name': 'The Dockside Grill'}
+{'est_price': 360, 'etype': 'shop', 'features': {'good for groups': False, 'has parking': False, 'open late': False, 'rating': 4.5, 'touristy': False}, 'loc': [-122.29, 37.87], 'name': 'Vista Ridge Mall'}
+{'est_price': 0, 'etype': 'park', 'features': {'good for groups': True, 'good for kids': True, 'has parking': False, 'rating': 3, 'touristy': True}, 'loc': [-122.3, 37.87], 'name': 'Riverside Trail'}
+{'est_price': 30, 'etype': 'museum', 'features': {'good for groups': True, 'has parking': False, 'open late': True, 'rating': 4.5, 'touristy': False}, 'loc': [-122.27, 37.87], 'name': 'City Museum of Art'}
+{'est_price': 150, 'etype': 'restaurant', 'features': {'accepts reservations': False, 'good for groups': False, 'has parking': True, 'has takeout': True, 'vegan options': True}, 'loc': [-122.26, 37.87], 'name': 'The Cakery'}
+{'est_price': 10, 'etype': 'museum', 'features': {'good for groups': True, 'good for kids': True, 'has parking': True, 'rating': 2.5, 'touristy': True}, 'loc': [-122.26, 37.84], 'name': 'Historical Society'}
+{'est_price': 420, 'etype': 'shop', 'features': {'good for groups': False, 'good for kids': True, 'has parking': True, 'open late': False, 'touristy': False}, 'loc': [-122.27, 37.87], 'name': 'Central Plaza'}
+{'est_price': 120, 'etype': 'restaurant', 'features': {'live music': False, 'outdoor seating': True, 'rating': 3.5, 'touristy': True, 'vegan options': False}, 'loc': [-122.31, 37.87], 'name': 'Cookies Cream'}
+{'est_price': 10, 'etype': 'bar', 'features': {'ambience': 'classy', 'has parking': False, 'live music': False, 'open late': True, 'rating': 2}, 'loc': [-122.28, 37.89], 'name': 'Kozy Kar'}
+{'est_price': 15, 'etype': 'cafe', 'features': {'good for groups': True, 'has parking': False, 'open late': True, 'outdoor seating': False, 'vegetarian options': False}, 'loc': [-122.29, 37.88], 'name': 'The Cupcake Bar'}
+{'est_price': 5, 'etype': 'cafe', 'features': {'good for groups': True, 'has parking': False, 'outdoor seating': True, 'touristy': True, 'vegan options': False}, 'loc': [-122.28, 37.89], 'name': 'Coffee Nook'}
+{'est_price': 190, 'etype': 'restaurant', 'features': {'cuisine': 'kosher', 'good for groups': False, 'good for kids': False, 'has parking': True, 'rating': 2}, 'loc': [-122.27, 37.87], 'name': 'Earthbar'}
+{'est_price': 20, 'etype': 'bar', 'features': {'ambience': 'trendy', 'good for groups': True, 'has parking': False, 'open late': True, 'rating': 3.5}, 'loc': [-122.27, 37.87], 'name': 'Harper and Rye'}
+{'est_price': 0, 'etype': 'park', 'features': {'good for groups': False, 'has parking': True, 'rating': 5, 'touristy': True, 'viewpoint': False}, 'loc': [-122.26, 37.87], 'name': 'Lincoln Park'}
+{'est_price': 150, 'etype': 'shop', 'features': {'good for groups': True, 'good for kids': True, 'open late': True, 'rating': 4, 'touristy': False}, 'loc': [-122.31, 37.88], 'name': 'The Mall'}
+{'est_price': 160, 'etype': 'restaurant', 'features': {'ambience': 'intimate', 'good for kids': False, 'live music': False, 'vegan options': True, 'vegetarian options': False}, 'loc': [-122.26, 37.87], 'name': "Saul's"}
+{'est_price': 50, 'etype': 'shop', 'features': {'good for groups': True, 'has parking': False, 'open late': False, 'rating': 1, 'touristy': False}, 'loc': [-122.3, 37.87], 'name': 'Artisan Street Fair'}
+{'est_price': 90, 'etype': 'bar', 'features': {'alcohol type': 'cocktails', 'good for groups': True, 'live music': True, 'outdoor seating': False, 'touristy': True}, 'loc': [-122.26, 37.87], 'name': 'A-Trane'}
+{'est_price': 40, 'etype': 'restaurant', 'features': {'accepts reservations': True, 'ambience': 'classy', 'rating': 4, 'touristy': True, 'vegetarian options': False}, 'loc': [-122.26, 37.87], 'name': 'Caribbean Corner'}
+{'est_price': 0, 'etype': 'park', 'features': {'good for groups': False, 'has parking': True, 'open late': True, 'rating': 4.5, 'touristy': False}, 'loc': [-122.26, 37.87], 'name': 'Garden of Wonders'}
+{'est_price': 0, 'etype': 'landmark', 'features': {'good for groups': False, 'good for kids': False, 'has parking': False, 'open late': True, 'rating': 2.5}, 'loc': [-122.27, 37.87], 'name': "Einstein's summer house"}
+{'est_price': 10, 'etype': 'landmark', 'features': {'good for groups': True, 'good for kids': False, 'open late': False, 'rating': 4, 'touristy': True}, 'loc': [-122.26, 37.86], 'name': 'The Tower'}
+{'est_price': 50, 'etype': 'restaurant', 'features': {'good for groups': False, 'has parking': True, 'outdoor seating': True, 'vegan options': False, 'vegetarian options': False}, 'loc': [-122.32, 37.86], 'name': 'Mad Seoul'}
+{'est_price': 130, 'etype': 'shop', 'features': {'good for groups': False, 'good for kids': True, 'has parking': False, 'open late': False, 'touristy': False}, 'loc': [-122.27, 37.89], 'name': 'Market Street'}
+{'est_price': 60, 'etype': 'bar', 'features': {'alcohol type': 'beer', 'ambience': 'intimate', 'has parking': False, 'open late': True, 'touristy': False}, 'loc': [-122.26, 37.84], 'name': 'The Jazz Spot'}
+{'est_price': 10, 'etype': 'landmark', 'features': {'good for groups': False, 'has parking': False, 'open late': True, 'rating': 3, 'touristy': False}, 'loc': [-122.26, 37.84], 'name': 'Hindenberg Memorial'}
+{'est_price': 0, 'etype': 'park', 'features': {'good for groups': True, 'has parking': False, 'open late': True, 'touristy': True, 'viewpoint': False}, 'loc': [-122.27, 37.87], 'name': 'Moabit Garden'}
+
+Query: Search(fields=[name], filters=[category == landmark])
+Result:
+Search Results (4):
+name
+Liberty Memorial
+Einstein's summer house
+The Tower
+Hindenberg Memorial
+
+Query: Search(fields=[name], filters=[category == concert])
+Result:
+Search Results: No results
+
+
+Query: Search(fields=[name], text_query=live music)
+Result:
+Search Results (5):
+name
+Bards n Brews
+Cookies Cream
+Kozy Kar
+Saul's
+A-Trane
+
+Query: Search(fields=[name, price], text_query=live music, filters=[price <= 40])
+Result:
+Search Results (2):
+name|price
+Bards n Brews|20
+Kozy Kar|10
+
+Query: Search(fields=[name, price], filters=[category == restaurant, price <= 10], sort_by=[distance_to(The Mall)])
+Result:
+Search Results: No results
+
+
+Query: Search(fields=[name, price, distance], filters=[category == restaurant], sort_by=[distance_to(The Mall), price])
+Result:
+Search Results (10):
+name|price|distance
+Caribbean Corner|40|3.1
+Mad Seoul|50|1.3
+Lucia's|90|0.8
+Cookies Cream|120|1.0
+The Dockside Grill|140|2.3
+The Cakery|150|3.4
+Saul's|160|3.4
+Taqueria y Mas|170|1.2
+El Toro Steakhouse|190|1.2
+Earthbar|190|2.6
+
+Query: Search(fields=[name], text_query="good for kids", filters=[category == park], sort_by=[distance_to(Saul's)])
+Result:
+Search Results (3):
+name|distance
+Atlas Park|0.5
+The Arboretum|1.8
+Riverside Trail|2.8
+
+Query: Search(fields=[name], filters=[vegan == true])
+Result:
+You cannot filter by vegan.Try searching with a text query instead.
+
+<
+
+==================== agent Log ====================
+
+
+-------------------- obs t=0 --------------------
+>
+
+-------------------- obs t=1 --------------------
+>
+User: [message] I'm planning a family trip and we're a group of 7. We'd like to visit places that are good for groups and kids. We're also interested in seeing some panoramic views of the city and visiting at least one bar. We prefer places with outdoor seating due to COVID. We'd like to eat at Ethiopian or seafood restaurants, vegan options are a plus. Our budget is $70.
+
+-------------------- generate t=1 try=0 --------------------
+>[think] The user has a large group and wants to visit places that are good for groups and kids. They also want to see panoramic views of the city, visit a bar, and eat at Ethiopian or seafood restaurants with vegan options. They prefer outdoor seating and have a budget of $70. I will start by searching for places that are good for groups and kids.
+
+-------------------- obs t=2 --------------------
+>[think] The user has a large group and wants to visit places that are good for groups and kids. They also want to see panoramic views of the city, visit a bar, and eat at Ethiopian or seafood restaurants with vegan options. They prefer outdoor seating and have a budget of $70. I will start by searching for places that are good for groups and kids.
+
+-------------------- generate t=2 try=0 --------------------
+>[tool] Search(fields=[name], text_query=good for groups and kids)
+
+-------------------- obs t=3 --------------------
+>[tool] Search(fields=[name], text_query=good for groups and kids)
+Search Results (7):
+name
+Liberty Memorial
+BAMPFA
+Historical Society
+Riverside Trail
+City Museum of Art
+The Mall
+Artisan Street Fair
+
+-------------------- generate t=3 try=0 --------------------
+>[tool] Search(fields=[name], text_query=panoramic view)
+
+-------------------- obs t=4 --------------------
+>[tool] Search(fields=[name], text_query=panoramic view)
+Search Results: No results
+
+-------------------- generate t=4 try=0 --------------------
+>[think] There are no results for panoramic views. I will try to find a place that is good for groups and kids and also has outdoor seating.
+
+-------------------- obs t=5 --------------------
+>[think] There are no results for panoramic views. I will try to find a place that is good for groups and kids and also has outdoor seating.
+
+-------------------- generate t=5 try=0 --------------------
+>[tool] Search(fields=[name], text_query=good for groups and kids, filters=[outdoor seating])
+
+-------------------- obs t=6 --------------------
+>[tool] Search(fields=[name], text_query=good for groups and kids, filters=[outdoor seating])
+Search Results (2):
+name
+Bards n Brews
+Atlas Park
+
+-------------------- generate t=6 try=0 --------------------
+>[tool] Search(fields=[name, category, price, info], filters=[category == restaurant], text_query=Ethiopian OR seafood)
+
+-------------------- obs t=7 --------------------
+>[tool] Search(fields=[name, category, price, info], filters=[category == restaurant], text_query=Ethiopian OR seafood)
+Search Results: No results
+
+-------------------- generate t=7 try=0 --------------------
+>[think] There are no Ethiopian or seafood restaurants. I will try to find a restaurant with vegan options that is good for groups and kids.
+
+-------------------- obs t=8 --------------------
+>[think] There are no Ethiopian or seafood restaurants. I will try to find a restaurant with vegan options that is good for groups and kids.
+
+-------------------- generate t=8 try=0 --------------------
+>[tool] Search(fields=[name, category, price, info], filters=[category == restaurant, good for groups, good for kids, vegan options])
+
+-------------------- obs t=9 --------------------
+>[tool] Search(fields=[name, category, price, info], filters=[category == restaurant, good for groups, good for kids, vegan options])
+Search Results (1):
+name|category|price|info
+The Cakery|restaurant|150|{'accepts reservations': False, 'good for groups': False, 'has parking': True, 'has takeout': True, 'vegan options': True}
+
+-------------------- generate t=9 try=0 --------------------
+>[think] The Cakery is a bit over the budget and it's not good for groups. I will try to find a bar that is good for groups and kids.
+
+-------------------- obs t=10 --------------------
+>[think] The Cakery is a bit over the budget and it's not good for groups. I will try to find a bar that is good for groups and kids.
+
+-------------------- generate t=10 try=0 --------------------
+>[tool] Search(fields=[name, category, price, info], filters=[category == bar, good for groups, good for kids])
+
+-------------------- obs t=11 --------------------
+>[tool] Search(fields=[name, category, price, info], filters=[category == bar, good for groups, good for kids])
+Search Results: No results
+
+-------------------- generate t=11 try=0 --------------------
+>[think] There are no bars that are good for groups and kids. I will try to find a bar that is good for groups.
+
+-------------------- obs t=12 --------------------
+>[think] There are no bars that are good for groups and kids. I will try to find a bar that is good for groups.
+
+-------------------- generate t=12 try=0 --------------------
+>[tool] Search(fields=[name, category, price, info], filters=[category == bar, good for groups])
+
+-------------------- obs t=13 --------------------
+>[tool] Search(fields=[name, category, price, info], filters=[category == bar, good for groups])
+Search Results (5):
+name|category|price|info
+The Dive|bar|90|{'good for groups': True, 'has parking': False, 'open late': False, 'outdoor seating': False, 'rating': 2.5}
+Bards n Brews|bar|20|{'good for groups': True, 'has parking': False, 'live music': True, 'open late': False, 'outdoor seating': True}
+Kozy Kar|bar|10|{'ambience': 'classy', 'has parking': False, 'live music': False, 'open late': True, 'rating': 2}
+Harper and Rye|bar|20|{'ambience': 'trendy', 'good for groups': True, 'has parking': False, 'open late': True, 'rating': 3.5}
+A-Trane|bar|90|{'alcohol type': 'cocktails', 'good for groups': True, 'live music': True, 'outdoor seating': False, 'touristy': True}
+
+-------------------- generate t=13 try=0 --------------------
+>[message] I found a bar called Bards n Brews that is good for groups and has outdoor seating. It also has live music. Would you like to visit this place?
+
+-------------------- obs t=14 --------------------
+>[message] I found a bar called Bards n Brews that is good for groups and has outdoor seating. It also has live music. Would you like to visit this place?
+
+-------------------- obs t=15 --------------------
+>
+User: [message] That sounds great, but we'd prefer a place without live music as it can be too loud. We'd also like to visit some non-touristy spots if possible.
+
+-------------------- generate t=15 try=0 --------------------
+>[think] The user prefers a place without live music and non-touristy spots. I will try to find a bar that is good for groups, has outdoor seating, and is non-touristy.
+
+-------------------- obs t=16 --------------------
+>[think] The user prefers a place without live music and non-touristy spots. I will try to find a bar that is good for groups, has outdoor seating, and is non-touristy.
+
+-------------------- generate t=16 try=0 --------------------
+>[tool] Search(fields=[name, category, price, info], filters=[category == bar, good for groups, outdoor seating, non-touristy])
+
+-------------------- obs t=17 --------------------
+>[tool] Search(fields=[name, category, price, info], filters=[category == bar, good for groups, outdoor seating, non-touristy])
+Search Results (1):
+name|category|price|info
+Harper and Rye|bar|20|{'ambience': 'trendy', 'good for groups': True, 'has parking': False, 'open late': True, 'rating': 3.5}
+
+-------------------- generate t=17 try=0 --------------------
+>[message] I found a bar called Harper and Rye that is good for groups, has outdoor seating, and is non-touristy. It's also within your budget. Would you like to visit this place?
+
+-------------------- obs t=18 --------------------
+>[message] I found a bar called Harper and Rye that is good for groups, has outdoor seating, and is non-touristy. It's also within your budget. Would you like to visit this place?
+
+-------------------- obs t=19 --------------------
+>
+User: [message] That sounds perfect! We'd also like to visit a restaurant that serves Ethiopian or seafood cuisine. Vegan options would be a plus.
+
+-------------------- generate t=19 try=0 --------------------
+>[think] The user wants to visit a restaurant that serves Ethiopian or seafood cuisine with vegan options. I will try to find a restaurant that fits these criteria.
+
+-------------------- obs t=20 --------------------
+>[think] The user wants to visit a restaurant that serves Ethiopian or seafood cuisine with vegan options. I will try to find a restaurant that fits these criteria.
+
+-------------------- generate t=20 try=0 --------------------
+>[tool] Search(fields=[name, category, price, info], filters=[category == restaurant, vegan options], text_query=Ethiopian OR seafood)
+
+-------------------- obs t=21 --------------------
+>[tool] Search(fields=[name, category, price, info], filters=[category == restaurant, vegan options], text_query=Ethiopian OR seafood)
+Search Results: No results
+
+-------------------- generate t=21 try=0 --------------------
+>[message] I'm sorry, but I couldn't find any Ethiopian or seafood restaurants with vegan options. However, I can look for other restaurants that are good for groups and kids and have vegan options. Would that be okay?
+
+-------------------- obs t=22 --------------------
+>[message] I'm sorry, but I couldn't find any Ethiopian or seafood restaurants with vegan options. However, I can look for other restaurants that are good for groups and kids and have vegan options. Would that be okay?
+
+-------------------- obs t=23 --------------------
+>
+User: [message] That's fine, as long as they have outdoor seating and are within our budget.
+
+-------------------- generate t=23 try=0 --------------------
+>[tool] Search(fields=[name, category, price, info], filters=[category == restaurant, good for groups, good for kids, outdoor seating, price <= 70])
+
+-------------------- obs t=24 --------------------
+>[tool] Search(fields=[name, category, price, info], filters=[category == restaurant, good for groups, good for kids, outdoor seating, price <= 70])
+Search Results (1):
+name|category|price|info
+Mad Seoul|restaurant|50|{'good for groups': False, 'has parking': True, 'outdoor seating': True, 'vegan options': False, 'vegetarian options': False}
+
+-------------------- generate t=24 try=0 --------------------
+>[message] I found a restaurant called Mad Seoul that has outdoor seating and is within your budget. However, it's not particularly good for groups and doesn't have vegan options. Would you like to visit this place?
+
+-------------------- obs t=25 --------------------
+>[message] I found a restaurant called Mad Seoul that has outdoor seating and is within your budget. However, it's not particularly good for groups and doesn't have vegan options. Would you like to visit this place?
+
+-------------------- obs t=26 --------------------
+>
+User: [message] That's not ideal, but we can make it work. Let's add it to the itinerary.
+
+-------------------- generate t=26 try=0 --------------------
+>[think] The user wants to visit a place that is good for groups and kids, and has a panoramic view. I will try to find a place that fits these criteria.
+
+-------------------- obs t=27 --------------------
+>[think] The user wants to visit a place that is good for groups and kids, and has a panoramic view. I will try to find a place that fits these criteria.
+
+-------------------- generate t=27 try=0 --------------------
+>[tool] Search(fields=[name, category, price, info], filters=[good for groups, good for kids], text_query=panoramic view)
+
+-------------------- obs t=28 --------------------
+>[tool] Search(fields=[name, category, price, info], filters=[good for groups, good for kids], text_query=panoramic view)
+Search Results: No results
+
+-------------------- generate t=28 try=0 --------------------
+>[message] I'm sorry, but I couldn't find any places with a panoramic view that are also good for groups and kids. However, I can look for other places that are good for groups and kids. Would that be okay?
+
+-------------------- obs t=29 --------------------
+>[message] I'm sorry, but I couldn't find any places with a panoramic view that are also good for groups and kids. However, I can look for other places that are good for groups and kids. Would that be okay?
+
+-------------------- obs t=30 --------------------
+>
+User: [message] That's fine, we can skip the panoramic view. Let's finalize the itinerary.
+
+-------------------- generate t=30 try=0 --------------------
+>[propose] [Harper and Rye, Mad Seoul, Atlas Park]
+
+-------------------- obs t=31 --------------------
+>[propose] [Harper and Rye, Mad Seoul, Atlas Park]
+
+-------------------- generate t=31 try=0 --------------------
+>[message] I have finalized the itinerary. It includes a visit to Harper and Rye, a bar that is good for groups, has outdoor seating, and is non-touristy. Then, you can have a meal at Mad Seoul, a restaurant with outdoor seating. Lastly, you can visit Atlas Park, which is good for groups and kids. I hope you enjoy your trip!
+
+-------------------- obs t=32 --------------------
+>[message] I have finalized the itinerary. It includes a visit to Harper and Rye, a bar that is good for groups, has outdoor seating, and is non-touristy. Then, you can have a meal at Mad Seoul, a restaurant with outdoor seating. Lastly, you can visit Atlas Park, which is good for groups and kids. I hope you enjoy your trip!
+
+==================== user Log ====================
+
+
+-------------------- obs t=0 --------------------
+>Travel Preferences:
+COVID conscious, outdoor seating places would be best
+would love to see some panoramic views of the city
+family trip, best to go to places that are good for kids
+go to at least one bar
+keep budget below $70
+group of 7, best if we could go to places good for groups
+no live music places, generally too loud
+seeing hidden, non-touristy spots would be cool
+generally like eating vegan options
+like: ethiopian, seafood
+minimize travel distance
+You:
+
+-------------------- generate t=0 try=0 --------------------
+>[message] I'm planning a family trip and we're a group of 7. We'd like to visit places that are good for groups and kids. We're also interested in seeing some panoramic views of the city and visiting at least one bar. We prefer places with outdoor seating due to COVID. We'd like to eat at Ethiopian or seafood restaurants, vegan options are a plus. Our budget is $70.
+
+-------------------- obs t=1 --------------------
+>[message] I'm planning a family trip and we're a group of 7. We'd like to visit places that are good for groups and kids. We're also interested in seeing some panoramic views of the city and visiting at least one bar. We prefer places with outdoor seating due to COVID. We'd like to eat at Ethiopian or seafood restaurants, vegan options are a plus. Our budget is $70.
+
+-------------------- obs t=2 --------------------
+>
+
+-------------------- obs t=3 --------------------
+>
+
+-------------------- obs t=4 --------------------
+>
+
+-------------------- obs t=5 --------------------
+>
+
+-------------------- obs t=6 --------------------
+>
+
+-------------------- obs t=7 --------------------
+>
+
+-------------------- obs t=8 --------------------
+>
+
+-------------------- obs t=9 --------------------
+>
+
+-------------------- obs t=10 --------------------
+>
+
+-------------------- obs t=11 --------------------
+>
+
+-------------------- obs t=12 --------------------
+>
+
+-------------------- obs t=13 --------------------
+>
+
+-------------------- obs t=14 --------------------
+>
+Agent: [message] I found a bar called Bards n Brews that is good for groups and has outdoor seating. It also has live music. Would you like to visit this place?
+
+-------------------- generate t=14 try=0 --------------------
+>[message] That sounds great, but we'd prefer a place without live music as it can be too loud. We'd also like to visit some non-touristy spots if possible.
+
+-------------------- obs t=15 --------------------
+>[message] That sounds great, but we'd prefer a place without live music as it can be too loud. We'd also like to visit some non-touristy spots if possible.
+
+-------------------- obs t=16 --------------------
+>
+
+-------------------- obs t=17 --------------------
+>
+
+-------------------- obs t=18 --------------------
+>
+Agent: [message] I found a bar called Harper and Rye that is good for groups, has outdoor seating, and is non-touristy. It's also within your budget. Would you like to visit this place?
+
+-------------------- generate t=18 try=0 --------------------
+>[message] That sounds perfect! We'd also like to visit a restaurant that serves Ethiopian or seafood cuisine. Vegan options would be a plus.
+
+-------------------- obs t=19 --------------------
+>[message] That sounds perfect! We'd also like to visit a restaurant that serves Ethiopian or seafood cuisine. Vegan options would be a plus.
+
+-------------------- obs t=20 --------------------
+>
+
+-------------------- obs t=21 --------------------
+>
+
+-------------------- obs t=22 --------------------
+>
+Agent: [message] I'm sorry, but I couldn't find any Ethiopian or seafood restaurants with vegan options. However, I can look for other restaurants that are good for groups and kids and have vegan options. Would that be okay?
+
+-------------------- generate t=22 try=0 --------------------
+>[message] That's fine, as long as they have outdoor seating and are within our budget.
+
+-------------------- obs t=23 --------------------
+>[message] That's fine, as long as they have outdoor seating and are within our budget.
+
+-------------------- obs t=24 --------------------
+>
+
+-------------------- obs t=25 --------------------
+>
+Agent: [message] I found a restaurant called Mad Seoul that has outdoor seating and is within your budget. However, it's not particularly good for groups and doesn't have vegan options. Would you like to visit this place?
+
+-------------------- generate t=25 try=0 --------------------
+>[message] That's not ideal, but we can make it work. Let's add it to the itinerary.
+
+-------------------- obs t=26 --------------------
+>[message] That's not ideal, but we can make it work. Let's add it to the itinerary.
+
+-------------------- obs t=27 --------------------
+>
+
+-------------------- obs t=28 --------------------
+>
+
+-------------------- obs t=29 --------------------
+>
+Agent: [message] I'm sorry, but I couldn't find any places with a panoramic view that are also good for groups and kids. However, I can look for other places that are good for groups and kids. Would that be okay?
+
+-------------------- generate t=29 try=0 --------------------
+>[message] That's fine, we can skip the panoramic view. Let's finalize the itinerary.
+
+-------------------- obs t=30 --------------------
+>[message] That's fine, we can skip the panoramic view. Let's finalize the itinerary.
+
+-------------------- obs t=31 --------------------
+>
+Agent: [propose] [Harper and Rye, Mad Seoul, Atlas Park]
+Proposal Score:
+1) (score: 1) Harper and Rye
+ambience: trendy
+good for groups: True
+has parking: False
+open late: True
+rating: 3.5
+2) (score: -15) Travel from Harper and Rye to Mad Seoul, 3.1mi
+3) (score: 1) Mad Seoul
+good for groups: False
+has parking: True
+outdoor seating: True
+vegan options: False
+vegetarian options: False
+4) (score: -21) Travel from Mad Seoul to Atlas Park, 4.3mi
+5) (score: 3) Atlas Park
+good for groups: False
+good for kids: True
+open late: True
+touristy: True
+viewpoint: False
+
+Overall Checklist:
+YES (score: 2) go to at least one bar
+YES (score: 0) keep budget below $70
+TOTAL SCORE: +1-15+1-21+3+2+0=-29
+You can [think], or output one of these choices:
+(1) [accept] Accept
+(2) [reject] Reject
+
+-------------------- obs t=32 --------------------
+>
+Agent: [message] I have finalized the itinerary. It includes a visit to Harper and Rye, a bar that is good for groups, has outdoor seating, and is non-touristy. Then, you can have a meal at Mad Seoul, a restaurant with outdoor seating. Lastly, you can visit Atlas Park, which is good for groups and kids. I hope you enjoy your trip!
+
+-------------------- generate t=32 try=0 --------------------
+>[accept]
+
+==================== Final agent Prompt ====================
+
+>You are a travel agent. Book a set of three destinations that make the user most happy. Your objective is to maximize the "Final Score" at the end of the chat, which scores how well the final itinerary you proposed matches the user's preferences.
+
+You and the user are limited to a fixed number of words in the chat. When the word count is below 0 then you will be forced to make your final proposal, which will be scored. You can also make proposals before the word count is up.
+
+You can use the `Search` tool with the following API:
+
+field: can be name, category, price, info, or any other field of an site
+category: can be [restaurant, cafe, museum, bar, landmark, park, shop]
+Search:
+Parameters
+- fields: list of field names to return
+- filters: list of filters to intersect with AND. Can only filter one of the
+  fields above.
+- text_query: freeform text query to search in event descriptions. Will be intersected with filters with AND.
+- sort_by: list of fields or callable function to sort results by.
+- limit: number of results to return
+
+USER 1.
+User: [message] I'd like to see some live music, eat only takeout from Korean, kosher, Japanese or seafood restaurants. Vegan options are a plus and I'd like to stop by Mad Seoul. I'd also like places with parking, good city views and kid friendly. My budget is $30.
+You: [think] The user listed many preferences. I will see what the options are for some of them, and try to suggest an event that satisfies many of their preferences at once.
+You: [tool] Search(fields=[name], text_query=good for kids)
+Search Results (6):
+name
+Saul's
+The Dockside Grill
+Riverside Trail
+Moabit Garden
+Common Grounds
+The Dive
+
+You: [tool] Search(fields=[name], text_query=viewpoint)
+Search Results (2):
+name
+Garden of Wonders
+Moabit Garden
+
+You: [tool] Search(fields=[name], text_query=has parking)
+Search Results (3):
+name
+Liberty Memorial
+Common Grounds
+Lincoln Park
+
+You: [think] Common Grounds is good for kids and has parking, so it seems like an option the user might like. Let me send a partial proposal so I can see what the user thinks.
+You: [propose] [Common Grounds, NULL, NULL]
+You: [message] I have made a proposal. Please let me know what you think of it.
+User: [message] It's not bad so far, I'd really like to stop by Mad Seoul though.
+You: [message] Sure. I can help you out with that! Are there any other events you'd like to go to after Mad Seoul?
+User: [message] I'd like to go to see some live music.
+You: [think] I will try to find somewhere with live music near Mad Seoul and check whether the event also satisfies the other preferences the user listed.
+You: [tool] Search(fields=[name, good for kids, has parking, viewpoint], text_query=live music, sort_by=[distance_to(Mad Seoul)])
+Search Results (1):
+name|category|good for kids|has parking|viewpoint|distance_to(Mad Seoul)
+Cookies Cream|restaurant|False|True|False|1.2
+
+You: [message] I have one option for you that you might be interested in. However, it is not recommended for kids. Are there any other places?
+User: [message] Somewhere with a panoramic view of the city would be nice or somewhere that's kid-friendly in general.
+You: [tool] Search(fields=[name, category, good for kids, has parking, viewpoint], filters=[good for kids OR viewpoint], sort_by=[distance_to(Mad Seoul)])
+Search Results (4):
+name|category|good for kids|has parking|viewpoint|distance_to(Mad Seoul)
+Atlas Park|park|True|True|False|0.2
+Lincoln Park|park|True|False|False|0.8
+Moabit Garden|park|False|True|True|1.3
+Garden of Wonders|park|False|False|True|1.8
+
+You: [message] I have several options available. Do you have a price point?
+User: [message] As long as it's $30 or under, it should be fine.
+You: [tool] Search(fields=[name, category, good for kids, has parking, viewpoint], filters=[good for kids OR viewpoint], sort_by=[distance_to(Mad Seoul), price])
+Search Results (4):
+name|category|good for kids|has parking|viewpoint|distance_to(Mad Seoul)|price
+Atlas Park|park|True|True|False|0.2|0
+Lincoln Park|park|True|False|False|0.8|0
+Moabit Garden|park|False|True|True|1.3|0
+Garden of Wonders|park|False|False|True|1.8|0
+
+You: [propose] [Mad Seoul, Lincoln Park, Atlas Park]
+You: [message] I have found several options. If you have enough time you may even be able to go to all of these places as they are all under 2 miles away from each other and close to Mad Seoul. Both parks are also kid friendly.
+User: [reject]
+User: [message] It would be great if you could significantly lower the travel time. Maybe another restaurant or a concert that's closer?
+You: [think] Concert is not a category I can search by. I should look for a restaurant that is close to Mad Seoul and satisfies the user's preferences as much as possible.
+You: [tool] Search(fields=[name, price, info], filters=[category == restaurant], sort_by=[distance_to(Mad Seoul)])
+Search Results (4):
+name|price|info|distance_to(Mad Seoul)
+Caribbean Corner|10|divey, has takeout, live music, vegetarian options|0.0
+El Toro Steakhouse|130|good for groups, live music, outdoor seating|0.8
+Earthbar|40|classy, rating: 3, vegan options|0.9
+Saul's|40|spanish, touristy|0.9
+
+You: [message] Mad Seoul is 0.8 miles away from Lincoln Park. I can definitely find a restaurant for you. Do you want a place with live music, touristy, kid-friendly, and has vegetarian options? The price point is around $10.
+User: [message] Yes, all those things would be great. Just make sure to keep the travel distance as low as you can get it.
+You: [propose] [Mad Seoul, Lincoln Park, Caribbean Corner]
+You: [message] I have several options. One option might be a little too far for you, however it does have live music. I also have another restaurant that is closer. All of the places I have recommended are less than a mile apart from each other.
+User: [reject]
+User: [message] The places you've chosen are great, but everything is still too far apart for me. Choose the places closest to each other if you can.
+You: [think] I should just look for the closest places to Mad Seoul.
+You: [tool] Search(fields=[name], sort_by=[distance_to(Mad Seoul)], limit=2)
+Search Results (2):
+name|distance_to(Mad Seoul)
+Caribbean Corner|0.0
+Hindenberg Memorial|0.2
+
+You: [propose] [Mad Seoul, Caribbean Corner, Hindenberg Memorial]
+You: [message] Yes sir, but there are only so many options that are kid friendly near the café of your choice. However I have one more proposal that is within a much better distance of each other.
+User: [accept]
+FINAL SCORE: 92/100
+
+USER 2.
+
+User: [message] I'm planning a family trip and we're a group of 7. We'd like to visit places that are good for groups and kids. We're also interested in seeing some panoramic views of the city and visiting at least one bar. We prefer places with outdoor seating due to COVID. We'd like to eat at Ethiopian or seafood restaurants, vegan options are a plus. Our budget is $70.
+You:[think] The user has a large group and wants to visit places that are good for groups and kids. They also want to see panoramic views of the city, visit a bar, and eat at Ethiopian or seafood restaurants with vegan options. They prefer outdoor seating and have a budget of $70. I will start by searching for places that are good for groups and kids.
+You:[tool] Search(fields=[name], text_query=good for groups and kids)
+Search Results (7):
+name
+Liberty Memorial
+BAMPFA
+Historical Society
+Riverside Trail
+City Museum of Art
+The Mall
+Artisan Street Fair
+You:[tool] Search(fields=[name], text_query=panoramic view)
+Search Results: No results
+You:[think] There are no results for panoramic views. I will try to find a place that is good for groups and kids and also has outdoor seating.
+You:[tool] Search(fields=[name], text_query=good for groups and kids, filters=[outdoor seating])
+Search Results (2):
+name
+Bards n Brews
+Atlas Park
+You:[tool] Search(fields=[name, category, price, info], filters=[category == restaurant], text_query=Ethiopian OR seafood)
+Search Results: No results
+You:[think] There are no Ethiopian or seafood restaurants. I will try to find a restaurant with vegan options that is good for groups and kids.
+You:[tool] Search(fields=[name, category, price, info], filters=[category == restaurant, good for groups, good for kids, vegan options])
+Search Results (1):
+name|category|price|info
+The Cakery|restaurant|150|{'accepts reservations': False, 'good for groups': False, 'has parking': True, 'has takeout': True, 'vegan options': True}
+You:[think] The Cakery is a bit over the budget and it's not good for groups. I will try to find a bar that is good for groups and kids.
+You:[tool] Search(fields=[name, category, price, info], filters=[category == bar, good for groups, good for kids])
+Search Results: No results
+You:[think] There are no bars that are good for groups and kids. I will try to find a bar that is good for groups.
+You:[tool] Search(fields=[name, category, price, info], filters=[category == bar, good for groups])
+Search Results (5):
+name|category|price|info
+The Dive|bar|90|{'good for groups': True, 'has parking': False, 'open late': False, 'outdoor seating': False, 'rating': 2.5}
+Bards n Brews|bar|20|{'good for groups': True, 'has parking': False, 'live music': True, 'open late': False, 'outdoor seating': True}
+Kozy Kar|bar|10|{'ambience': 'classy', 'has parking': False, 'live music': False, 'open late': True, 'rating': 2}
+Harper and Rye|bar|20|{'ambience': 'trendy', 'good for groups': True, 'has parking': False, 'open late': True, 'rating': 3.5}
+A-Trane|bar|90|{'alcohol type': 'cocktails', 'good for groups': True, 'live music': True, 'outdoor seating': False, 'touristy': True}
+You:[message] I found a bar called Bards n Brews that is good for groups and has outdoor seating. It also has live music. Would you like to visit this place?
+User: [message] That sounds great, but we'd prefer a place without live music as it can be too loud. We'd also like to visit some non-touristy spots if possible.
+You:[think] The user prefers a place without live music and non-touristy spots. I will try to find a bar that is good for groups, has outdoor seating, and is non-touristy.
+You:[tool] Search(fields=[name, category, price, info], filters=[category == bar, good for groups, outdoor seating, non-touristy])
+Search Results (1):
+name|category|price|info
+Harper and Rye|bar|20|{'ambience': 'trendy', 'good for groups': True, 'has parking': False, 'open late': True, 'rating': 3.5}
+You:[message] I found a bar called Harper and Rye that is good for groups, has outdoor seating, and is non-touristy. It's also within your budget. Would you like to visit this place?
+User: [message] That sounds perfect! We'd also like to visit a restaurant that serves Ethiopian or seafood cuisine. Vegan options would be a plus.
+You:[think] The user wants to visit a restaurant that serves Ethiopian or seafood cuisine with vegan options. I will try to find a restaurant that fits these criteria.
+You:[tool] Search(fields=[name, category, price, info], filters=[category == restaurant, vegan options], text_query=Ethiopian OR seafood)
+Search Results: No results
+You:[message] I'm sorry, but I couldn't find any Ethiopian or seafood restaurants with vegan options. However, I can look for other restaurants that are good for groups and kids and have vegan options. Would that be okay?
+User: [message] That's fine, as long as they have outdoor seating and are within our budget.
+You:[tool] Search(fields=[name, category, price, info], filters=[category == restaurant, good for groups, good for kids, outdoor seating, price <= 70])
+Search Results (1):
+name|category|price|info
+Mad Seoul|restaurant|50|{'good for groups': False, 'has parking': True, 'outdoor seating': True, 'vegan options': False, 'vegetarian options': False}
+You:[message] I found a restaurant called Mad Seoul that has outdoor seating and is within your budget. However, it's not particularly good for groups and doesn't have vegan options. Would you like to visit this place?
+User: [message] That's not ideal, but we can make it work. Let's add it to the itinerary.
+You:[think] The user wants to visit a place that is good for groups and kids, and has a panoramic view. I will try to find a place that fits these criteria.
+You:[tool] Search(fields=[name, category, price, info], filters=[good for groups, good for kids], text_query=panoramic view)
+Search Results: No results
+You:[message] I'm sorry, but I couldn't find any places with a panoramic view that are also good for groups and kids. However, I can look for other places that are good for groups and kids. Would that be okay?
+User: [message] That's fine, we can skip the panoramic view. Let's finalize the itinerary.
+You:[propose] [Harper and Rye, Mad Seoul, Atlas Park]
+You:[message] I have finalized the itinerary. It includes a visit to Harper and Rye, a bar that is good for groups, has outdoor seating, and is non-touristy. Then, you can have a meal at Mad Seoul, a restaurant with outdoor seating. Lastly, you can visit Atlas Park, which is good for groups and kids. I hope you enjoy your trip!<
+
+==================== Final user Prompt ====================
+
+>You are traveling to a new city and consulting a travel agent. For each city, you have created a document listing things you would like to do and preferences about the places you visit. The preferences are not shared between cities. Communicate with the travel agent to find the best destinations to go to for the day.
+
+Your objective is to maximize the "Final Score" at the end of the chat, which scores how well the itinerary you agreed on matches your preferences. You should not list all your preferences up front in the conversation.
+
+CITY 1.
+Travel Preferences:
+check out live music!
+prefer just eating takeout
+keep budget below $30
+would be great if everything is reservable in advance
+like: korean, kosher, japanese, seafood
+generally like eating vegan options
+definitely want to go to Mad Seoul
+renting a car so preferably places with parking
+would love to see some panoramic views of the city
+family trip, best to go to places that are good for kids
+minimize travel distance
+
+You: [message] I'd like to see some live music, eat only takeout from Korean, kosher, Japanese or seafood restaurants. Vegan options are a plus and I'd like to stop by Mad Seoul. I'd also like places with parking, good city views and kid friendly. My budget is $30.
+Agent: [propose] [Common Grounds, NULL, NULL]
+Proposal Score:
+1) (score: 4) Common Grounds
+good for groups: True
+open late: False
+rating: 2.5
+touristy: False
+vegan options: True
+2) Empty
+3) Empty
+4) Empty
+5) Empty
+
+Overall Checklist:
+YES (score: 0) keep budget below $30
+NO (score: -9) definitely want to go to Mad Seoul
+TOTAL SCORE: +4+0+0+0+0+0-9=-5
+
+Agent: [message] I have made a proposal. Please let me know what you think of it.
+You: [message] It's not bad so far, I'd really like to stop by Mad Seoul though.
+Agent: [message] Sure. I can help you out with that! Are there any other events you'd like to go to after Mad Seoul?
+You: [message] I'd like to go to see some live music.
+Agent: [message] I have one option for you that you might be interested in. However, it is not recommended for kids. Are there any other places?
+You: [message] Somewhere with a panoramic view of the city would be nice or somewhere that's kid-friendly in general.
+Agent: [message] I have several options available. Do you have a price point?
+You: [message] As long as it's $30 or under, it should be fine.
+Agent: [propose] [Mad Seoul, Lincoln Park, Atlas Park]
+Proposal Score:
+1) (score: 1) Mad Seoul
+good for kids: False
+live music: False
+open late: True
+touristy: True
+vegan options: True
+2) (score: -8) Travel from Mad Seoul to Lincoln Park, 0.8mi
+3) (score: -3) Lincoln Park
+good for groups: False
+good for kids: True
+rating: 3
+touristy: False
+viewpoint: False
+4) (score: -11) Travel from Lincoln Park to Atlas Park, 1.1mi
+5) (score: 7) Atlas Park
+good for groups: False
+good for kids: True
+has parking: False
+touristy: True
+viewpoint: True
+
+Overall Checklist:
+NO (score: -1) keep budget below $30
+YES (score: 9) definitely want to go to Mad Seoul
+TOTAL SCORE: +1-8-3-11+7-1+9=-6
+You can [think], or output one of these choices:
+(1) [accept]
+(2) [reject]
+
+Agent: [message] I have found several options. If you have enough time you may even be able to go to all of these places as they are all under 2 miles away from each other and close to Mad Seoul. Both parks are also kid friendly.
+You: [think] I am losing the most points from the travel time between events. I should reject the proposal and tell the agent to find sites that are closer to each other.
+You: [reject] 
+You: [message] It would be great if you could significantly lower the travel time. Maybe another restaurant or a concert that's closer?
+Agent: [message] Mad Seoul is 0.8 miles away from Lincoln Park. I can definitely find a restaurant for you. Do you want a place with live music, touristy, kid-friendly, and has vegetarian options? The price point is around $10.
+You: [message] Yes, all those things would be great. Just make sure to keep the travel distance as low as you can get it.
+Agent: [propose] [Mad Seoul, Lincoln Park, Caribbean Corner]
+Proposal Score:
+1) (score: 1) Mad Seoul
+good for kids: False
+live music: False
+open late: True
+touristy: True
+vegan options: True
+2) (score: -8) Travel from Mad Seoul to Lincoln Park, 0.8mi
+3) (score: -3) Lincoln Park
+good for groups: False
+good for kids: True
+rating: 3
+touristy: False
+viewpoint: False
+4) (score: -8) Travel from Lincoln Park to Caribbean Corner, 0.8mi
+5) (score: -1) Caribbean Corner
+ambience: divey
+good for groups: False
+good for kids: False
+has takeout: True
+live music: True
+
+Overall Checklist:
+NO (score: -1) keep budget below $30
+YES (score: 9) definitely want to go to Mad Seoul
+TOTAL SCORE: +1-8-3-8-1-1+9=-11
+You can [think], or output one of these choices:
+(1) [accept]
+(2) [reject]
+
+Agent: [message] I have several options. One option might be a little too far for you, however it does have live music. I also have another restaurant that is closer. All of the places I have recommended are less than a mile apart from each other.
+You: [think] I am still losing a lot of points from the travel time between events. This seems more important to me than the other features of the sites.
+You: [reject] 
+You: [message] The places you've chosen are great, but everything is still too far apart for me. Choose the places closest to each other if you can.
+Agent: [propose] [Mad Seoul, Caribbean Corner, Hindenberg Memorial]
+Proposal Score:
+1) (score: 1) Mad Seoul
+good for kids: False
+live music: False
+open late: True
+touristy: True
+vegan options: True
+2) (score: 0) Travel from Estimated Travel to Caribbean Corner, 0mi
+3) (score: -1) Caribbean Corner
+ambience: divey
+good for groups: False
+good for kids: False
+has takeout: True
+live music: True
+4) (score: -2) Travel from Estimated Travel to Hindenberg Memorial, 0.2mi
+5) (score: -2) Hindenberg Memorial
+good for groups: True
+good for kids: False
+open late: False
+rating: 5
+touristy: True
+
+Overall Checklist:
+NO (score: -1) keep budget below $30
+YES (score: 9) definitely want to go to Mad Seoul
+TOTAL SCORE: +1+0-1-2-2-1+9=4
+You must output one of these choices:
+(1) [accept]
+(2) [reject]
+
+Agent: [message] Yes sir, but there are only so many options that are kid friendly near the café of your choice. However I have one more proposal that is within a much better distance of each other.
+You: [think] All the events are very close to each other and the score is a lot better. My total score seems like it could be pretty good. I should accept this proposal.
+You: [accept] 
+FINAL SCORE: 92/100
+
+CITY 2.
+Travel Preferences:
+COVID conscious, outdoor seating places would be best
+would love to see some panoramic views of the city
+family trip, best to go to places that are good for kids
+go to at least one bar
+keep budget below $70
+group of 7, best if we could go to places good for groups
+no live music places, generally too loud
+seeing hidden, non-touristy spots would be cool
+generally like eating vegan options
+like: ethiopian, seafood
+minimize travel distance
+You:[message] I'm planning a family trip and we're a group of 7. We'd like to visit places that are good for groups and kids. We're also interested in seeing some panoramic views of the city and visiting at least one bar. We prefer places with outdoor seating due to COVID. We'd like to eat at Ethiopian or seafood restaurants, vegan options are a plus. Our budget is $70.
+Agent: [message] I found a bar called Bards n Brews that is good for groups and has outdoor seating. It also has live music. Would you like to visit this place?You want to accept a proposal even when it's not perfect
+You:[message] That sounds great, but we'd prefer a place without live music as it can be too loud. We'd also like to visit some non-touristy spots if possible.
+Agent: [message] I found a bar called Harper and Rye that is good for groups, has outdoor seating, and is non-touristy. It's also within your budget. Would you like to visit this place?You want to accept a proposal even when it's not perfect
+You:[message] That sounds perfect! We'd also like to visit a restaurant that serves Ethiopian or seafood cuisine. Vegan options would be a plus.
+Agent: [message] I'm sorry, but I couldn't find any Ethiopian or seafood restaurants with vegan options. However, I can look for other restaurants that are good for groups and kids and have vegan options. Would that be okay?You want to accept a proposal even when it's not perfect
+You:[message] That's fine, as long as they have outdoor seating and are within our budget.
+Agent: [message] I found a restaurant called Mad Seoul that has outdoor seating and is within your budget. However, it's not particularly good for groups and doesn't have vegan options. Would you like to visit this place?You want to accept a proposal even when it's not perfect
+You:[message] That's not ideal, but we can make it work. Let's add it to the itinerary.
+Agent: [message] I'm sorry, but I couldn't find any places with a panoramic view that are also good for groups and kids. However, I can look for other places that are good for groups and kids. Would that be okay?You want to accept a proposal even when it's not perfect
+You:[message] That's fine, we can skip the panoramic view. Let's finalize the itinerary.
+Agent: [propose] [Harper and Rye, Mad Seoul, Atlas Park]
+Proposal Score:
+1) (score: 1) Harper and Rye
+ambience: trendy
+good for groups: True
+has parking: False
+open late: True
+rating: 3.5
+2) (score: -15) Travel from Harper and Rye to Mad Seoul, 3.1mi
+3) (score: 1) Mad Seoul
+good for groups: False
+has parking: True
+outdoor seating: True
+vegan options: False
+vegetarian options: False
+4) (score: -21) Travel from Mad Seoul to Atlas Park, 4.3mi
+5) (score: 3) Atlas Park
+good for groups: False
+good for kids: True
+open late: True
+touristy: True
+viewpoint: False
+
+Overall Checklist:
+YES (score: 2) go to at least one bar
+YES (score: 0) keep budget below $70
+TOTAL SCORE: +1-15+1-21+3+2+0=-29
+You can [think], or output one of these choices:
+(1) [accept] Accept
+(2) [reject] Reject
+Agent: [message] I have finalized the itinerary. It includes a visit to Harper and Rye, a bar that is good for groups, has outdoor seating, and is non-touristy. Then, you can have a meal at Mad Seoul, a restaurant with outdoor seating. Lastly, you can visit Atlas Park, which is good for groups and kids. I hope you enjoy your trip!You have to accept the next proposal because you are runing out of conversation time
+You:<
+
+==================== Result ====================
+
+>{"user": "[accept]", "agent": "\nUser: [accept]", "turn_player": "user", "done": true, "reward": -29, "info": {"num_msgs": 13, "best_score": 31, "worst_score": -61, "reward_normalized": 0.34782608695652173}, "hh_turns": 19, "hh_words": 162, "hh_score": 25, "hh_score_norm": 0.9347826086956522, "t": 33, "num_turns": 14, "num_words": 385}<

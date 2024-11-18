@@ -1,0 +1,44 @@
+To determine the total number of queries, the number of incorrect queries, and the number of correct queries, let's analyze each query step by step:
+
+1. **Query 1:**
+   - **Search:** `fields=[name, category, rating, outdoor seating, good for kids, not serious]`
+   - **Filters:** `rating > 3, outdoor seating == True, good for kids == True, not serious == True`
+   - **Result:** Saul's, Schwarzes Cafe, Riverside Trail
+   - **Correctness:** The query is correct. The results match the filters and fields specified.
+
+2. **Query 2:**
+   - **Search:** `fields=[name, category, viewpoint, landmark]`
+   - **Filters:** `viewpoint == True OR landmark == True`
+   - **Result:** Moabit Garden, Riverside Trail, Lincoln Park, Liberty Memorial, Hindenberg Memorial, Einstein's summer house
+   - **Correctness:** The query is correct. The results match the filters and fields specified.
+
+3. **Query 3:**
+   - **Search:** `fields=[name, category, rating]`
+   - **Filters:** `category == landmark, rating > 3`
+   - **Sort by:** `distance_to(City Museum of Art)`
+   - **Result:** Hindenberg Memorial
+   - **Correctness:** The query is correct. The result matches the filters and sorting criteria.
+
+4. **Query 4:**
+   - **Search:** `fields=[name]`
+   - **Sort by:** `distance_to(City Museum of Art)`
+   - **Limit:** `2`
+   - **Result:** City Museum of Art, The Jazz Spot
+   - **Correctness:** The query is correct. The results are sorted by distance and limited to 2.
+
+5. **Query 5:**
+   - **Search:** `fields=[name]`
+   - **Sort by:** `distance_to(City Museum of Art)`
+   - **Limit:** `2`
+   - **Result:** City Museum of Art, The Cupcake Bar
+   - **Correctness:** The query is correct. The results are sorted by distance and limited to 2.
+
+Now, let's summarize the findings:
+
+- Total number of queries: 5
+- Number of incorrect queries: 0
+- Number of correct queries: 5
+
+Therefore, the result is:
+
+[result]:: 5, 0, 5

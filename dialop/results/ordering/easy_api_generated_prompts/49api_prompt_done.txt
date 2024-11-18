@@ -1,0 +1,6 @@
+I care about vibe more than location.  
+I care about location less than rating.  
+I care about rating less than price.  
+I care about price more than vibe.  
+I care about vibe more than location.  
+I care about location less than rating.  

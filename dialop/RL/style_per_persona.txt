@@ -1,0 +1,102 @@
+{
+    "0": {
+        "Feedback Provider": 0.22,
+        "Decisive Planner": 0.91,
+        "Experience Enthusiast": 0.43
+    },
+    "1": {
+        "Cautious Decision-Maker": 0.52,
+        "Social Connector": 0.05,
+        "Decisive Planner": 0.77
+    },
+    "2": {
+        "Information Seeker": 0.03,
+        "Flexible Explorer": 0.49,
+        "Cautious Decision-Maker": 0.91
+    },
+    "3": {
+        "Feedback Provider": 0.45,
+        "Cautious Decision-Maker": 0.42,
+        "Decisive Planner": 0.31
+    },
+    "4": {
+        "Budget-Conscious Client": 1.0,
+        "Visual Learner": 0.57,
+        "Minimalist Communicator": 0.24
+    },
+    "5": {
+        "Experience Enthusiast": 0.21,
+        "Visual Learner": 0.23,
+        "Social Connector": 0.15
+    },
+    "6": {
+        "Budget-Conscious Client": 0.62,
+        "Visual Learner": 0.57,
+        "Decisive Planner": 0.92
+    },
+    "7": {
+        "Visual Learner": 0.73,
+        "Flexible Explorer": 0.35,
+        "Information Seeker": 0.72
+    },
+    "8": {
+        "Visual Learner": 0.28,
+        "Feedback Provider": 0.23,
+        "Information Seeker": 0.87
+    },
+    "9": {
+        "Minimalist Communicator": 0.62,
+        "Experience Enthusiast": 0.89,
+        "Detail-Oriented Client": 0.9
+    },
+    "10": {
+        "Flexible Explorer": 0.4,
+        "Experience Enthusiast": 0.45,
+        "Minimalist Communicator": 0.97
+    },
+    "11": {
+        "Feedback Provider": 0.33,
+        "Budget-Conscious Client": 0.16,
+        "Decisive Planner": 0.06
+    },
+    "12": {
+        "Experience Enthusiast": 0.34,
+        "Visual Learner": 0.67,
+        "Flexible Explorer": 0.15
+    },
+    "13": {
+        "Decisive Planner": 0.87,
+        "Visual Learner": 0.98,
+        "Cautious Decision-Maker": 0.04
+    },
+    "14": {
+        "Cautious Decision-Maker": 0.69,
+        "Social Connector": 0.62,
+        "Information Seeker": 0.34
+    },
+    "15": {
+        "Information Seeker": 0.9,
+        "Social Connector": 0.35,
+        "Detail-Oriented Client": 0.8
+    },
+    "16": {
+        "Feedback Provider": 0.31,
+        "Social Connector": 0.57,
+        "Budget-Conscious Client": 0.55
+    },
+    "17": {
+        "Feedback Provider": 0.17,
+        "Flexible Explorer": 0.14,
+        "Experience Enthusiast": 0.97
+    },
+    "18": {
+        "Minimalist Communicator": 0.48,
+        "Social Connector": 0.2,
+        "Information Seeker": 0.57
+    },
+    "19": {
+        "Experience Enthusiast": 0.19,
+        "Social Connector": 0.55,
+        "Minimalist Communicator": 0.76
+    }
+}

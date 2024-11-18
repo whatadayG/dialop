@@ -1,0 +1,32 @@
+To determine the total number of queries, the number of incorrect queries, and the number of correct queries, let's analyze each query step by step:
+
+1. **Query 1**: `Search(fields=[name], text_query=good for kids)`
+   - This query is correct. It searches for entries with "good for kids" in the name field.
+
+2. **Query 2**: `Search(fields=[name], text_query=viewpoint)`
+   - This query is correct. It searches for entries with "viewpoint" in the name field.
+
+3. **Query 3**: `Search(fields=[name], text_query=has parking)`
+   - This query is correct. It searches for entries with "has parking" in the name field.
+
+4. **Query 4**: `Search(fields=[name, info], filters=[category == restaurant], text_query="Korean, kosher, Japanese, seafood, vegan, takeout")`
+   - This query is incorrect. The text query is not properly structured for a search; it should be using filters for specific cuisines or features instead of a text query.
+
+5. **Query 5**: `Search(fields=[name, info], filters=[category == restaurant, good for kids == True], text_query="Korean, kosher, Japanese, seafood, vegan, takeout")`
+   - This query is incorrect. It attempts to find restaurants that are good for kids with specific cuisines or features, but the text query is not properly structured.
+
+6. **Query 6**: `Search(fields=[name, info], filters=[category != restaurant, good for kids == True, has parking == True, viewpoint == True])`
+   - This query is incorrect. The dataset shows that Atlas Park does not have parking, so the result is incorrect.
+
+7. **Query 7**: `Search(fields=[name, info], filters=[good for kids == True, has parking == True, viewpoint == True], sort_by=[distance_to(Mad Seoul)], limit=2)`
+   - This query is incorrect. The dataset shows that Atlas Park does not have parking, so the result is incorrect.
+
+Now, let's summarize the results:
+
+- Total number of queries: 7
+- Number of incorrect queries: 4 (Queries 4, 5, 6, and 7)
+- Number of correct queries: 3 (Queries 1, 2, and 3)
+
+Therefore, the result is:
+
+[result]:: 7, 4, 3

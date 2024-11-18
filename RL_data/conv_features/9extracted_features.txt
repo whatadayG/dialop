@@ -1,0 +1,1 @@
+{'cuisine': ['japanese', 'Unknown'], 'AtLeastOneEventType': ['cafe', 'Unknown'], 'WantToGo': ['BAMPFA', 'Unknown'], 'ambience': ['quiet', 'Unknown'], 'PriceBudgetPreference': ['$20 per person', 'Unknown']}

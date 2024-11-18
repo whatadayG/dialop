@@ -1,0 +1,41 @@
+To determine the total number of queries, the number of incorrect queries, and the number of correct queries, let's analyze each query step by step:
+
+1. **Query 1**: `Search(fields=[name], text_query=good for groups)`
+   - This query is correct. It searches for names with the text "good for groups" and returns relevant results.
+
+2. **Query 2**: `Search(fields=[name], text_query=has parking)`
+   - This query is correct. It searches for names with the text "has parking" and returns relevant results.
+
+3. **Query 3**: `Search(fields=[name, category], filters=[category == shop], text_query=good for groups)`
+   - This query is correct. It searches for names and categories where the category is "shop" and the text "good for groups" is present, returning relevant results.
+
+4. **Query 4**: `Search(fields=[name], text_query=wifi)`
+   - This query is correct. It searches for names with the text "wifi" and returns relevant results.
+
+5. **Query 5**: `Search(fields=[name], text_query=outdoor seating)`
+   - This query is correct. It searches for names with the text "outdoor seating" and returns relevant results.
+
+6. **Query 6**: `Search(fields=[name], text_query=takeout)`
+   - This query is correct. It searches for names with the text "takeout" and returns relevant results.
+
+7. **Query 7**: `Search(fields=[name, price], filters=[price <= 90])`
+   - This query is correct. It searches for names and prices where the price is less than or equal to 90, returning relevant results.
+
+8. **Query 8**: `Search(fields=[name, category, good for groups, has parking, outdoor seating], filters=[good for groups AND has parking AND outdoor seating], sort_by=[distance_to(Kozy Kar)], limit=3)`
+   - This query is incorrect. The results include entries that do not have all three features: "good for groups," "has parking," and "outdoor seating."
+
+9. **Query 9**: `Search(fields=[name, category, good for groups, has parking, outdoor seating, wifi], filters=[good for groups AND has parking AND outdoor seating AND wifi], sort_by=[distance_to(Kozy Kar)], limit=3)`
+   - This query is incorrect. The results include entries that do not have all four features: "good for groups," "has parking," "outdoor seating," and "wifi."
+
+10. **Query 10**: `Search(fields=[name, category, good for groups, has parking, outdoor seating, takeout], filters=[good for groups AND has parking AND outdoor seating AND takeout], sort_by=[distance_to(Kozy Kar)], limit=3)`
+    - This query is incorrect. The results include entries that do not have all four features: "good for groups," "has parking," "outdoor seating," and "takeout."
+
+Now, let's summarize the results:
+
+- Total number of queries: 10
+- Number of incorrect queries: 3 (Queries 8, 9, and 10)
+- Number of correct queries: 7
+
+Therefore, the result is:
+
+[result]:: 10, 3, 7

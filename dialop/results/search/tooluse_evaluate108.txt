@@ -1,0 +1,40 @@
+To determine the total number of queries, the number of incorrect queries, and the number of correct queries, let's analyze each query step by step:
+
+1. **Query 1**: `Search(fields=[name], text_query=kid friendly live music wifi)`
+   - The result is "The Cakery," which matches the criteria (good for kids, live music, has wifi). 
+   - **Correct**
+
+2. **Query 2**: `Search(fields=[name, price, info], filters=[category == restaurant, price <= 70], text_query=takeout vegetarian vegan)`
+   - No results found. The dataset confirms there are no restaurants with takeout, vegetarian, and vegan options under $70.
+   - **Correct**
+
+3. **Query 3**: `Search(fields=[name, price, info], filters=[category == restaurant, price <= 70], text_query=takeout vegetarian)`
+   - The result is "Earthbar," which does not match the price filter (price is $170).
+   - **Incorrect**
+
+4. **Query 4**: `Search(fields=[name, price, info], filters=[category == restaurant, price <= 70], text_query=takeout)`
+   - The result is "Saul's," which does not have takeout.
+   - **Incorrect**
+
+5. **Query 5**: `Search(fields=[name, price, info], filters=[category == restaurant, price <= 70], text_query=takeout)`
+   - The results include "The Cakery," "El Toro Steakhouse," and "Saul's." None of these have takeout.
+   - **Incorrect**
+
+6. **Query 6**: `Search(fields=[name], sort_by=[distance_to(The Dive)], limit=2)`
+   - The results are "The Dive" and "Taqueria y Mas," which are correctly sorted by distance.
+   - **Correct**
+
+7. **Query 7**: `Search(fields=[name], sort_by=[distance_to(The Jazz Spot)], limit=2)`
+   - The results are "The Jazz Spot" and "Asha Tea House," which are correctly sorted by distance.
+   - **Correct**
+
+8. **Query 8**: `Search(fields=[name], sort_by=[distance_to(The Dive)], limit=2)`
+   - The results are "The Dive" and "Taqueria y Mas," which are correctly sorted by distance.
+   - **Correct**
+
+Now, let's summarize the results:
+- Total number of queries: 8
+- Number of incorrect queries: 3 (Queries 3, 4, and 5)
+- Number of correct queries: 5 (Queries 1, 2, 6, 7, and 8)
+
+[result]:: 8, 3, 5

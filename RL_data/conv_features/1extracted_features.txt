@@ -1,0 +1,1 @@
+{'live music': ['like', 'High'], 'touristy': ['dislike', 'High'], 'good for groups': ['yes', 'Unknown'], 'has_parking': ['yes', 'Unknown'], 'has_takeout': ['yes', 'Unknown'], 'AtLeastOneEventType': ['cafe', 'Unknown'], 'PriceBudgetPreference': ['$60', 'Unknown'], 'WantToGo': ['The Dive', 'Unknown']}

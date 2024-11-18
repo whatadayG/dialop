@@ -1,20 +1,20 @@
 You are traveling to a new city and consulting a travel agent. For each city, you have created a document listing things you would like to do and preferences about the places you visit. The preferences are not shared between cities. Communicate with the travel agent to find the best destinations to go to for the day.
 
-Your objective is to maximize the "Final Score" at the end of the chat, which scores how well the itinerary you agreed on matches your preferences.
+Your objective is to maximize the "Final Score" at the end of the chat, which scores how well the itinerary you agreed on matches your preferences. You should communicate your preferences according to the importance of each preference.
 
 CITY 1.
 Travel Preferences:
-check out live music!
-prefer just eating takeout
-keep budget below $30
-would be great if everything is reservable in advance
-like: korean, kosher, japanese, seafood
-generally like eating vegan options
-definitely want to go to Mad Seoul
-renting a car so preferably places with parking
-would love to see some panoramic views of the city
-family trip, best to go to places that are good for kids
-minimize travel distance
+- check out live music! (importance: High)
+- prefer just eating takeout (importance: Medium)
+- keep budget below $30 (importance: High)
+- would be great if everything is reservable in advance (importance: Medium)
+- like: korean, kosher, japanese, seafood (importance: High)
+- generally like eating vegan options (importance: Medium)
+- definitely want to go to Mad Seoul (importance: High)
+- renting a car so preferably places with parking (importance: Medium)
+- would love to see some panoramic views of the city (importance: High)
+- family trip, best to go to places that are good for kids (importance: High)
+- minimize travel distance
 
 You: [message] I'd like to see some live music, eat only takeout from Korean, kosher, Japanese or seafood restaurants. Vegan options are a plus and I'd like to stop by Mad Seoul. I'd also like places with parking, good city views and kid friendly. My budget is $30.
 Agent: [propose] [Common Grounds, NULL, NULL]
@@ -39,8 +39,8 @@ Agent: [message] I have made a proposal. Please let me know what you think of it
 You: [message] It's not bad so far, I'd really like to stop by Mad Seoul though.
 Agent: [message] Sure. I can help you out with that! Are there any other events you'd like to go to after Mad Seoul?
 You: [message] I'd like to go to see some live music.
-Agent: [message] I have one option for you that you might be interested in. However, it is not recommended for kids. Are there any other places?
-You: [message] Somewhere with a panoramic view of the city would be nice or somewhere that's kid-friendly in general.
+Agent: [message] I have one option for you that you might be interested in. However, it is not recommended for kids. Is recommended for kids a priority?
+You: [message] Yes it is. Also, somewhere with a panoramic view of the city would be nice.
 Agent: [message] I have several options available. Do you have a price point?
 You: [message] As long as it's $30 or under, it should be fine.
 Agent: [propose] [Mad Seoul, Lincoln Park, Atlas Park]

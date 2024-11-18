@@ -1,0 +1,96 @@
+import gspread
+import re
+from google.oauth2.service_account import Credentials
+import pdb
+import json
+import openai
+from openai import OpenAI
+import ast
+import pathlib
+from envs import (
+    PlanningEnv,
+    OptimizationEnv,
+    MediationEnv,
+    WordLimit,
+    ForceProposal,
+    AsymmetricForceProposal
+)
+
+try:
+    with open(pathlib.Path(__file__).parent / ".api_key") as f:
+        
+        x = json.load(f)
+        
+        client = OpenAI(api_key=x["api_key"], organization = x["organization"])
+        #pdb.set_trace()
+
+
+        # TODO: The 'openai.organization' option isn't read in the client API. You will need to pass it when you instantiate the client, e.g. 'OpenAI(organization=x["organization"])'
+        
+        
+    print("Loaded .api_key")
+except Exception as e:
+    #openai.api_key = os.getenv("OPENAI_API_KEY")
+    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+    print(e)
+
+if not client.api_key:
+    print("Warning: no OpenAI API key loaded.")
+
+
+SERVICE_ACCOUNT_FILE = '/Users/georgiazhou/research_machine/dialop/dialop-8759580d9f40.json'
+SCOPE = ["https://spreadsheets.google.com/feeds", 
+         "https://www.googleapis.com/auth/drive"]
+credentials = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPE)
+paper = gspread.authorize(credentials)
+spreadsheet = paper.open('Dialop-GPT4-Planning')
+
+
+def generate_rollouts(context, action, num_rollouts=3):
+    rollouts = []
+    for _ in range(num_rollouts):
+        response = openai.ChatCompletion.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": f"{context}\n\nAction: {action}\n\nWhat happens next?"}
+            ],
+            temperature=0.5  # Adjust to add variability
+        )
+        rollouts.append(response.choices[0].message['content'])
+    return rollouts
+
+
+
+def Agent_tell(string): 
+    prompt = {'role': 'user', 'content': string,}      
+    model_kwargs = dict(
+            
+            model='gpt-4o',
+            temperature=0.1,
+            top_p=.95,
+            frequency_penalty=0,
+            presence_penalty=0,
+            messages = [prompt]
+        )
+
+    #kwargs.update(**self.model_kwargs)
+        # 'message' key added for new openai API; role is the role of the mssage
+    #pdb.set_trace()
+    response = client.chat.completions.create(**model_kwargs)
+    return response.choices[0].message.content
+
+def rollout_test():
+    context = "The user has asked for options to handle a delicate negotiation."
+    actions = ["Propose a compromise", "Take a firm stance", "Ask for more information"]
+
+    all_rollouts = {}
+    for action in actions:
+        all_rollouts[action] = generate_rollouts(context, action)
+
+    # Example of output structure
+    for action, rollouts in all_rollouts.items():
+        print(f"Action: {action}")
+        for i, outcome in enumerate(rollouts):
+            print(f"Outcome {i+1}: {outcome}\n")
+

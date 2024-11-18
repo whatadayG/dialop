@@ -1,0 +1,39 @@
+To determine the total number of queries, the number of incorrect queries, and the number of correct queries, let's analyze each query step by step:
+
+1. **Query 1:**
+   - **Search:** `fields=[name, category], filters=[category == museum], sort_by=[rating], limit=2`
+   - **Expected Result:** Museums sorted by rating.
+   - **Actual Result:** 
+     - Historical Society (rating: 4.5)
+     - City Museum of Art (rating: 3)
+   - **Correctness:** Correct. The query correctly filters museums and sorts them by rating.
+
+2. **Query 2:**
+   - **Search:** `fields=[name, category, info], filters=[category == restaurant, info contains Chinese OR Ethiopian], sort_by=[rating], limit=2`
+   - **Expected Result:** Restaurants with Chinese or Ethiopian cuisine.
+   - **Actual Result:** 
+     - El Toro Steakhouse (cuisine: Japanese)
+     - Taqueria y Mas (no mention of Chinese or Ethiopian)
+   - **Correctness:** Incorrect. The query results do not match the filter criteria of Chinese or Ethiopian cuisine.
+
+3. **Query 3:**
+   - **Search:** `fields=[name, category, info], filters=[category == restaurant, info contains Chinese OR Ethiopian AND vegan], sort_by=[rating], limit=2`
+   - **Expected Result:** Restaurants with Chinese or Ethiopian cuisine and vegan options.
+   - **Actual Result:** 
+     - Mad Seoul (vegan options: True)
+     - The Dockside Grill (vegan options: True)
+   - **Correctness:** Incorrect. The query results do not match the filter criteria of Chinese or Ethiopian cuisine.
+
+4. **Query 4:**
+   - **Search:** `fields=[name, category, info], filters=[info contains wifi], sort_by=[rating], limit=1`
+   - **Expected Result:** Places with wifi.
+   - **Actual Result:** 
+     - Coffee Nook (has wifi: True)
+   - **Correctness:** Correct. The query correctly filters for places with wifi.
+
+**Summary:**
+- Total number of queries: 4
+- Number of incorrect queries: 2 (Queries 2 and 3)
+- Number of correct queries: 2 (Queries 1 and 4)
+
+[result]:: 4, 2, 2

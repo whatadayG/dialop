@@ -1,0 +1,1 @@
+{'touristy': ['like', 'High'], 'has wifi': ['like', 'High'], 'PriceBudgetPreference': ['$90', 'Unknown'], 'viewpoint': [None, 'Unknown']}

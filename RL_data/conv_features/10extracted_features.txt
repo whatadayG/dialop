@@ -1,0 +1,1 @@
+{'AtLeastOneEventType': ['museum', 'Unknown'], 'good for kids': ['like', 'Unknown'], 'cuisine': ['Chinese', 'Unknown'], 'vegetarian options': ['like', 'Unknown'], 'live music': ['dislike', 'Unknown'], 'DistancePreference': ['minimize travel distance', 'Unknown'], 'PriceBudgetPreference': ['reasonably priced', 'Unknown']}

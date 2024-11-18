@@ -1,0 +1,41 @@
+To determine the total number of queries, the number of incorrect queries, and the number of correct queries, let's analyze each query step by step:
+
+1. **Query 1**: 
+   - Filters: category == restaurant, info == outdoor seating, info == vegetarian options
+   - Text query: "Korean, Chinese, Japanese, seafood, Thai, Spanish, kosher"
+   - Results: The Dockside Grill (Chinese, vegetarian options), The Cakery (Thai, outdoor seating)
+   - **Correct**: The Dockside Grill matches the filters and text query. The Cakery matches the filters but has a rating of 1, which is not specified in the query, so it's not incorrect.
+
+2. **Query 2**: 
+   - Filters: category == museum
+   - Results: City Museum of Art, Historical Society, BAMPFA
+   - **Correct**: All results are museums.
+
+3. **Query 3**: 
+   - Text query: "hidden, non-touristy"
+   - Results: The Arboretum (non-touristy), Caribbean Corner (non-touristy)
+   - **Correct**: Both results match the text query for non-touristy.
+
+4. **Query 4**: 
+   - Filters: category == restaurant, info == outdoor seating, info == vegetarian options, rating >= 4
+   - Text query: "Korean, Chinese, Japanese, seafood, Thai, Spanish, kosher"
+   - Results: The Dockside Grill (Chinese, vegetarian options)
+   - **Incorrect**: The Cakery is included but has a rating of 1, which does not meet the rating >= 4 filter.
+
+5. **Query 5**: 
+   - Filters: category == museum, rating >= 4
+   - Results: City Museum of Art, Historical Society
+   - **Correct**: Both results are museums with a rating >= 4.
+
+6. **Query 6**: 
+   - Filters: rating >= 4
+   - Text query: "hidden, non-touristy"
+   - Results: The Arboretum (non-touristy, rating 1.5), The Tower (rating 4.5), Atlas Park (rating 5), Garden of Wonders (rating 5), Caribbean Corner (rating 4)
+   - **Incorrect**: The Arboretum is included but has a rating of 1.5, which does not meet the rating >= 4 filter.
+
+Now, let's summarize the results:
+- Total number of queries: 6
+- Number of incorrect queries: 2 (Query 4 and Query 6)
+- Number of correct queries: 4
+
+[result]:: 6, 2, 4

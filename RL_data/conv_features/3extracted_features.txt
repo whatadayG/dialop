@@ -1,0 +1,1 @@
+{'WantToGo': ['Earthbar', 'Unknown'], 'viewpoint': ['panoramic view of the city', 'Unknown'], 'alcohol type': ['cocktails', 'Unknown'], 'live music': ['dislike', 'Unknown'], 'DistancePreference': ['minimum travel distance', 'Unknown']}

@@ -23,12 +23,17 @@ class Conversation:
         self.state = None
         self.history = []
         self.parent_conv = parent_conv
+        self.son_convs = []
+        self.propose_made = False
+
         
-    def step(self, response: str, t: int) -> ConversationState:
+    def step(self, response: str, t: int, propose = False) -> ConversationState:
         """Take a step in the conversation"""
-        obss, resample, features, ready = self.env.step(response, t >= (self.max_length-5))
+        obss, resample, features, ready = self.env.step(response, t >= (self.max_length-5), propose = propose)
         
         #print(obss)
+        if '[propose]' in obss.get('agent', ''):
+            self.propose_made = True
         
         self.state = ConversationState(
             obss=obss,
@@ -112,10 +117,10 @@ class ParallelConversations:
         self.max_length = max_length
     
     
-    def create_pair_new_players(self, current_players, multiple_user_personas_incomplete: Optional[List[str]] = None):
+    def create_pair_new_players(self, current_players, user_personas_incomplete_prompt: Optional[List[str]] = None, strategy = None):
         agent = current_players['agent']
         user = current_players['user']
-        if not multiple_user_personas_incomplete:
+        if not user_personas_incomplete_prompt:
             players = {"agent": LLMPlayer(agent.prompt, agent.role, agent.console,
                                      optional=agent.optional,
                                      model_kwargs={"temperature": 0.8}),
@@ -125,29 +130,34 @@ class ParallelConversations:
         else: 
             with open('/Users/georgiazhou/research_machine/dialop/dialop/prompts/planning_user.txt', 'r') as f:
                 base_prompt = f.read()
-            players = {}
-            for i, halfprompt in enumerate(multiple_user_personas_incomplete):
-                prompt = base_prompt + halfprompt
-                players[f'pair_{i}'] = {"agent": LLMPlayer(agent.prompt, agent.role, agent.console,
+            prompt = base_prompt + user_personas_incomplete_prompt
+            players = {"agent": LLMPlayer(agent.prompt, agent.role, agent.console,
                                      optional=agent.optional,
                                      model_kwargs={"temperature": 0.8}),
                                      "user" : LLMPlayer(prompt, user.role, user.console,
                                     optional=user.optional,
                                     model_kwargs={"temperature": 0.8})}
+        
+        if strategy:
+            players['agent'].strategy = strategy
+        elif agent.strategy:
+            players['agent'].strategy = agent.strategy
+            
         return players
-    def initialize_streams(self, initial_responses: List[str], t: int): # 3 different agent responses 
+    def initialize_streams(self, initial_responses: List[str], strategy_response_list: List[str], t: int): # 3 different agent responses 
         """Initialize parallel conversations with different responses"""
         self.conversations = []
         #self.code_names = {}
         self.envs = {}
         self.players_dict = {}
         for i, resp in enumerate(initial_responses):
-            players = self.create_pair_new_players(self.c_players)
+            players = self.create_pair_new_players(self.c_players, strategy = strategy_response_list[i])
             
             self.players_dict[i] = players
             env_copy = copy.deepcopy(self.env)
             self.envs[i] = env_copy
             conv = Conversation(players, env_copy, self.max_length)
+            
             conv.step(resp, t)
             [player.observe(conv.state.obss[pname]) for pname, player in players.items()]
             print(conv.state.obss)

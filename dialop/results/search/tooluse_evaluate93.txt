@@ -1,0 +1,32 @@
+To determine the total number of queries, the number of incorrect queries, and the number of correct queries, let's analyze each query step by step:
+
+1. **Query 1**: `Search(fields=[name, category, good for kids, has wifi], text_query=wine and cocktails, filters=[category == bar])`
+   - This query is searching for bars with "wine and cocktails" in the text query. The dataset contains bars, but the text query "wine and cocktails" does not match any specific entry in the dataset. However, the search results show bars that serve wine, which is relevant. 
+   - **Correct**: Yes, because it returned relevant bars.
+
+2. **Query 2**: `Search(fields=[name, category, good for kids, has wifi], text_query=vegan, filters=[category == restaurant])`
+   - This query is searching for restaurants with "vegan" in the text query. The dataset does not have any restaurants with vegan options, but it returned a cafe instead.
+   - **Correct**: No, because it returned a cafe instead of a restaurant.
+
+3. **Query 3**: `Search(fields=[name, category, good for kids, has wifi], text_query=city view)`
+   - This query is searching for places with "city view" in the text query. The dataset does not have a specific "city view" field, but it returned parks with viewpoints, which is relevant.
+   - **Correct**: Yes, because it returned relevant parks with viewpoints.
+
+4. **Query 4**: `Search(fields=[name], sort_by=[distance_to(Artisan Street Fair)], limit=2)`
+   - This query is sorting by distance to "Artisan Street Fair" and limiting the results to 2. The results are correct based on the dataset.
+   - **Correct**: Yes, because it returned the correct closest places.
+
+5. **Query 5**: `Search(fields=[name], sort_by=[distance_to(Saul's)], limit=2)`
+   - This query is sorting by distance to "Saul's" and limiting the results to 2. The results are correct based on the dataset.
+   - **Correct**: Yes, because it returned the correct closest places.
+
+6. **Query 6**: `Search(fields=[name], sort_by=[distance_to(Artisan Street Fair)], limit=3)`
+   - This query is sorting by distance to "Artisan Street Fair" and limiting the results to 3. The results are correct based on the dataset.
+   - **Correct**: Yes, because it returned the correct closest places.
+
+Now, let's summarize the results:
+- Total number of queries: 6
+- Number of incorrect queries: 1 (Query 2)
+- Number of correct queries: 5
+
+Therefore, the result is: [result]:: 6, 1, 5.

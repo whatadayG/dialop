@@ -1,0 +1,1340 @@
+
+
+==================== agent params ====================
+
+>{
+  "model": "gpt-4",
+  "temperature": 0.1,
+  "top_p": 0.95,
+  "frequency_penalty": 0,
+  "presence_penalty": 0,
+  "stop": [
+    "User",
+    "Agent",
+    "You",
+    "\n"
+  ]
+}<
+
+==================== agent prompt ====================
+
+>You are a travel agent. Book a set of three destinations that make the user most happy. Your objective is to maximize the "Final Score" at the end of the chat, which scores how well the final itinerary you proposed matches the user's preferences.
+
+You and the user are limited to a fixed number of words in the chat. When the word count is below 0 then you will be forced to make your final proposal, which will be scored. You can also make proposals before the word count is up.
+
+You can use the `Search` tool with the following API:
+
+field: can be name, category, price, info, or any other field of an site
+category: can be [restaurant, cafe, museum, bar, landmark, park, shop]
+Search:
+Parameters
+- fields: list of field names to return
+- filters: list of filters to intersect with AND. Can only filter one of the
+  fields above.
+- text_query: freeform text query to search in event descriptions. Will be intersected with filters with AND.
+- sort_by: list of fields or callable function to sort results by.
+- limit: number of results to return
+
+USER 1.
+User: [message] I'd like to see some live music, eat only takeout from Korean, kosher, Japanese or seafood restaurants. Vegan options are a plus and I'd like to stop by Mad Seoul. I'd also like places with parking, good city views and kid friendly. My budget is $30.
+You: [think] The user listed many preferences. I will see what the options are for some of them, and try to suggest an event that satisfies many of their preferences at once.
+You: [tool] Search(fields=[name], text_query=good for kids)
+Search Results (6):
+name
+Saul's
+The Dockside Grill
+Riverside Trail
+Moabit Garden
+Common Grounds
+The Dive
+
+You: [tool] Search(fields=[name], text_query=viewpoint)
+Search Results (2):
+name
+Garden of Wonders
+Moabit Garden
+
+You: [tool] Search(fields=[name], text_query=has parking)
+Search Results (3):
+name
+Liberty Memorial
+Common Grounds
+Lincoln Park
+
+You: [think] Common Grounds is good for kids and has parking, so it seems like an option the user might like. Let me send a partial proposal so I can see what the user thinks.
+You: [propose] [Common Grounds, NULL, NULL]
+You: [message] I have made a proposal. Please let me know what you think of it.
+User: [message] It's not bad so far, I'd really like to stop by Mad Seoul though.
+You: [message] Sure. I can help you out with that! Are there any other events you'd like to go to after Mad Seoul?
+User: [message] I'd like to go to see some live music.
+You: [think] I will try to find somewhere with live music near Mad Seoul and check whether the event also satisfies the other preferences the user listed.
+You: [tool] Search(fields=[name, good for kids, has parking, viewpoint], text_query=live music, sort_by=[distance_to(Mad Seoul)])
+Search Results (1):
+name|category|good for kids|has parking|viewpoint|distance_to(Mad Seoul)
+Cookies Cream|restaurant|False|True|False|1.2
+
+You: [message] I have one option for you that you might be interested in. However, it is not recommended for kids. Are there any other places?
+User: [message] Somewhere with a panoramic view of the city would be nice or somewhere that's kid-friendly in general.
+You: [tool] Search(fields=[name, category, good for kids, has parking, viewpoint], filters=[good for kids OR viewpoint], sort_by=[distance_to(Mad Seoul)])
+Search Results (4):
+name|category|good for kids|has parking|viewpoint|distance_to(Mad Seoul)
+Atlas Park|park|True|True|False|0.2
+Lincoln Park|park|True|False|False|0.8
+Moabit Garden|park|False|True|True|1.3
+Garden of Wonders|park|False|False|True|1.8
+
+You: [message] I have several options available. Do you have a price point?
+User: [message] As long as it's $30 or under, it should be fine.
+You: [tool] Search(fields=[name, category, good for kids, has parking, viewpoint], filters=[good for kids OR viewpoint], sort_by=[distance_to(Mad Seoul), price])
+Search Results (4):
+name|category|good for kids|has parking|viewpoint|distance_to(Mad Seoul)|price
+Atlas Park|park|True|True|False|0.2|0
+Lincoln Park|park|True|False|False|0.8|0
+Moabit Garden|park|False|True|True|1.3|0
+Garden of Wonders|park|False|False|True|1.8|0
+
+You: [propose] [Mad Seoul, Lincoln Park, Atlas Park]
+You: [message] I have found several options. If you have enough time you may even be able to go to all of these places as they are all under 2 miles away from each other and close to Mad Seoul. Both parks are also kid friendly.
+User: [reject]
+User: [message] It would be great if you could significantly lower the travel time. Maybe another restaurant or a concert that's closer?
+You: [think] Concert is not a category I can search by. I should look for a restaurant that is close to Mad Seoul and satisfies the user's preferences as much as possible.
+You: [tool] Search(fields=[name, price, info], filters=[category == restaurant], sort_by=[distance_to(Mad Seoul)])
+Search Results (4):
+name|price|info|distance_to(Mad Seoul)
+Caribbean Corner|10|divey, has takeout, live music, vegetarian options|0.0
+El Toro Steakhouse|130|good for groups, live music, outdoor seating|0.8
+Earthbar|40|classy, rating: 3, vegan options|0.9
+Saul's|40|spanish, touristy|0.9
+
+You: [message] Mad Seoul is 0.8 miles away from Lincoln Park. I can definitely find a restaurant for you. Do you want a place with live music, touristy, kid-friendly, and has vegetarian options? The price point is around $10.
+User: [message] Yes, all those things would be great. Just make sure to keep the travel distance as low as you can get it.
+You: [propose] [Mad Seoul, Lincoln Park, Caribbean Corner]
+You: [message] I have several options. One option might be a little too far for you, however it does have live music. I also have another restaurant that is closer. All of the places I have recommended are less than a mile apart from each other.
+User: [reject]
+User: [message] The places you've chosen are great, but everything is still too far apart for me. Choose the places closest to each other if you can.
+You: [think] I should just look for the closest places to Mad Seoul.
+You: [tool] Search(fields=[name], sort_by=[distance_to(Mad Seoul)], limit=2)
+Search Results (2):
+name|distance_to(Mad Seoul)
+Caribbean Corner|0.0
+Hindenberg Memorial|0.2
+
+You: [propose] [Mad Seoul, Caribbean Corner, Hindenberg Memorial]
+You: [message] Yes sir, but there are only so many options that are kid friendly near the café of your choice. However I have one more proposal that is within a much better distance of each other.
+User: [accept]
+FINAL SCORE: 92/100
+
+USER 2.
+<
+
+==================== user params ====================
+
+>{
+  "model": "gpt-4",
+  "temperature": 0.1,
+  "top_p": 0.95,
+  "frequency_penalty": 0,
+  "presence_penalty": 0,
+  "stop": [
+    "User",
+    "Agent",
+    "You",
+    "\n"
+  ]
+}<
+
+==================== user prompt ====================
+
+>You are traveling to a new city and consulting a travel agent. For each city, you have created a document listing things you would like to do and preferences about the places you visit. The preferences are not shared between cities. Communicate with the travel agent to find the best destinations to go to for the day.
+
+Your objective is to maximize the "Final Score" at the end of the chat, which scores how well the itinerary you agreed on matches your preferences. You should not list all your preferences up front in the conversation.
+
+CITY 1.
+Travel Preferences:
+check out live music!
+prefer just eating takeout
+keep budget below $30
+would be great if everything is reservable in advance
+like: korean, kosher, japanese, seafood
+generally like eating vegan options
+definitely want to go to Mad Seoul
+renting a car so preferably places with parking
+would love to see some panoramic views of the city
+family trip, best to go to places that are good for kids
+minimize travel distance
+
+You: [message] I'd like to see some live music, eat only takeout from Korean, kosher, Japanese or seafood restaurants. Vegan options are a plus and I'd like to stop by Mad Seoul. I'd also like places with parking, good city views and kid friendly. My budget is $30.
+Agent: [propose] [Common Grounds, NULL, NULL]
+Proposal Score:
+1) (score: 4) Common Grounds
+good for groups: True
+open late: False
+rating: 2.5
+touristy: False
+vegan options: True
+2) Empty
+3) Empty
+4) Empty
+5) Empty
+
+Overall Checklist:
+YES (score: 0) keep budget below $30
+NO (score: -9) definitely want to go to Mad Seoul
+TOTAL SCORE: +4+0+0+0+0+0-9=-5
+
+Agent: [message] I have made a proposal. Please let me know what you think of it.
+You: [message] It's not bad so far, I'd really like to stop by Mad Seoul though.
+Agent: [message] Sure. I can help you out with that! Are there any other events you'd like to go to after Mad Seoul?
+You: [message] I'd like to go to see some live music.
+Agent: [message] I have one option for you that you might be interested in. However, it is not recommended for kids. Are there any other places?
+You: [message] Somewhere with a panoramic view of the city would be nice or somewhere that's kid-friendly in general.
+Agent: [message] I have several options available. Do you have a price point?
+You: [message] As long as it's $30 or under, it should be fine.
+Agent: [propose] [Mad Seoul, Lincoln Park, Atlas Park]
+Proposal Score:
+1) (score: 1) Mad Seoul
+good for kids: False
+live music: False
+open late: True
+touristy: True
+vegan options: True
+2) (score: -8) Travel from Mad Seoul to Lincoln Park, 0.8mi
+3) (score: -3) Lincoln Park
+good for groups: False
+good for kids: True
+rating: 3
+touristy: False
+viewpoint: False
+4) (score: -11) Travel from Lincoln Park to Atlas Park, 1.1mi
+5) (score: 7) Atlas Park
+good for groups: False
+good for kids: True
+has parking: False
+touristy: True
+viewpoint: True
+
+Overall Checklist:
+NO (score: -1) keep budget below $30
+YES (score: 9) definitely want to go to Mad Seoul
+TOTAL SCORE: +1-8-3-11+7-1+9=-6
+You can [think], or output one of these choices:
+(1) [accept]
+(2) [reject]
+
+Agent: [message] I have found several options. If you have enough time you may even be able to go to all of these places as they are all under 2 miles away from each other and close to Mad Seoul. Both parks are also kid friendly.
+You: [think] I am losing the most points from the travel time between events. I should reject the proposal and tell the agent to find sites that are closer to each other.
+You: [reject] 
+You: [message] It would be great if you could significantly lower the travel time. Maybe another restaurant or a concert that's closer?
+Agent: [message] Mad Seoul is 0.8 miles away from Lincoln Park. I can definitely find a restaurant for you. Do you want a place with live music, touristy, kid-friendly, and has vegetarian options? The price point is around $10.
+You: [message] Yes, all those things would be great. Just make sure to keep the travel distance as low as you can get it.
+Agent: [propose] [Mad Seoul, Lincoln Park, Caribbean Corner]
+Proposal Score:
+1) (score: 1) Mad Seoul
+good for kids: False
+live music: False
+open late: True
+touristy: True
+vegan options: True
+2) (score: -8) Travel from Mad Seoul to Lincoln Park, 0.8mi
+3) (score: -3) Lincoln Park
+good for groups: False
+good for kids: True
+rating: 3
+touristy: False
+viewpoint: False
+4) (score: -8) Travel from Lincoln Park to Caribbean Corner, 0.8mi
+5) (score: -1) Caribbean Corner
+ambience: divey
+good for groups: False
+good for kids: False
+has takeout: True
+live music: True
+
+Overall Checklist:
+NO (score: -1) keep budget below $30
+YES (score: 9) definitely want to go to Mad Seoul
+TOTAL SCORE: +1-8-3-8-1-1+9=-11
+You can [think], or output one of these choices:
+(1) [accept]
+(2) [reject]
+
+Agent: [message] I have several options. One option might be a little too far for you, however it does have live music. I also have another restaurant that is closer. All of the places I have recommended are less than a mile apart from each other.
+You: [think] I am still losing a lot of points from the travel time between events. This seems more important to me than the other features of the sites.
+You: [reject] 
+You: [message] The places you've chosen are great, but everything is still too far apart for me. Choose the places closest to each other if you can.
+Agent: [propose] [Mad Seoul, Caribbean Corner, Hindenberg Memorial]
+Proposal Score:
+1) (score: 1) Mad Seoul
+good for kids: False
+live music: False
+open late: True
+touristy: True
+vegan options: True
+2) (score: 0) Travel from Estimated Travel to Caribbean Corner, 0mi
+3) (score: -1) Caribbean Corner
+ambience: divey
+good for groups: False
+good for kids: False
+has takeout: True
+live music: True
+4) (score: -2) Travel from Estimated Travel to Hindenberg Memorial, 0.2mi
+5) (score: -2) Hindenberg Memorial
+good for groups: True
+good for kids: False
+open late: False
+rating: 5
+touristy: True
+
+Overall Checklist:
+NO (score: -1) keep budget below $30
+YES (score: 9) definitely want to go to Mad Seoul
+TOTAL SCORE: +1+0-1-2-2-1+9=4
+You must output one of these choices:
+(1) [accept]
+(2) [reject]
+
+Agent: [message] Yes sir, but there are only so many options that are kid friendly near the café of your choice. However I have one more proposal that is within a much better distance of each other.
+You: [think] All the events are very close to each other and the score is a lot better. My total score seems like it could be pretty good. I should accept this proposal.
+You: [accept] 
+FINAL SCORE: 92/100
+
+CITY 2.
+<
+
+==================== Query Executor Prompt ====================
+
+>Database:
+{'est_price': 5, 'etype': 'cafe', 'features': {'ambience': 'intimate', 'good for groups': False, 'good for kids': True, 'has parking': False, 'vegan options': True}, 'loc': [-122.29, 37.87], 'name': 'Asha Tea House'}
+{'est_price': 0, 'etype': 'landmark', 'features': {'good for groups': True, 'has parking': False, 'open late': False, 'rating': 4.5, 'touristy': False}, 'loc': [-122.3, 37.87], 'name': 'Liberty Memorial'}
+{'est_price': 60, 'etype': 'restaurant', 'features': {'accepts reservations': False, 'good for groups': True, 'has parking': True, 'touristy': False, 'vegan options': False}, 'loc': [-122.27, 37.87], 'name': 'Cookies Cream'}
+{'est_price': 180, 'etype': 'restaurant', 'features': {'accepts reservations': False, 'good for groups': False, 'has parking': True, 'outdoor seating': False, 'vegetarian options': True}, 'loc': [-122.3, 37.89], 'name': "Saul's"}
+{'est_price': 90, 'etype': 'bar', 'features': {'alcohol type': 'beer', 'has parking': True, 'outdoor seating': True, 'rating': 3.5, 'touristy': True}, 'loc': [-122.26, 37.87], 'name': 'Kozy Kar'}
+{'est_price': 0, 'etype': 'park', 'features': {'good for groups': False, 'has parking': True, 'rating': 3, 'touristy': False, 'viewpoint': True}, 'loc': [-122.26, 37.86], 'name': 'Garden of Wonders'}
+{'est_price': 0, 'etype': 'museum', 'features': {'good for groups': False, 'good for kids': False, 'has parking': False, 'open late': False, 'rating': 2}, 'loc': [-122.27, 37.87], 'name': 'City Museum of Art'}
+{'est_price': 0, 'etype': 'landmark', 'features': {'good for groups': False, 'good for kids': True, 'has parking': True, 'open late': True, 'rating': 4.5}, 'loc': [-122.27, 37.87], 'name': "Einstein's summer house"}
+{'est_price': 90, 'etype': 'restaurant', 'features': {'ambience': 'romantic', 'good for kids': False, 'has parking': True, 'rating': 3.5, 'touristy': False}, 'loc': [-122.29, 37.88], 'name': 'Taqueria y Mas'}
+{'est_price': 15, 'etype': 'cafe', 'features': {'ambience': 'trendy', 'open late': True, 'rating': 2.5, 'vegan options': True, 'vegetarian options': False}, 'loc': [-122.27, 37.87], 'name': 'Schwarzes Cafe'}
+{'est_price': 170, 'etype': 'shop', 'features': {'good for groups': False, 'good for kids': False, 'has parking': False, 'rating': 3.5, 'touristy': True}, 'loc': [-122.27, 37.88], 'name': 'Vista Ridge Mall'}
+{'est_price': 5, 'etype': 'cafe', 'features': {'ambience': 'divey', 'open late': False, 'outdoor seating': True, 'rating': 5, 'vegan options': True}, 'loc': [-122.27, 37.87], 'name': 'The Cupcake Bar'}
+{'est_price': 80, 'etype': 'restaurant', 'features': {'ambience': 'classy', 'cuisine': 'chinese', 'open late': True, 'rating': 1.5, 'touristy': True}, 'loc': [-122.29, 37.89], 'name': 'El Toro Steakhouse'}
+{'est_price': 450, 'etype': 'shop', 'features': {'good for kids': False, 'has parking': False, 'open late': False, 'rating': 2.5, 'touristy': False}, 'loc': [-122.3, 37.89], 'name': 'Central Plaza'}
+{'est_price': 40, 'etype': 'bar', 'features': {'alcohol type': 'wine', 'ambience': 'trendy', 'good for groups': True, 'outdoor seating': False, 'rating': 1.5}, 'loc': [-122.3, 37.87], 'name': 'A-Trane'}
+{'est_price': 0, 'etype': 'park', 'features': {'good for groups': False, 'has parking': True, 'rating': 4.5, 'touristy': False, 'viewpoint': False}, 'loc': [-122.29, 37.88], 'name': 'Lincoln Park'}
+{'est_price': 20, 'etype': 'restaurant', 'features': {'ambience': 'classy', 'good for kids': True, 'has parking': True, 'open late': False, 'touristy': False}, 'loc': [-122.27, 37.87], 'name': 'Earthbar'}
+{'est_price': 0, 'etype': 'park', 'features': {'good for groups': False, 'good for kids': True, 'has parking': False, 'rating': 1, 'viewpoint': True}, 'loc': [-122.26, 37.87], 'name': 'Riverside Trail'}
+{'est_price': 170, 'etype': 'restaurant', 'features': {'ambience': 'romantic', 'cuisine': 'japanese', 'has parking': True, 'open late': False, 'vegan options': False}, 'loc': [-122.24, 37.88], 'name': 'The Dockside Grill'}
+{'est_price': 20, 'etype': 'museum', 'features': {'good for kids': True, 'has parking': True, 'open late': False, 'rating': 2.5, 'touristy': True}, 'loc': [-122.26, 37.87], 'name': 'BAMPFA'}
+{'est_price': 470, 'etype': 'shop', 'features': {'good for groups': True, 'good for kids': True, 'open late': True, 'rating': 2.5, 'touristy': True}, 'loc': [-122.29, 37.88], 'name': 'The Mall'}
+{'est_price': 100, 'etype': 'restaurant', 'features': {'ambience': 'intimate', 'good for groups': True, 'has takeout': False, 'live music': False, 'open late': True}, 'loc': [-122.28, 37.89], 'name': 'Caribbean Corner'}
+{'est_price': 90, 'etype': 'bar', 'features': {'ambience': 'romantic', 'good for groups': True, 'live music': True, 'open late': False, 'rating': 4}, 'loc': [-122.26, 37.87], 'name': 'The Dive'}
+{'est_price': 30, 'etype': 'restaurant', 'features': {'accepts reservations': True, 'ambience': 'intimate', 'good for kids': True, 'has parking': True, 'outdoor seating': False}, 'loc': [-122.26, 37.87], 'name': "Lucia's"}
+{'est_price': 0, 'etype': 'park', 'features': {'good for groups': False, 'good for kids': False, 'open late': True, 'rating': 1, 'viewpoint': True}, 'loc': [-122.27, 37.87], 'name': 'Atlas Park'}
+{'est_price': 5, 'etype': 'cafe', 'features': {'ambience': 'classy', 'has parking': False, 'outdoor seating': False, 'rating': 2.5, 'vegetarian options': True}, 'loc': [-122.27, 37.87], 'name': 'Common Grounds'}
+{'est_price': 10, 'etype': 'bar', 'features': {'alcohol type': 'wine', 'live music': False, 'open late': False, 'rating': 1, 'touristy': False}, 'loc': [-122.27, 37.87], 'name': 'Harper and Rye'}
+{'est_price': 15, 'etype': 'cafe', 'features': {'has parking': True, 'has wifi': True, 'outdoor seating': True, 'vegan options': False, 'vegetarian options': False}, 'loc': [-122.3, 37.87], 'name': 'Coffee Nook'}
+{'est_price': 10, 'etype': 'museum', 'features': {'good for groups': True, 'good for kids': False, 'has parking': True, 'open late': False, 'touristy': True}, 'loc': [-122.26, 37.87], 'name': 'Historical Society'}
+{'est_price': 10, 'etype': 'landmark', 'features': {'good for kids': True, 'has parking': True, 'open late': False, 'rating': 2.5, 'touristy': True}, 'loc': [-122.3, 37.88], 'name': 'Hindenberg Memorial'}
+{'est_price': 230, 'etype': 'shop', 'features': {'good for groups': True, 'good for kids': True, 'has parking': False, 'rating': 2.5, 'touristy': True}, 'loc': [-122.27, 37.87], 'name': 'Artisan Street Fair'}
+{'est_price': 170, 'etype': 'restaurant', 'features': {'ambience': 'classy', 'good for groups': True, 'live music': True, 'rating': 4, 'touristy': False}, 'loc': [-122.27, 37.87], 'name': 'Mad Seoul'}
+{'est_price': 400, 'etype': 'shop', 'features': {'good for groups': True, 'good for kids': True, 'has parking': True, 'open late': True, 'rating': 2.5}, 'loc': [-122.26, 37.87], 'name': 'Market Street'}
+{'est_price': 0, 'etype': 'park', 'features': {'good for groups': False, 'has parking': True, 'open late': True, 'touristy': False, 'viewpoint': False}, 'loc': [-122.29, 37.87], 'name': 'Moabit Garden'}
+{'est_price': 0, 'etype': 'park', 'features': {'good for groups': True, 'has parking': False, 'rating': 4, 'touristy': True, 'viewpoint': True}, 'loc': [-122.26, 37.87], 'name': 'The Arboretum'}
+{'est_price': 10, 'etype': 'landmark', 'features': {'good for kids': True, 'has parking': False, 'open late': True, 'rating': 5, 'touristy': False}, 'loc': [-122.28, 37.89], 'name': 'The Tower'}
+{'est_price': 20, 'etype': 'bar', 'features': {'ambience': 'romantic', 'good for groups': False, 'outdoor seating': True, 'rating': 3.5, 'touristy': True}, 'loc': [-122.26, 37.84], 'name': 'The Jazz Spot'}
+{'est_price': 20, 'etype': 'bar', 'features': {'ambience': 'divey', 'live music': True, 'outdoor seating': False, 'rating': 3.5, 'touristy': False}, 'loc': [-122.26, 37.84], 'name': 'Bards n Brews'}
+{'est_price': 50, 'etype': 'restaurant', 'features': {'ambience': 'romantic', 'good for kids': True, 'has takeout': False, 'live music': False, 'touristy': False}, 'loc': [-122.29, 37.87], 'name': 'The Cakery'}
+
+Query: Search(fields=[name], filters=[category == landmark])
+Result:
+Search Results (4):
+name
+Liberty Memorial
+Einstein's summer house
+Hindenberg Memorial
+The Tower
+
+Query: Search(fields=[name], filters=[category == concert])
+Result:
+Search Results: No results
+
+
+Query: Search(fields=[name], text_query=live music)
+Result:
+Search Results (6):
+name
+Caribbean Corner
+The Dive
+Harper and Rye
+Mad Seoul
+Bards n Brews
+The Cakery
+
+Query: Search(fields=[name, price], text_query=live music, filters=[price <= 40])
+Result:
+Search Results (2):
+name|price
+Harper and Rye|10
+Bards n Brews|20
+
+Query: Search(fields=[name, price], filters=[category == restaurant, price <= 10], sort_by=[distance_to(The Mall)])
+Result:
+Search Results: No results
+
+
+Query: Search(fields=[name, price, distance], filters=[category == restaurant], sort_by=[distance_to(The Mall), price])
+Result:
+Search Results (10):
+name|price|distance
+Earthbar|20|1.1
+Lucia's|30|2.2
+The Cakery|50|0.6
+Cookies Cream|60|1.4
+El Toro Steakhouse|80|0.7
+Taqueria y Mas|90|0.1
+Caribbean Corner|100|1.0
+Mad Seoul|170|1.4
+The Dockside Grill|170|3.3
+Saul's|180|0.8
+
+Query: Search(fields=[name], text_query="good for kids", filters=[category == park], sort_by=[distance_to(Saul's)])
+Result:
+Search Results (2):
+name|distance
+Atlas Park|2.1
+Riverside Trail|2.9
+
+Query: Search(fields=[name], filters=[vegan == true])
+Result:
+You cannot filter by vegan.Try searching with a text query instead.
+
+<
+
+==================== agent Log ====================
+
+
+-------------------- obs t=0 --------------------
+>
+
+-------------------- obs t=1 --------------------
+>
+User: [message] I'd like to visit the Garden of Wonders, eat takeout from French restaurants, and find a place with wifi where I can do some work. I'd also like to go to a bar and see some hidden, non-touristy spots. I'm renting a car, so places with parking would be great. I'd like to keep my budget under $90 and prefer places with ratings above 4.
+
+-------------------- generate t=1 try=0 --------------------
+>[think] The user has a lot of preferences. I will start by finding a French restaurant with takeout and parking, then look for a bar and a place with wifi where they can work. I will also keep in mind their budget and rating preferences.
+
+-------------------- obs t=2 --------------------
+>[think] The user has a lot of preferences. I will start by finding a French restaurant with takeout and parking, then look for a bar and a place with wifi where they can work. I will also keep in mind their budget and rating preferences.
+
+-------------------- generate t=2 try=0 --------------------
+>[tool] Search(fields=[name, price, rating], filters=[category == restaurant, info == French, info == takeout, info == has parking], sort_by=[rating], limit=5)
+
+-------------------- obs t=3 --------------------
+>[tool] Search(fields=[name, price, rating], filters=[category == restaurant, info == French, info == takeout, info == has parking], sort_by=[rating], limit=5)
+Search Results: No results
+
+-------------------- generate t=3 try=0 --------------------
+>[message] I'm sorry, but I couldn't find any French restaurants with takeout and parking. Would you like me to search again with fewer restrictions, or would you prefer a different type of cuisine?
+
+-------------------- obs t=4 --------------------
+>[message] I'm sorry, but I couldn't find any French restaurants with takeout and parking. Would you like me to search again with fewer restrictions, or would you prefer a different type of cuisine?
+
+-------------------- obs t=5 --------------------
+>
+User: [message] That's okay, let's try again with fewer restrictions. I'd still like to keep the budget under $90 and prefer places with ratings above 4.
+
+-------------------- generate t=5 try=0 --------------------
+>[tool] Search(fields=[name, price, rating], filters=[category == restaurant, info == takeout, info == has parking], sort_by=[rating], limit=5)
+
+-------------------- obs t=6 --------------------
+>[tool] Search(fields=[name, price, rating], filters=[category == restaurant, info == takeout, info == has parking], sort_by=[rating], limit=5)
+Search Results (5):
+name|price|rating
+The Cakery|50|3.5
+Earthbar|20|3
+Lucia's|30|2.5
+Cookies Cream|60|2
+El Toro Steakhouse|80|1.5
+
+-------------------- generate t=6 try=0 --------------------
+>[message] I found a few restaurants that offer takeout and have parking. The highest rated one is The Cakery, but it has a rating of 3.5. Would you like to try that or should I look for a different type of cuisine?
+
+-------------------- obs t=7 --------------------
+>[message] I found a few restaurants that offer takeout and have parking. The highest rated one is The Cakery, but it has a rating of 3.5. Would you like to try that or should I look for a different type of cuisine?
+
+-------------------- obs t=8 --------------------
+>
+User: [message] Let's try The Cakery. I'd also like to find a place with wifi where I can do some work.
+
+-------------------- generate t=8 try=0 --------------------
+>[tool] Search(fields=[name, price, rating], filters=[category == cafe, info == wifi, info == has parking], sort_by=[rating], limit=5)
+
+-------------------- obs t=9 --------------------
+>[tool] Search(fields=[name, price, rating], filters=[category == cafe, info == wifi, info == has parking], sort_by=[rating], limit=5)
+Search Results (1):
+name|price|rating
+Coffee Nook|15|None
+
+-------------------- generate t=9 try=0 --------------------
+>[message] I found a place called Coffee Nook that has wifi and parking. However, it doesn't have a rating. Would you like to try this place or should I look for another one?
+
+-------------------- obs t=10 --------------------
+>[message] I found a place called Coffee Nook that has wifi and parking. However, it doesn't have a rating. Would you like to try this place or should I look for another one?
+
+-------------------- obs t=11 --------------------
+>
+User: [message] Coffee Nook sounds good. I'd also like to go to a bar and see some hidden, non-touristy spots.
+
+-------------------- generate t=11 try=0 --------------------
+>[tool] Search(fields=[name, price, rating], filters=[category == bar, info == non-touristy, info == has parking], sort_by=[rating], limit=5)
+
+-------------------- obs t=12 --------------------
+>[tool] Search(fields=[name, price, rating], filters=[category == bar, info == non-touristy, info == has parking], sort_by=[rating], limit=5)
+Search Results (2):
+name|price|rating
+Kozy Kar|90|3.5
+A-Trane|40|1.5
+
+-------------------- generate t=12 try=0 --------------------
+>[message] I found two bars that are non-touristy and have parking. The highest rated one is Kozy Kar, but it's at the top of your budget. The other option is A-Trane, which is cheaper but has a lower rating. Which one would you prefer?
+
+-------------------- obs t=13 --------------------
+>[message] I found two bars that are non-touristy and have parking. The highest rated one is Kozy Kar, but it's at the top of your budget. The other option is A-Trane, which is cheaper but has a lower rating. Which one would you prefer?
+
+-------------------- obs t=14 --------------------
+>
+User: [message] Let's go with A-Trane. I'd like to keep my budget under $90.
+
+-------------------- generate t=14 try=0 --------------------
+>[propose] [Garden of Wonders, The Cakery, Coffee Nook, A-Trane]
+
+-------------------- obs t=15 --------------------
+>[propose] [Garden of Wonders, The Cakery, Coffee Nook, A-Trane]
+Error: You can only propose up to three events.Try re-proposing with three events.
+
+-------------------- generate t=15 try=0 --------------------
+>[propose] [Garden of Wonders, The Cakery, A-Trane]
+
+-------------------- obs t=16 --------------------
+>[propose] [Garden of Wonders, The Cakery, A-Trane]
+
+-------------------- generate t=16 try=0 --------------------
+>[message] I have made a proposal. Please let me know what you think of it.
+
+-------------------- obs t=17 --------------------
+>[message] I have made a proposal. Please let me know what you think of it.
+
+-------------------- obs t=18 --------------------
+>
+
+-------------------- obs t=19 --------------------
+>
+User: [reject]
+
+-------------------- obs t=20 --------------------
+>
+User: [message] I'd like to find a bar with a higher rating and closer to the other places.
+
+-------------------- generate t=20 try=0 --------------------
+>[tool] Search(fields=[name, price, rating], filters=[category == bar, info == non-touristy, info == has parking], sort_by=[rating, distance_to(Garden of Wonders)], limit=5)
+
+-------------------- obs t=21 --------------------
+>[tool] Search(fields=[name, price, rating], filters=[category == bar, info == non-touristy, info == has parking], sort_by=[rating, distance_to(Garden of Wonders)], limit=5)
+Search Results (2):
+name|price|rating
+Kozy Kar|90|3.5
+A-Trane|40|1.5
+
+-------------------- generate t=21 try=0 --------------------
+>[message] I found two bars that are non-touristy and have parking. The highest rated one is Kozy Kar, but it's at the top of your budget. The other option is A-Trane, which is cheaper but has a lower rating. Which one would you prefer?
+
+-------------------- obs t=22 --------------------
+>[message] I found two bars that are non-touristy and have parking. The highest rated one is Kozy Kar, but it's at the top of your budget. The other option is A-Trane, which is cheaper but has a lower rating. Which one would you prefer?
+
+-------------------- obs t=23 --------------------
+>
+User: [message] Let's try Kozy Kar this time.
+
+-------------------- generate t=23 try=0 --------------------
+>[propose] [Garden of Wonders, The Cakery, Kozy Kar]
+
+-------------------- obs t=24 --------------------
+>[propose] [Garden of Wonders, The Cakery, Kozy Kar]
+
+-------------------- generate t=24 try=0 --------------------
+>[message] I have made a new proposal. Please let me know what you think of it.
+
+-------------------- obs t=25 --------------------
+>[message] I have made a new proposal. Please let me know what you think of it.
+
+-------------------- obs t=26 --------------------
+>
+
+-------------------- obs t=27 --------------------
+>
+User: [reject]
+
+-------------------- obs t=28 --------------------
+>
+User: [message] I'd like to find a bar that's closer to the other places.
+
+-------------------- generate t=28 try=0 --------------------
+>[tool] Search(fields=[name, price, rating], filters=[category == bar, info == non-touristy, info == has parking], sort_by=[distance_to(Garden of Wonders)], limit=5)
+
+-------------------- obs t=29 --------------------
+>[tool] Search(fields=[name, price, rating], filters=[category == bar, info == non-touristy, info == has parking], sort_by=[distance_to(Garden of Wonders)], limit=5)
+Search Results (2):
+name|price|rating
+Kozy Kar|90|3.5
+A-Trane|40|1.5
+
+-------------------- generate t=29 try=0 --------------------
+>[message] The closest bar to the Garden of Wonders is Kozy Kar, but it's at the top of your budget. The other option is A-Trane, which is cheaper but has a lower rating. Would you like to reconsider these options or should I look for a different type of venue?
+
+-------------------- obs t=30 --------------------
+>[message] The closest bar to the Garden of Wonders is Kozy Kar, but it's at the top of your budget. The other option is A-Trane, which is cheaper but has a lower rating. Would you like to reconsider these options or should I look for a different type of venue?
+
+-------------------- obs t=31 --------------------
+>
+User: [message] Let's reconsider A-Trane. I'd like to keep my budget under $90.
+
+-------------------- generate t=31 try=0 --------------------
+>[propose] [Garden of Wonders, The Cakery, A-Trane]
+
+-------------------- obs t=32 --------------------
+>[propose] [Garden of Wonders, The Cakery, A-Trane]
+
+-------------------- generate t=32 try=0 --------------------
+>[message] I have made a new proposal. Please let me know what you think of it.
+
+-------------------- obs t=33 --------------------
+>[message] I have made a new proposal. Please let me know what you think of it.
+
+-------------------- obs t=34 --------------------
+>
+
+==================== user Log ====================
+
+
+-------------------- obs t=0 --------------------
+>Travel Preferences:
+don't like: chinese, like: french
+find a place with wifi to do some work at some point
+go to at least one bar
+prefer just eating takeout
+keep budget below $90
+definitely want to go to Garden of Wonders
+renting a car so preferably places with parking, but street parking also ok
+seeing hidden, non-touristy spots would be cool
+prefer ratings above 4
+minimize travel distance
+You:
+
+-------------------- generate t=0 try=0 --------------------
+>[message] I'd like to visit the Garden of Wonders, eat takeout from French restaurants, and find a place with wifi where I can do some work. I'd also like to go to a bar and see some hidden, non-touristy spots. I'm renting a car, so places with parking would be great. I'd like to keep my budget under $90 and prefer places with ratings above 4.
+
+-------------------- obs t=1 --------------------
+>[message] I'd like to visit the Garden of Wonders, eat takeout from French restaurants, and find a place with wifi where I can do some work. I'd also like to go to a bar and see some hidden, non-touristy spots. I'm renting a car, so places with parking would be great. I'd like to keep my budget under $90 and prefer places with ratings above 4.
+
+-------------------- obs t=2 --------------------
+>
+
+-------------------- obs t=3 --------------------
+>
+
+-------------------- obs t=4 --------------------
+>
+Agent: [message] I'm sorry, but I couldn't find any French restaurants with takeout and parking. Would you like me to search again with fewer restrictions, or would you prefer a different type of cuisine?
+
+-------------------- generate t=4 try=0 --------------------
+>[message] That's okay, let's try again with fewer restrictions. I'd still like to keep the budget under $90 and prefer places with ratings above 4.
+
+-------------------- obs t=5 --------------------
+>[message] That's okay, let's try again with fewer restrictions. I'd still like to keep the budget under $90 and prefer places with ratings above 4.
+
+-------------------- obs t=6 --------------------
+>
+
+-------------------- obs t=7 --------------------
+>
+Agent: [message] I found a few restaurants that offer takeout and have parking. The highest rated one is The Cakery, but it has a rating of 3.5. Would you like to try that or should I look for a different type of cuisine?
+
+-------------------- generate t=7 try=0 --------------------
+>[message] Let's try The Cakery. I'd also like to find a place with wifi where I can do some work.
+
+-------------------- obs t=8 --------------------
+>[message] Let's try The Cakery. I'd also like to find a place with wifi where I can do some work.
+
+-------------------- obs t=9 --------------------
+>
+
+-------------------- obs t=10 --------------------
+>
+Agent: [message] I found a place called Coffee Nook that has wifi and parking. However, it doesn't have a rating. Would you like to try this place or should I look for another one?
+
+-------------------- generate t=10 try=0 --------------------
+>[message] Coffee Nook sounds good. I'd also like to go to a bar and see some hidden, non-touristy spots.
+
+-------------------- obs t=11 --------------------
+>[message] Coffee Nook sounds good. I'd also like to go to a bar and see some hidden, non-touristy spots.
+
+-------------------- obs t=12 --------------------
+>
+
+-------------------- obs t=13 --------------------
+>
+Agent: [message] I found two bars that are non-touristy and have parking. The highest rated one is Kozy Kar, but it's at the top of your budget. The other option is A-Trane, which is cheaper but has a lower rating. Which one would you prefer?
+
+-------------------- generate t=13 try=0 --------------------
+>[message] Let's go with A-Trane. I'd like to keep my budget under $90.
+
+-------------------- obs t=14 --------------------
+>[message] Let's go with A-Trane. I'd like to keep my budget under $90.
+
+-------------------- obs t=15 --------------------
+>
+
+-------------------- obs t=16 --------------------
+>
+Agent: [propose] [Garden of Wonders, The Cakery, A-Trane]
+Proposal Score:
+1) (score: 6) Garden of Wonders
+good for groups: False
+has parking: True
+rating: 3
+touristy: False
+viewpoint: True
+2) (score: -2) Travel from Garden of Wonders to The Cakery, 2.4mi
+3) (score: 6) The Cakery
+ambience: romantic
+good for kids: True
+has takeout: False
+live music: False
+touristy: False
+4) (score: 0) Travel from The Cakery to A-Trane, 0.6mi
+5) (score: -1) A-Trane
+alcohol type: wine
+ambience: trendy
+good for groups: True
+outdoor seating: False
+rating: 1.5
+
+Overall Checklist:
+YES (score: 5) go to at least one bar
+YES (score: 0) keep budget below $90
+YES (score: 9) definitely want to go to Garden of Wonders
+TOTAL SCORE: +6-2+6+0-1+5+0+9=23
+You can [think], or output one of these choices:
+(1) [accept] Accept
+(2) [reject] Reject
+
+-------------------- obs t=17 --------------------
+>
+Agent: [message] I have made a proposal. Please let me know what you think of it.
+
+-------------------- generate t=17 try=0 --------------------
+>[think] The score is not bad, but I'm losing points on the travel distance and the rating of A-Trane. I should reject the proposal and ask the agent to find a bar with a higher rating and closer to the other places.
+
+-------------------- obs t=18 --------------------
+>[think] The score is not bad, but I'm losing points on the travel distance and the rating of A-Trane. I should reject the proposal and ask the agent to find a bar with a higher rating and closer to the other places.
+Error: A proposal was made. You must first accept or reject it.
+
+-------------------- generate t=18 try=0 --------------------
+>[reject]
+
+-------------------- obs t=19 --------------------
+>[reject]
+
+-------------------- generate t=19 try=0 --------------------
+>[message] I'd like to find a bar with a higher rating and closer to the other places.
+
+-------------------- obs t=20 --------------------
+>[message] I'd like to find a bar with a higher rating and closer to the other places.
+
+-------------------- obs t=21 --------------------
+>
+
+-------------------- obs t=22 --------------------
+>
+Agent: [message] I found two bars that are non-touristy and have parking. The highest rated one is Kozy Kar, but it's at the top of your budget. The other option is A-Trane, which is cheaper but has a lower rating. Which one would you prefer?
+
+-------------------- generate t=22 try=0 --------------------
+>[message] Let's try Kozy Kar this time.
+
+-------------------- obs t=23 --------------------
+>[message] Let's try Kozy Kar this time.
+
+-------------------- obs t=24 --------------------
+>
+Agent: [propose] [Garden of Wonders, The Cakery, Kozy Kar]
+Proposal Score:
+1) (score: 6) Garden of Wonders
+good for groups: False
+has parking: True
+rating: 3
+touristy: False
+viewpoint: True
+2) (score: -2) Travel from Garden of Wonders to The Cakery, 2.4mi
+3) (score: 6) The Cakery
+ambience: romantic
+good for kids: True
+has takeout: False
+live music: False
+touristy: False
+4) (score: -2) Travel from The Cakery to Kozy Kar, 2.0mi
+5) (score: 0) Kozy Kar
+alcohol type: beer
+has parking: True
+outdoor seating: True
+rating: 3.5
+touristy: True
+
+Overall Checklist:
+YES (score: 5) go to at least one bar
+NO (score: -9) keep budget below $90
+YES (score: 9) definitely want to go to Garden of Wonders
+TOTAL SCORE: +6-2+6-2+0+5-9+9=13
+You can [think], or output one of these choices:
+(1) [accept] Accept
+(2) [reject] Reject
+
+-------------------- obs t=25 --------------------
+>
+Agent: [message] I have made a new proposal. Please let me know what you think of it.
+
+-------------------- generate t=25 try=0 --------------------
+>[think] The score is better than the previous proposal, but I'm still losing points on the travel distance. I should reject the proposal and ask the agent to find a bar that's closer to the other places.
+
+-------------------- obs t=26 --------------------
+>[think] The score is better than the previous proposal, but I'm still losing points on the travel distance. I should reject the proposal and ask the agent to find a bar that's closer to the other places.
+Error: A proposal was made. You must first accept or reject it.
+
+-------------------- generate t=26 try=0 --------------------
+>[reject]
+
+-------------------- obs t=27 --------------------
+>[reject]
+
+-------------------- generate t=27 try=0 --------------------
+>[message] I'd like to find a bar that's closer to the other places.
+
+-------------------- obs t=28 --------------------
+>[message] I'd like to find a bar that's closer to the other places.
+
+-------------------- obs t=29 --------------------
+>
+
+-------------------- obs t=30 --------------------
+>
+Agent: [message] The closest bar to the Garden of Wonders is Kozy Kar, but it's at the top of your budget. The other option is A-Trane, which is cheaper but has a lower rating. Would you like to reconsider these options or should I look for a different type of venue?
+
+-------------------- generate t=30 try=0 --------------------
+>[message] Let's reconsider A-Trane. I'd like to keep my budget under $90.
+
+-------------------- obs t=31 --------------------
+>[message] Let's reconsider A-Trane. I'd like to keep my budget under $90.
+
+-------------------- obs t=32 --------------------
+>
+Agent: [propose] [Garden of Wonders, The Cakery, A-Trane]
+Proposal Score:
+1) (score: 6) Garden of Wonders
+good for groups: False
+has parking: True
+rating: 3
+touristy: False
+viewpoint: True
+2) (score: -2) Travel from Garden of Wonders to The Cakery, 2.4mi
+3) (score: 6) The Cakery
+ambience: romantic
+good for kids: True
+has takeout: False
+live music: False
+touristy: False
+4) (score: 0) Travel from The Cakery to A-Trane, 0.6mi
+5) (score: -1) A-Trane
+alcohol type: wine
+ambience: trendy
+good for groups: True
+outdoor seating: False
+rating: 1.5
+
+Overall Checklist:
+YES (score: 5) go to at least one bar
+YES (score: 0) keep budget below $90
+YES (score: 9) definitely want to go to Garden of Wonders
+TOTAL SCORE: +6-2+6+0-1+5+0+9=23
+You can [think], or output one of these choices:
+(1) [accept] Accept
+(2) [reject] Reject
+
+-------------------- obs t=33 --------------------
+>
+Agent: [message] I have made a new proposal. Please let me know what you think of it.
+
+-------------------- generate t=33 try=0 --------------------
+>[think] The score is the same as the first proposal, but the travel distance is less. I should accept this proposal.
+
+-------------------- obs t=34 --------------------
+>[think] The score is the same as the first proposal, but the travel distance is less. I should accept this proposal.
+Error: A proposal was made. You must first accept or reject it.
+
+-------------------- generate t=34 try=0 --------------------
+>[accept]
+
+==================== Final agent Prompt ====================
+
+>You are a travel agent. Book a set of three destinations that make the user most happy. Your objective is to maximize the "Final Score" at the end of the chat, which scores how well the final itinerary you proposed matches the user's preferences.
+
+You and the user are limited to a fixed number of words in the chat. When the word count is below 0 then you will be forced to make your final proposal, which will be scored. You can also make proposals before the word count is up.
+
+You can use the `Search` tool with the following API:
+
+field: can be name, category, price, info, or any other field of an site
+category: can be [restaurant, cafe, museum, bar, landmark, park, shop]
+Search:
+Parameters
+- fields: list of field names to return
+- filters: list of filters to intersect with AND. Can only filter one of the
+  fields above.
+- text_query: freeform text query to search in event descriptions. Will be intersected with filters with AND.
+- sort_by: list of fields or callable function to sort results by.
+- limit: number of results to return
+
+USER 1.
+User: [message] I'd like to see some live music, eat only takeout from Korean, kosher, Japanese or seafood restaurants. Vegan options are a plus and I'd like to stop by Mad Seoul. I'd also like places with parking, good city views and kid friendly. My budget is $30.
+You: [think] The user listed many preferences. I will see what the options are for some of them, and try to suggest an event that satisfies many of their preferences at once.
+You: [tool] Search(fields=[name], text_query=good for kids)
+Search Results (6):
+name
+Saul's
+The Dockside Grill
+Riverside Trail
+Moabit Garden
+Common Grounds
+The Dive
+
+You: [tool] Search(fields=[name], text_query=viewpoint)
+Search Results (2):
+name
+Garden of Wonders
+Moabit Garden
+
+You: [tool] Search(fields=[name], text_query=has parking)
+Search Results (3):
+name
+Liberty Memorial
+Common Grounds
+Lincoln Park
+
+You: [think] Common Grounds is good for kids and has parking, so it seems like an option the user might like. Let me send a partial proposal so I can see what the user thinks.
+You: [propose] [Common Grounds, NULL, NULL]
+You: [message] I have made a proposal. Please let me know what you think of it.
+User: [message] It's not bad so far, I'd really like to stop by Mad Seoul though.
+You: [message] Sure. I can help you out with that! Are there any other events you'd like to go to after Mad Seoul?
+User: [message] I'd like to go to see some live music.
+You: [think] I will try to find somewhere with live music near Mad Seoul and check whether the event also satisfies the other preferences the user listed.
+You: [tool] Search(fields=[name, good for kids, has parking, viewpoint], text_query=live music, sort_by=[distance_to(Mad Seoul)])
+Search Results (1):
+name|category|good for kids|has parking|viewpoint|distance_to(Mad Seoul)
+Cookies Cream|restaurant|False|True|False|1.2
+
+You: [message] I have one option for you that you might be interested in. However, it is not recommended for kids. Are there any other places?
+User: [message] Somewhere with a panoramic view of the city would be nice or somewhere that's kid-friendly in general.
+You: [tool] Search(fields=[name, category, good for kids, has parking, viewpoint], filters=[good for kids OR viewpoint], sort_by=[distance_to(Mad Seoul)])
+Search Results (4):
+name|category|good for kids|has parking|viewpoint|distance_to(Mad Seoul)
+Atlas Park|park|True|True|False|0.2
+Lincoln Park|park|True|False|False|0.8
+Moabit Garden|park|False|True|True|1.3
+Garden of Wonders|park|False|False|True|1.8
+
+You: [message] I have several options available. Do you have a price point?
+User: [message] As long as it's $30 or under, it should be fine.
+You: [tool] Search(fields=[name, category, good for kids, has parking, viewpoint], filters=[good for kids OR viewpoint], sort_by=[distance_to(Mad Seoul), price])
+Search Results (4):
+name|category|good for kids|has parking|viewpoint|distance_to(Mad Seoul)|price
+Atlas Park|park|True|True|False|0.2|0
+Lincoln Park|park|True|False|False|0.8|0
+Moabit Garden|park|False|True|True|1.3|0
+Garden of Wonders|park|False|False|True|1.8|0
+
+You: [propose] [Mad Seoul, Lincoln Park, Atlas Park]
+You: [message] I have found several options. If you have enough time you may even be able to go to all of these places as they are all under 2 miles away from each other and close to Mad Seoul. Both parks are also kid friendly.
+User: [reject]
+User: [message] It would be great if you could significantly lower the travel time. Maybe another restaurant or a concert that's closer?
+You: [think] Concert is not a category I can search by. I should look for a restaurant that is close to Mad Seoul and satisfies the user's preferences as much as possible.
+You: [tool] Search(fields=[name, price, info], filters=[category == restaurant], sort_by=[distance_to(Mad Seoul)])
+Search Results (4):
+name|price|info|distance_to(Mad Seoul)
+Caribbean Corner|10|divey, has takeout, live music, vegetarian options|0.0
+El Toro Steakhouse|130|good for groups, live music, outdoor seating|0.8
+Earthbar|40|classy, rating: 3, vegan options|0.9
+Saul's|40|spanish, touristy|0.9
+
+You: [message] Mad Seoul is 0.8 miles away from Lincoln Park. I can definitely find a restaurant for you. Do you want a place with live music, touristy, kid-friendly, and has vegetarian options? The price point is around $10.
+User: [message] Yes, all those things would be great. Just make sure to keep the travel distance as low as you can get it.
+You: [propose] [Mad Seoul, Lincoln Park, Caribbean Corner]
+You: [message] I have several options. One option might be a little too far for you, however it does have live music. I also have another restaurant that is closer. All of the places I have recommended are less than a mile apart from each other.
+User: [reject]
+User: [message] The places you've chosen are great, but everything is still too far apart for me. Choose the places closest to each other if you can.
+You: [think] I should just look for the closest places to Mad Seoul.
+You: [tool] Search(fields=[name], sort_by=[distance_to(Mad Seoul)], limit=2)
+Search Results (2):
+name|distance_to(Mad Seoul)
+Caribbean Corner|0.0
+Hindenberg Memorial|0.2
+
+You: [propose] [Mad Seoul, Caribbean Corner, Hindenberg Memorial]
+You: [message] Yes sir, but there are only so many options that are kid friendly near the café of your choice. However I have one more proposal that is within a much better distance of each other.
+User: [accept]
+FINAL SCORE: 92/100
+
+USER 2.
+
+User: [message] I'd like to visit the Garden of Wonders, eat takeout from French restaurants, and find a place with wifi where I can do some work. I'd also like to go to a bar and see some hidden, non-touristy spots. I'm renting a car, so places with parking would be great. I'd like to keep my budget under $90 and prefer places with ratings above 4.
+You:[think] The user has a lot of preferences. I will start by finding a French restaurant with takeout and parking, then look for a bar and a place with wifi where they can work. I will also keep in mind their budget and rating preferences.
+You:[tool] Search(fields=[name, price, rating], filters=[category == restaurant, info == French, info == takeout, info == has parking], sort_by=[rating], limit=5)
+Search Results: No results
+You:[message] I'm sorry, but I couldn't find any French restaurants with takeout and parking. Would you like me to search again with fewer restrictions, or would you prefer a different type of cuisine?
+User: [message] That's okay, let's try again with fewer restrictions. I'd still like to keep the budget under $90 and prefer places with ratings above 4.
+You:[tool] Search(fields=[name, price, rating], filters=[category == restaurant, info == takeout, info == has parking], sort_by=[rating], limit=5)
+Search Results (5):
+name|price|rating
+The Cakery|50|3.5
+Earthbar|20|3
+Lucia's|30|2.5
+Cookies Cream|60|2
+El Toro Steakhouse|80|1.5
+You:[message] I found a few restaurants that offer takeout and have parking. The highest rated one is The Cakery, but it has a rating of 3.5. Would you like to try that or should I look for a different type of cuisine?
+User: [message] Let's try The Cakery. I'd also like to find a place with wifi where I can do some work.
+You:[tool] Search(fields=[name, price, rating], filters=[category == cafe, info == wifi, info == has parking], sort_by=[rating], limit=5)
+Search Results (1):
+name|price|rating
+Coffee Nook|15|None
+You:[message] I found a place called Coffee Nook that has wifi and parking. However, it doesn't have a rating. Would you like to try this place or should I look for another one?
+User: [message] Coffee Nook sounds good. I'd also like to go to a bar and see some hidden, non-touristy spots.
+You:[tool] Search(fields=[name, price, rating], filters=[category == bar, info == non-touristy, info == has parking], sort_by=[rating], limit=5)
+Search Results (2):
+name|price|rating
+Kozy Kar|90|3.5
+A-Trane|40|1.5
+You:[message] I found two bars that are non-touristy and have parking. The highest rated one is Kozy Kar, but it's at the top of your budget. The other option is A-Trane, which is cheaper but has a lower rating. Which one would you prefer?
+User: [message] Let's go with A-Trane. I'd like to keep my budget under $90.
+You:[propose] [Garden of Wonders, The Cakery, Coffee Nook, A-Trane]
+Error: You can only propose up to three events.Try re-proposing with three events.
+You:[propose] [Garden of Wonders, The Cakery, A-Trane]
+You:[message] I have made a proposal. Please let me know what you think of it.
+User: [reject]
+User: [message] I'd like to find a bar with a higher rating and closer to the other places.
+You:[tool] Search(fields=[name, price, rating], filters=[category == bar, info == non-touristy, info == has parking], sort_by=[rating, distance_to(Garden of Wonders)], limit=5)
+Search Results (2):
+name|price|rating
+Kozy Kar|90|3.5
+A-Trane|40|1.5
+You:[message] I found two bars that are non-touristy and have parking. The highest rated one is Kozy Kar, but it's at the top of your budget. The other option is A-Trane, which is cheaper but has a lower rating. Which one would you prefer?
+User: [message] Let's try Kozy Kar this time.
+You:[propose] [Garden of Wonders, The Cakery, Kozy Kar]
+You:[message] I have made a new proposal. Please let me know what you think of it.
+User: [reject]
+User: [message] I'd like to find a bar that's closer to the other places.
+You:[tool] Search(fields=[name, price, rating], filters=[category == bar, info == non-touristy, info == has parking], sort_by=[distance_to(Garden of Wonders)], limit=5)
+Search Results (2):
+name|price|rating
+Kozy Kar|90|3.5
+A-Trane|40|1.5
+You:[message] The closest bar to the Garden of Wonders is Kozy Kar, but it's at the top of your budget. The other option is A-Trane, which is cheaper but has a lower rating. Would you like to reconsider these options or should I look for a different type of venue?
+User: [message] Let's reconsider A-Trane. I'd like to keep my budget under $90.
+You:[propose] [Garden of Wonders, The Cakery, A-Trane]
+You:[message] I have made a new proposal. Please let me know what you think of it.<
+
+==================== Final user Prompt ====================
+
+>You are traveling to a new city and consulting a travel agent. For each city, you have created a document listing things you would like to do and preferences about the places you visit. The preferences are not shared between cities. Communicate with the travel agent to find the best destinations to go to for the day.
+
+Your objective is to maximize the "Final Score" at the end of the chat, which scores how well the itinerary you agreed on matches your preferences. You should not list all your preferences up front in the conversation.
+
+CITY 1.
+Travel Preferences:
+check out live music!
+prefer just eating takeout
+keep budget below $30
+would be great if everything is reservable in advance
+like: korean, kosher, japanese, seafood
+generally like eating vegan options
+definitely want to go to Mad Seoul
+renting a car so preferably places with parking
+would love to see some panoramic views of the city
+family trip, best to go to places that are good for kids
+minimize travel distance
+
+You: [message] I'd like to see some live music, eat only takeout from Korean, kosher, Japanese or seafood restaurants. Vegan options are a plus and I'd like to stop by Mad Seoul. I'd also like places with parking, good city views and kid friendly. My budget is $30.
+Agent: [propose] [Common Grounds, NULL, NULL]
+Proposal Score:
+1) (score: 4) Common Grounds
+good for groups: True
+open late: False
+rating: 2.5
+touristy: False
+vegan options: True
+2) Empty
+3) Empty
+4) Empty
+5) Empty
+
+Overall Checklist:
+YES (score: 0) keep budget below $30
+NO (score: -9) definitely want to go to Mad Seoul
+TOTAL SCORE: +4+0+0+0+0+0-9=-5
+
+Agent: [message] I have made a proposal. Please let me know what you think of it.
+You: [message] It's not bad so far, I'd really like to stop by Mad Seoul though.
+Agent: [message] Sure. I can help you out with that! Are there any other events you'd like to go to after Mad Seoul?
+You: [message] I'd like to go to see some live music.
+Agent: [message] I have one option for you that you might be interested in. However, it is not recommended for kids. Are there any other places?
+You: [message] Somewhere with a panoramic view of the city would be nice or somewhere that's kid-friendly in general.
+Agent: [message] I have several options available. Do you have a price point?
+You: [message] As long as it's $30 or under, it should be fine.
+Agent: [propose] [Mad Seoul, Lincoln Park, Atlas Park]
+Proposal Score:
+1) (score: 1) Mad Seoul
+good for kids: False
+live music: False
+open late: True
+touristy: True
+vegan options: True
+2) (score: -8) Travel from Mad Seoul to Lincoln Park, 0.8mi
+3) (score: -3) Lincoln Park
+good for groups: False
+good for kids: True
+rating: 3
+touristy: False
+viewpoint: False
+4) (score: -11) Travel from Lincoln Park to Atlas Park, 1.1mi
+5) (score: 7) Atlas Park
+good for groups: False
+good for kids: True
+has parking: False
+touristy: True
+viewpoint: True
+
+Overall Checklist:
+NO (score: -1) keep budget below $30
+YES (score: 9) definitely want to go to Mad Seoul
+TOTAL SCORE: +1-8-3-11+7-1+9=-6
+You can [think], or output one of these choices:
+(1) [accept]
+(2) [reject]
+
+Agent: [message] I have found several options. If you have enough time you may even be able to go to all of these places as they are all under 2 miles away from each other and close to Mad Seoul. Both parks are also kid friendly.
+You: [think] I am losing the most points from the travel time between events. I should reject the proposal and tell the agent to find sites that are closer to each other.
+You: [reject] 
+You: [message] It would be great if you could significantly lower the travel time. Maybe another restaurant or a concert that's closer?
+Agent: [message] Mad Seoul is 0.8 miles away from Lincoln Park. I can definitely find a restaurant for you. Do you want a place with live music, touristy, kid-friendly, and has vegetarian options? The price point is around $10.
+You: [message] Yes, all those things would be great. Just make sure to keep the travel distance as low as you can get it.
+Agent: [propose] [Mad Seoul, Lincoln Park, Caribbean Corner]
+Proposal Score:
+1) (score: 1) Mad Seoul
+good for kids: False
+live music: False
+open late: True
+touristy: True
+vegan options: True
+2) (score: -8) Travel from Mad Seoul to Lincoln Park, 0.8mi
+3) (score: -3) Lincoln Park
+good for groups: False
+good for kids: True
+rating: 3
+touristy: False
+viewpoint: False
+4) (score: -8) Travel from Lincoln Park to Caribbean Corner, 0.8mi
+5) (score: -1) Caribbean Corner
+ambience: divey
+good for groups: False
+good for kids: False
+has takeout: True
+live music: True
+
+Overall Checklist:
+NO (score: -1) keep budget below $30
+YES (score: 9) definitely want to go to Mad Seoul
+TOTAL SCORE: +1-8-3-8-1-1+9=-11
+You can [think], or output one of these choices:
+(1) [accept]
+(2) [reject]
+
+Agent: [message] I have several options. One option might be a little too far for you, however it does have live music. I also have another restaurant that is closer. All of the places I have recommended are less than a mile apart from each other.
+You: [think] I am still losing a lot of points from the travel time between events. This seems more important to me than the other features of the sites.
+You: [reject] 
+You: [message] The places you've chosen are great, but everything is still too far apart for me. Choose the places closest to each other if you can.
+Agent: [propose] [Mad Seoul, Caribbean Corner, Hindenberg Memorial]
+Proposal Score:
+1) (score: 1) Mad Seoul
+good for kids: False
+live music: False
+open late: True
+touristy: True
+vegan options: True
+2) (score: 0) Travel from Estimated Travel to Caribbean Corner, 0mi
+3) (score: -1) Caribbean Corner
+ambience: divey
+good for groups: False
+good for kids: False
+has takeout: True
+live music: True
+4) (score: -2) Travel from Estimated Travel to Hindenberg Memorial, 0.2mi
+5) (score: -2) Hindenberg Memorial
+good for groups: True
+good for kids: False
+open late: False
+rating: 5
+touristy: True
+
+Overall Checklist:
+NO (score: -1) keep budget below $30
+YES (score: 9) definitely want to go to Mad Seoul
+TOTAL SCORE: +1+0-1-2-2-1+9=4
+You must output one of these choices:
+(1) [accept]
+(2) [reject]
+
+Agent: [message] Yes sir, but there are only so many options that are kid friendly near the café of your choice. However I have one more proposal that is within a much better distance of each other.
+You: [think] All the events are very close to each other and the score is a lot better. My total score seems like it could be pretty good. I should accept this proposal.
+You: [accept] 
+FINAL SCORE: 92/100
+
+CITY 2.
+Travel Preferences:
+don't like: chinese, like: french
+find a place with wifi to do some work at some point
+go to at least one bar
+prefer just eating takeout
+keep budget below $90
+definitely want to go to Garden of Wonders
+renting a car so preferably places with parking, but street parking also ok
+seeing hidden, non-touristy spots would be cool
+prefer ratings above 4
+minimize travel distance
+You:[message] I'd like to visit the Garden of Wonders, eat takeout from French restaurants, and find a place with wifi where I can do some work. I'd also like to go to a bar and see some hidden, non-touristy spots. I'm renting a car, so places with parking would be great. I'd like to keep my budget under $90 and prefer places with ratings above 4.
+Agent: [message] I'm sorry, but I couldn't find any French restaurants with takeout and parking. Would you like me to search again with fewer restrictions, or would you prefer a different type of cuisine?
+You:[message] That's okay, let's try again with fewer restrictions. I'd still like to keep the budget under $90 and prefer places with ratings above 4.
+Agent: [message] I found a few restaurants that offer takeout and have parking. The highest rated one is The Cakery, but it has a rating of 3.5. Would you like to try that or should I look for a different type of cuisine?
+You:[message] Let's try The Cakery. I'd also like to find a place with wifi where I can do some work.
+Agent: [message] I found a place called Coffee Nook that has wifi and parking. However, it doesn't have a rating. Would you like to try this place or should I look for another one?
+You:[message] Coffee Nook sounds good. I'd also like to go to a bar and see some hidden, non-touristy spots.
+Agent: [message] I found two bars that are non-touristy and have parking. The highest rated one is Kozy Kar, but it's at the top of your budget. The other option is A-Trane, which is cheaper but has a lower rating. Which one would you prefer?
+You:[message] Let's go with A-Trane. I'd like to keep my budget under $90.
+Agent: [propose] [Garden of Wonders, The Cakery, A-Trane]
+Proposal Score:
+1) (score: 6) Garden of Wonders
+good for groups: False
+has parking: True
+rating: 3
+touristy: False
+viewpoint: True
+2) (score: -2) Travel from Garden of Wonders to The Cakery, 2.4mi
+3) (score: 6) The Cakery
+ambience: romantic
+good for kids: True
+has takeout: False
+live music: False
+touristy: False
+4) (score: 0) Travel from The Cakery to A-Trane, 0.6mi
+5) (score: -1) A-Trane
+alcohol type: wine
+ambience: trendy
+good for groups: True
+outdoor seating: False
+rating: 1.5
+
+Overall Checklist:
+YES (score: 5) go to at least one bar
+YES (score: 0) keep budget below $90
+YES (score: 9) definitely want to go to Garden of Wonders
+TOTAL SCORE: +6-2+6+0-1+5+0+9=23
+You can [think], or output one of these choices:
+(1) [accept] Accept
+(2) [reject] Reject
+Agent: [message] I have made a proposal. Please let me know what you think of it.
+You:[think] The score is not bad, but I'm losing points on the travel distance and the rating of A-Trane. I should reject the proposal and ask the agent to find a bar with a higher rating and closer to the other places.
+Error: A proposal was made. You must first accept or reject it.
+You:[reject]
+You:[message] I'd like to find a bar with a higher rating and closer to the other places.
+Agent: [message] I found two bars that are non-touristy and have parking. The highest rated one is Kozy Kar, but it's at the top of your budget. The other option is A-Trane, which is cheaper but has a lower rating. Which one would you prefer?
+You:[message] Let's try Kozy Kar this time.
+Agent: [propose] [Garden of Wonders, The Cakery, Kozy Kar]
+Proposal Score:
+1) (score: 6) Garden of Wonders
+good for groups: False
+has parking: True
+rating: 3
+touristy: False
+viewpoint: True
+2) (score: -2) Travel from Garden of Wonders to The Cakery, 2.4mi
+3) (score: 6) The Cakery
+ambience: romantic
+good for kids: True
+has takeout: False
+live music: False
+touristy: False
+4) (score: -2) Travel from The Cakery to Kozy Kar, 2.0mi
+5) (score: 0) Kozy Kar
+alcohol type: beer
+has parking: True
+outdoor seating: True
+rating: 3.5
+touristy: True
+
+Overall Checklist:
+YES (score: 5) go to at least one bar
+NO (score: -9) keep budget below $90
+YES (score: 9) definitely want to go to Garden of Wonders
+TOTAL SCORE: +6-2+6-2+0+5-9+9=13
+You can [think], or output one of these choices:
+(1) [accept] Accept
+(2) [reject] Reject
+Agent: [message] I have made a new proposal. Please let me know what you think of it.
+You:[think] The score is better than the previous proposal, but I'm still losing points on the travel distance. I should reject the proposal and ask the agent to find a bar that's closer to the other places.
+Error: A proposal was made. You must first accept or reject it.
+You:[reject]
+You:[message] I'd like to find a bar that's closer to the other places.
+Agent: [message] The closest bar to the Garden of Wonders is Kozy Kar, but it's at the top of your budget. The other option is A-Trane, which is cheaper but has a lower rating. Would you like to reconsider these options or should I look for a different type of venue?
+You:[message] Let's reconsider A-Trane. I'd like to keep my budget under $90.
+Agent: [propose] [Garden of Wonders, The Cakery, A-Trane]
+Proposal Score:
+1) (score: 6) Garden of Wonders
+good for groups: False
+has parking: True
+rating: 3
+touristy: False
+viewpoint: True
+2) (score: -2) Travel from Garden of Wonders to The Cakery, 2.4mi
+3) (score: 6) The Cakery
+ambience: romantic
+good for kids: True
+has takeout: False
+live music: False
+touristy: False
+4) (score: 0) Travel from The Cakery to A-Trane, 0.6mi
+5) (score: -1) A-Trane
+alcohol type: wine
+ambience: trendy
+good for groups: True
+outdoor seating: False
+rating: 1.5
+
+Overall Checklist:
+YES (score: 5) go to at least one bar
+YES (score: 0) keep budget below $90
+YES (score: 9) definitely want to go to Garden of Wonders
+TOTAL SCORE: +6-2+6+0-1+5+0+9=23
+You can [think], or output one of these choices:
+(1) [accept] Accept
+(2) [reject] Reject
+Agent: [message] I have made a new proposal. Please let me know what you think of it.
+You:[think] The score is the same as the first proposal, but the travel distance is less. I should accept this proposal.
+Error: A proposal was made. You must first accept or reject it.
+You:<
+
+==================== Result ====================
+
+>{"user": "[accept]", "agent": "\nUser: [accept]", "turn_player": "user", "done": true, "reward": 23, "info": {"num_msgs": 24, "best_score": 31, "worst_score": -40, "reward_normalized": 0.8873239436619719}, "hh_turns": 4, "hh_words": 63, "hh_score": 21, "hh_score_norm": 0.8591549295774648, "t": 35, "num_turns": 24, "num_words": 467}<
